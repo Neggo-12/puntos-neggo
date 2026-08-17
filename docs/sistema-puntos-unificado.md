@@ -52,9 +52,11 @@ Mismo patrón que ya existe entre `neggo-12` y `ads-ai-platform`: llamadas servi
 
 ## 8. Decisiones pendientes de Jhey
 
-- Tasa de conversión punto → COP.
-- Pago a comercios solo-canje: ¿siempre manual, o en algún punto se automatiza (Nequi/transferencia por API)?
-- ¿El `codigo_publico` del cliente se muestra en algún lugar del perfil de Neggo/Talleres, o solo lo ve el comercio al momento del canje?
+- ~~Tasa de conversión punto → COP.~~ **Resuelto 17 ago 2026** — ver `docs/modelo-economico-v1.md` (sección 1: $800 = 1 punto, 1 punto = $10; sección 4: condiciones de retiro en efectivo).
+- Pago a comercios solo-canje: ¿siempre manual, o en algún punto se automatiza (Nequi/transferencia por API)? — **sigue abierto.**
+- ¿El `codigo_publico` del cliente se muestra en algún lugar del perfil de Neggo/Talleres, o solo lo ve el comercio al momento del canje? — **sigue abierto.**
+
+> Nota (17 ago 2026): el modelo económico completo — multiplicadores, transferencias, vencimientos, y la decisión de arquitectura de separar la capa de Puntos (ledger) de una capa financiera regulada para el retiro en efectivo — quedó documentado en `docs/modelo-economico-v1.md`. Ese documento no reemplaza este esquema; lo complementa con las reglas de negocio que acá quedaban abiertas.
 
 ---
 

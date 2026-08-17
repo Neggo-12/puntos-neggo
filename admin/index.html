@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Puntos Neggo — Admin</title>
+<style>
+  :root { color-scheme: dark; }
+  body { font-family: -apple-system, system-ui, sans-serif; background: #0f1115; color: #e6e6e6; margin: 0; padding: 24px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 32px 0 12px; color: #9aa4b2; text-transform: uppercase; letter-spacing: .04em; }
+  .sub { color: #8a93a3; font-size: 13px; margin-bottom: 24px; }
+  input, button { font: inherit; }
+  input { background: #1a1d24; border: 1px solid #2a2f3a; color: #e6e6e6; padding: 8px 10px; border-radius: 6px; }
+  button { background: #2f6feb; border: none; color: white; padding: 8px 14px; border-radius: 6px; cursor: pointer; }
+  button:hover { background: #4184ff; }
+  button.secondary { background: #2a2f3a; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #2a2f3a; font-size: 13px; vertical-align: top; }
+  th { color: #8a93a3; font-weight: 500; }
+  code { background: #1a1d24; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+  .codigo { font-size: 16px; font-weight: 600; letter-spacing: .05em; color: #ffd166; }
+  .estado-pendiente { color: #ffd166; }
+  .estado-pagado { color: #4caf6f; }
+  #login-box { max-width: 320px; margin: 80px auto; display: flex; flex-direction: column; gap: 10px; }
+  #app { display: none; }
+  .error { color: #ff6b6b; font-size: 13px; min-height: 18px; }
+  .empty { color: #6b7280; font-size: 13px; padding: 12px 0; }
+  form.inline { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  form.inline input { flex: 1 1 160px; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; }
+  .pasivo { display: flex; gap: 24px; flex-wrap: wrap; background: #171a21; border: 1px solid #2a2f3a; border-radius: 8px; padding: 16px 20px; margin-top: 20px; }
+  .pasivo .stat { min-width: 160px; }
+  .pasivo .stat .label { color: #8a93a3; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  .pasivo .stat .valor { font-size: 22px; font-weight: 600; margin-top: 2px; }
+  .pasivo .nota { color: #6b7280; font-size: 12px; margin-top: 10px; width: 100%; }
+</style>
+</head>
+<body>
+
+<div id="login-box">
+  <h1>Puntos Neggo — Admin</h1>
+  <p class="sub">Acceso restringido. Solo usuarios en la tabla <code>admins</code>.</p>
+  <input id="email" type="email" placeholder="Email" autocomplete="username" />
+  <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password" />
+  <button id="btn-login">Entrar</button>
+  <div class="error" id="login-error"></div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div>
+      <h1>Puntos Neggo — Admin</h1>
+      <p class="sub" id="session-info"></p>
+    </div>
+    <button class="secondary" id="btn-logout">Salir</button>
+  </div>
+
+  <h2>Pasivo financiero (puntos en circulación)</h2>
+  <div class="error" id="pasivo-error"></div>
+  <div class="pasivo">
+    <div class="stat">
+      <div class="label">Puntos en circulación</div>
+      <div class="valor" id="pasivo-puntos">—</div>
+    </div>
+    <div class="stat">
+      <div class="label">Valor de referencia</div>
+      <div class="valor" id="pasivo-valor">—</div>
+    </div>
+    <div class="stat">
+      <div class="label">Clientes con saldo</div>
+      <div class="valor" id="pasivo-clientes">—</div>
+    </div>
+    <div class="nota">Nota: los lotes vencidos se descuentan con un barrido automático diario (01:00 hora Bogotá) — la cifra puede tener hasta 24h de rezago frente a un vencimiento que acaba de ocurrir, no es en tiempo real.</div>
+  </div>
+
+  <h2>Canjes pendientes de pago</h2>
+  <div class="error" id="canjes-error"></div>
+  <table id="tabla-canjes">
+    <thead>
+      <tr><th>Fecha</th><th>Cliente</th><th>Comercio</th><th>Puntos</th><th>Valor</th><th>Código</th><th>Acción</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div class="empty" id="canjes-empty" style="display:none">No hay canjes pendientes.</div>
+
+  <h2>Comercios solo-canje</h2>
+  <div class="error" id="comercios-error"></div>
+  <form class="inline" id="form-comercio">
+    <input id="c-nombre" placeholder="Nombre" required />
+    <input id="c-ciudad" placeholder="Ciudad" required />
+    <input id="c-contacto" placeholder="Contacto (tel/email)" required />
+    <input id="c-pago" placeholder="Datos de pago (cuenta/Nequi)" required />
+    <button type="submit">Agregar comercio</button>
+  </form>
+  <table id="tabla-comercios">
+    <thead><tr><th>Nombre</th><th>Ciudad</th><th>Contacto</th><th>Datos de pago</th><th>Alta</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <div class="empty" id="comercios-empty" style="display:none">Sin comercios registrados.</div>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+// Publishable key: es publica por diseno, la proteccion real es RLS + la tabla admins,
+// no la confidencialidad de esta key.
+const SUPABASE_URL = "https://ckxoypzsmvxhqlvlwnib.supabase.co";
+const SUPABASE_KEY = "sb_publishable_N0z9XkKZ92GfvxtHA-NZxA_0nENuF7v";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const $ = (id) => document.getElementById(id);
+const cop = (n) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(n);
+const fecha = (iso) => new Date(iso).toLocaleString("es-CO");
+
+async function init() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) return mostrarApp(session);
+  mostrarLogin();
+}
+
+function mostrarLogin() {
+  $("login-box").style.display = "flex";
+  $("app").style.display = "none";
+}
+
+async function mostrarApp(session) {
+  $("login-box").style.display = "none";
+  $("app").style.display = "block";
+  $("session-info").textContent = `Conectado como ${session.user.email}`;
+  await Promise.all([cargarPasivo(), cargarCanjes(), cargarComercios()]);
+}
+
+async function cargarPasivo() {
+  $("pasivo-error").textContent = "";
+  const { data, error } = await supabase.rpc("obtener_pasivo_puntos");
+  if (error) { $("pasivo-error").textContent = error.message; return; }
+  const fila = Array.isArray(data) ? data[0] : data;
+  if (!fila) return;
+  $("pasivo-puntos").textContent = new Intl.NumberFormat("es-CO").format(fila.puntos_en_circulacion);
+  $("pasivo-valor").textContent = cop(fila.valor_cop);
+  $("pasivo-clientes").textContent = new Intl.NumberFormat("es-CO").format(fila.clientes_con_saldo);
+}
+
+$("btn-login").addEventListener("click", async () => {
+  $("login-error").textContent = "";
+  const email = $("email").value.trim();
+  const password = $("password").value;
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) { $("login-error").textContent = error.message; return; }
+  mostrarApp(data.session);
+});
+
+$("btn-logout").addEventListener("click", async () => {
+  await supabase.auth.signOut();
+  mostrarLogin();
+});
+
+async function cargarCanjes() {
+  $("canjes-error").textContent = "";
+  const { data, error } = await supabase
+    .from("canjes")
+    .select("id, created_at, cliente_id, comercio_nombre, puntos, valor_cop, codigo_verificacion, estado")
+    .eq("estado", "pendiente_pago")
+    .order("created_at", { ascending: true });
+
+  if (error) { $("canjes-error").textContent = error.message; return; }
+
+  const tbody = document.querySelector("#tabla-canjes tbody");
+  tbody.innerHTML = "";
+  $("canjes-empty").style.display = data.length ? "none" : "block";
+
+  for (const c of data) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${fecha(c.created_at)}</td>
+      <td><code>${c.cliente_id.slice(0, 8)}</code></td>
+      <td>${c.comercio_nombre}</td>
+      <td>${c.puntos}</td>
+      <td>${cop(c.valor_cop)}</td>
+      <td class="codigo">${c.codigo_verificacion ?? "-"}</td>
+      <td><button data-id="${c.id}">Marcar entregado</button></td>
+    `;
+    tr.querySelector("button").addEventListener("click", (ev) => marcarEntregado(c.id, ev.target));
+    tbody.appendChild(tr);
+  }
+}
+
+async function marcarEntregado(canjeId, btn) {
+  if (!confirm("¿Confirmaste el código de verificación con el cliente antes de esto?")) return;
+  btn.disabled = true;
+  const { error } = await supabase.rpc("marcar_canje_pagado", { p_canje_id: canjeId });
+  if (error) {
+    $("canjes-error").textContent = error.message;
+    btn.disabled = false;
+    return;
+  }
+  await cargarCanjes();
+}
+
+async function cargarComercios() {
+  $("comercios-error").textContent = "";
+  const { data, error } = await supabase
+    .from("comercios_solo_canje")
+    .select("id, nombre, ciudad, contacto, datos_pago, created_at")
+    .order("created_at", { ascending: false });
+
+  if (error) { $("comercios-error").textContent = error.message; return; }
+
+  const tbody = document.querySelector("#tabla-comercios tbody");
+  tbody.innerHTML = "";
+  $("comercios-empty").style.display = data.length ? "none" : "block";
+
+  for (const c of data) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${c.nombre}</td>
+      <td>${c.ciudad}</td>
+      <td>${c.contacto}</td>
+      <td>${c.datos_pago}</td>
+      <td>${fecha(c.created_at)}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+$("form-comercio").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  $("comercios-error").textContent = "";
+  const payload = {
+    nombre: $("c-nombre").value.trim(),
+    ciudad: $("c-ciudad").value.trim(),
+    contacto: $("c-contacto").value.trim(),
+    datos_pago: $("c-pago").value.trim(),
+  };
+  const { error } = await supabase.from("comercios_solo_canje").insert(payload);
+  if (error) { $("comercios-error").textContent = error.message; return; }
+  ev.target.reset();
+  await cargarComercios();
+});
+
+init();
+</script>
+</body>
+</html>
