@@ -195,3 +195,31 @@ Se creó un canje de prueba real (`otorgar_puntos` → 2000 puntos, cliente `TES
 **Fase 6, sub-tarea 3 (notificación de vencimiento) cerrada y verificada -- también queda cerrada la verificación HTTP end-to-end de `revertir-puntos` que faltaba de la sub-tarea 2.**
 
 **Estado de Fase 6 a esta altura:** 3 de 4 sub-tareas completas (vencimiento por lote, reversos y fraude, notificación de vencimiento). Queda solo transferencia punto a punto, bloqueada por una decisión real de Jhey (límites diario/mensual).
+
+## Sesión 17 ago 2026 (continuación 10) — Fase 6, sub-tarea 4 (última): transferencia punto a punto
+
+Jhey no dio números para los límites cuando se le preguntó -- respondió "continúa", entendido como pedir que yo proponga valores razonables para que él los confirme o ajuste después, no como decisión final cerrada por mi cuenta.
+
+**Límites propuestos (`20260817_transferencia_puntos.sql`), pendientes de confirmación de Jhey:**
+- Máximo por transferencia individual: 2.000 puntos ($20.000).
+- Máximo diario por cliente emisor: 3.000 puntos ($30.000).
+- Máximo mensual por cliente emisor: 10.000 puntos ($100.000).
+- Máximo de transferencias por día: 3 (evita fraccionar una transferencia grande en varias chicas).
+Implementados como constantes (`c_max_*`) al inicio de `transferir_puntos`, fáciles de ubicar y cambiar en una migración futura si Jhey pide otros números.
+
+**Diseño:**
+- `transferir_puntos(...)`: mismo modelo de acceso que `otorgar_puntos`/`solicitar_canje`/`revertir_puntos_otorgados` (solo `service_role`). Valida: origen registrado y no congelado/bloqueado, destino registrado (no se auto-crea, a diferencia de `otorgar_puntos`) y no congelado, no auto-transferencia, saldo suficiente, límites diario/mensual/conteo. Idempotente por `(origen_producto, referencia_externa)` -- mismo patrón que `otorgar_puntos`, con un índice único parcial nuevo scoped a `tipo = 'transferido_salida'`.
+- **Preservación de vencimiento del lote de origen (sección 5 de la spec):** un cliente puede tener el saldo repartido en varios lotes con vencimientos distintos. `transferir_puntos` calcula el reparto FIFO ANTES de escribir nada (usa `_pendiente_por_lote` sobre el estado previo a la transferencia), y crea en el destinatario **una fila `transferido_entrada` por cada lote de origen que tocó**, cada una con la `fecha_vencimiento` original -- nunca una fecha nueva. En origen sí es una sola fila agregada (mismo patrón que `canjeado`), porque el consumo FIFO ya se resuelve en consulta, no hace falta partirla.
+- **Cambio a `_pendiente_por_lote` (función compartida, ya usada por el barrido de vencimientos y la notificación):** ahora trata `tipo in ('ganado', 'transferido_entrada')` como lotes de entrada (antes solo `'ganado'`). Cambio de bajo riesgo (ningún cliente tenía filas `transferido_entrada` todavía), pero se re-verificó el barrido con datos reales para confirmar que no se rompió nada.
+- **Controles de la spec que este ledger NO puede aplicar, documentado, no inventado:** "usuario verificado" (no existe verificación de identidad real en `neggo-12`, punto ciego ya documentado en la skill, no se resuelve acá) y "confirmación adicional" (responsabilidad de UX del producto que llama, no de este ledger).
+- Desplegado el Edge Function `transferir-puntos` (mismo patrón `x-internal-secret`).
+
+**VERIFICADO con evidencia real, no inferencia (datos de prueba eliminados después):**
+- `get_advisors(security)` + `information_schema.routine_privileges` desde el inicio: `transferir_puntos` y `_pendiente_por_lote` solo `postgres`/`service_role`, cero hallazgos de `anon`/`authenticated` -- lección de la sesión anterior aplicada desde el primer intento, no como fix posterior.
+- Transferencia multi-lote real: cliente A con 2 lotes (300 puntos a 5 días de vencer, 300 a 20 días), transferencia de 400 puntos a B -> consumió los 300 del lote más próximo a vencer + 100 del otro, confirmado con consulta directa: 2 filas `transferido_entrada` en B con `fecha_vencimiento` `2026-08-22` (300 pts) y `2026-09-06` (100 pts) -- exactas, preservadas del lote de origen. Saldo origen 600->200, destino 200->600.
+- Repetir la misma transferencia (misma `referenciaExterna`) -> `ya_procesado: true`, no duplica.
+- Rechazos confirmados, cada uno con el mensaje esperado: destinatario no registrado, auto-transferencia, saldo insuficiente, más de 2.000 puntos en una transferencia, cliente origen congelado, cuenta origen con `bloqueo_redencion`, cliente destino congelado, 4ª transferencia del día (límite de 3 alcanzado).
+- **Regresión de `_pendiente_por_lote` verificada con datos reales:** `puntos_por_vencer_cliente` sobre el cliente B (que recibió puntos por transferencia) detectó correctamente el lote transferido de 300 puntos a 5 días de vencer. Se backdateó el lote transferido de 100 puntos a ya vencido y se corrió `ejecutar_barrido_vencimientos()` -> venció exactamente esos 100 puntos, saldo de B bajó de 620 a 520 -- el barrido funciona igual de bien con puntos que llegaron por transferencia que con puntos ganados directo.
+- `SET LOCAL ROLE anon` contra `transferir_puntos` -> `permission denied` real.
+
+**Fase 6 completa -- las 4 sub-tareas hechas y verificadas.** Límites de transferencia pendientes de confirmación final de Jhey (son valores propuestos, fáciles de cambiar).
