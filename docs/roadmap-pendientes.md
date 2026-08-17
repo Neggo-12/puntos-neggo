@@ -168,3 +168,23 @@ Se creó un canje de prueba real (`otorgar_puntos` → 2000 puntos, cliente `TES
 - `get_advisors(security)` final: solo quedan los 4 `WARN` esperados de `authenticated` en las funciones admin-gateadas (mismo patrón ya aceptado de `marcar_canje_pagado`/`is_admin`), cero hallazgos de `anon`.
 
 **Fase 6, sub-tarea 2 (reversos y fraude) cerrada y verificada.**
+
+## Sesión 17 ago 2026 (continuación 9) — Fase 6, sub-tarea 3: notificación de vencimiento próximo + gap real corregido
+
+**Gap encontrado antes de empezar:** `revertir_puntos_otorgados` (sesión anterior) quedó restringida a `service_role`, correcto para seguridad, pero nunca se le construyó el Edge Function -- sin eso, Neggo/Talleres no tenían forma real de llamarla por HTTP. Corregido en esta sesión junto con la nueva funcionalidad, no se dejó pendiente.
+
+**Diseño (`20260817_puntos_por_vencer.sql`, modelo-economico-v1.md sección 6):**
+- `puntos_por_vencer_cliente(tipo_documento, numero_documento, dias default 15)` -- reutiliza `_pendiente_por_lote` (misma función que ya usa el barrido de vencimientos), filtrando lotes que **todavía no vencieron** pero vencen dentro de la ventana pedida, en vez de lotes ya vencidos.
+- **Decisión pendiente de Jhey, no inventada (ya estaba abierta en `modelo-economico-v1.md` sección 11):** la ventana exacta de aviso. Se implementó como parámetro con default 15 días -- es el número que el propio Jhey puso como ejemplo en la spec, no uno nuevo inventado, pero sigue siendo configurable por llamada, no una decisión final cerrada.
+- Puntos Neggo no envía notificaciones (no tiene canal propio) -- solo expone la data vía Edge Function; el producto que consume esto (Neggo/Talleres) decide push/email/banner.
+
+**Desplegado (Edge Functions, mismo patrón de `otorgar-puntos`/`solicitar-canje` -- `x-internal-secret`, `verify_jwt=false`):**
+- `puntos-por-vencer` -- envuelve `puntos_por_vencer_cliente`.
+- `revertir-puntos` -- envuelve `revertir_puntos_otorgados` (el gap de la sesión anterior).
+
+**VERIFICADO con evidencia real:**
+- `get_advisors(security)` + `information_schema.routine_privileges`: `puntos_por_vencer_cliente` solo `postgres`/`service_role`, sin `anon`/`authenticated` -- se revocó explícito de los 3 desde el inicio esta vez (lección de la sesión anterior aplicada).
+- Prueba funcional con datos reales (cliente `TEST-VENCER-001`): 2 lotes de 300 puntos, uno reubicado a 10 días de vencer, el otro a 12 meses -- `puntos_por_vencer_cliente(..., 15)` devolvió exactamente el lote de 10 días, el de 12 meses quedó afuera. Cliente inexistente -> lista vacía, sin error. Datos de prueba eliminados después.
+- Los 2 Edge Functions se desplegaron con `status: ACTIVE`. **No se pudo probar la llamada HTTP real desde este entorno** (sin salida de red, misma limitación que Fase 3) -- comandos curl exactos entregados a Jhey en el mensaje de cierre para que él (o Claude Code local) confirme end-to-end.
+
+**Pendiente de confirmación de Jhey:** correr los 2 curls de prueba y confirmar respuesta.
