@@ -187,4 +187,11 @@ Se creó un canje de prueba real (`otorgar_puntos` → 2000 puntos, cliente `TES
 - Prueba funcional con datos reales (cliente `TEST-VENCER-001`): 2 lotes de 300 puntos, uno reubicado a 10 días de vencer, el otro a 12 meses -- `puntos_por_vencer_cliente(..., 15)` devolvió exactamente el lote de 10 días, el de 12 meses quedó afuera. Cliente inexistente -> lista vacía, sin error. Datos de prueba eliminados después.
 - Los 2 Edge Functions se desplegaron con `status: ACTIVE`. **No se pudo probar la llamada HTTP real desde este entorno** (sin salida de red, misma limitación que Fase 3) -- comandos curl exactos entregados a Jhey en el mensaje de cierre para que él (o Claude Code local) confirme end-to-end.
 
-**Pendiente de confirmación de Jhey:** correr los 2 curls de prueba y confirmar respuesta.
+**Confirmado por Jhey con curl real (HTTP, no solo SQL directo):**
+- `puntos-por-vencer` con `PRUEBA-001` -> `{"lotes":[]}` (correcto, sin puntos por vencer).
+- `otorgar-puntos` con `PRUEBA-REVERSO`/`referenciaExterna: PRUEBA-REVERSO-001` -> `200 puntos otorgados`.
+- `revertir-puntos` con la misma referencia -> `puntos_revertidos: 200, puntos_no_recuperados: 0, saldo_nuevo: 0`. Dato de prueba eliminado después de confirmar.
+
+**Fase 6, sub-tarea 3 (notificación de vencimiento) cerrada y verificada -- también queda cerrada la verificación HTTP end-to-end de `revertir-puntos` que faltaba de la sub-tarea 2.**
+
+**Estado de Fase 6 a esta altura:** 3 de 4 sub-tareas completas (vencimiento por lote, reversos y fraude, notificación de vencimiento). Queda solo transferencia punto a punto, bloqueada por una decisión real de Jhey (límites diario/mensual).
