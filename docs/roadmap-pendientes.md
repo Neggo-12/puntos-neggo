@@ -200,7 +200,7 @@ Se creó un canje de prueba real (`otorgar_puntos` → 2000 puntos, cliente `TES
 
 Jhey no dio números para los límites cuando se le preguntó -- respondió "continúa", entendido como pedir que yo proponga valores razonables para que él los confirme o ajuste después, no como decisión final cerrada por mi cuenta.
 
-**Límites propuestos (`20260817_transferencia_puntos.sql`), pendientes de confirmación de Jhey:**
+**Límites confirmados por Jhey el 18 ago (`20260817_transferencia_puntos.sql`):**
 - Máximo por transferencia individual: 2.000 puntos ($20.000).
 - Máximo diario por cliente emisor: 3.000 puntos ($30.000).
 - Máximo mensual por cliente emisor: 10.000 puntos ($100.000).
@@ -222,4 +222,8 @@ Implementados como constantes (`c_max_*`) al inicio de `transferir_puntos`, fác
 - **Regresión de `_pendiente_por_lote` verificada con datos reales:** `puntos_por_vencer_cliente` sobre el cliente B (que recibió puntos por transferencia) detectó correctamente el lote transferido de 300 puntos a 5 días de vencer. Se backdateó el lote transferido de 100 puntos a ya vencido y se corrió `ejecutar_barrido_vencimientos()` -> venció exactamente esos 100 puntos, saldo de B bajó de 620 a 520 -- el barrido funciona igual de bien con puntos que llegaron por transferencia que con puntos ganados directo.
 - `SET LOCAL ROLE anon` contra `transferir_puntos` -> `permission denied` real.
 
-**Fase 6 completa -- las 4 sub-tareas hechas y verificadas.** Límites de transferencia pendientes de confirmación final de Jhey (son valores propuestos, fáciles de cambiar).
+**Fase 6 completa -- las 4 sub-tareas hechas y verificadas.**
+
+## Sesión 18 ago 2026 — Fase 6 cerrada, límites de transferencia confirmados
+
+Jhey confirmó los límites de transferencia propuestos (2.000 por transferencia, 3.000/día, 10.000/mes, 3 transferencias/día). No hubo cambios de código -- la migración `20260817_transferencia_puntos.sql` ya los tenía implementados como constantes. Fase 6 queda sin pendientes técnicos.
