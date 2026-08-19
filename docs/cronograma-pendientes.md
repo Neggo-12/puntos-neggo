@@ -60,9 +60,17 @@ Las fases están pensadas en **sesiones de trabajo**, no en fechas de calendario
 
 Las 4 sub-tareas (vencimiento por lote, reversos y fraude, notificación de vencimiento, transferencia punto a punto) están hechas y verificadas con datos reales. Los límites de transferencia quedaron confirmados por Jhey el 18 de agosto. Sin pendientes técnicos en esta fase.
 
-## Fase 7 — Retiro en efectivo (bloqueado, sin ETA técnico)
+## Fase 7 — Retiro en efectivo y pagos a comercios (arrancó parcialmente, 19 ago)
 
-No se activa hasta resolver, en este orden:
+Jhey empezó conversación con una pasarela de pagos. Sigue bloqueado el envío real de plata (proveedor definitivo + consulta jurídica/SARLAFT), pero ya se puede avanzar la parte técnica que no depende de eso.
+
+**Decisión de alcance importante (19 ago):** el comprobante de venta (monto pagado, producto/servicio) NO lo genera puntos-neggo — es responsabilidad del admin de Talleres/CarroTalleres, que tiene el contexto de la cita/servicio. Puntos-neggo ya soporta el enlace vía `referenciaExterna` en `otorgar_puntos` (existe desde Fase 1) más las columnas `valor_compra`/`multiplicador` ya persistidas en el ledger — no hizo falta ninguna migración para esto. Se le entregó al arquitecto de CarroTalleres el contrato exacto del endpoint `otorgar-puntos` para que genere el comprobante de su lado y lo enlace.
+
+**Sub-tarea, cuenta por pagar por comercio — hecho y verificado, 19 ago.** `obtener_pasivo_por_comercio()` agrupa `canjes` en estado `pendiente_pago` por comercio (mismo patrón que el pasivo de clientes de Fase 5). Verificado con datos de prueba reales: admin ve los montos correctos por comercio, no-admin ve cero filas, `anon` no puede ni ejecutar la función (`permission denied`). Agregado al panel admin como nueva sección "Cuenta por pagar por comercio", y `marcar_canje_pagado` ahora refresca esa tabla también. Datos de prueba eliminados después.
+
+Pendiente (no bloqueante, sub-fases siguientes): login/portal propio para comercios, confirmación de canje por el comercio mismo, solicitud de pago anticipado, y el adaptador de pago (`PaymentProvider`) con disparo manual y programado — estas sí requieren decisiones ya tomadas por Jhey (portal propio, ambos modos de pago desde el inicio) pero construcción nueva.
+
+El envío real de plata no se activa hasta resolver, en este orden:
 1. Selección del proveedor financiero regulado (Wompi como primera validación de MVP, SEDPE/BaaS como objetivo, Bold como alternativa) — **gestión de Jhey, no técnica**.
 2. Consulta jurídica/regulatoria formal (Ley 1735, régimen SEDPE, Superfinanciera) — **gestión de Jhey**.
 3. Diseño del saldo prefondeado por comercio (no emitir puntos "a crédito").

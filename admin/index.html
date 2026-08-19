@@ -75,6 +75,16 @@
     <div class="nota">Nota: los lotes vencidos se descuentan con un barrido automático diario (01:00 hora Bogotá) — la cifra puede tener hasta 24h de rezago frente a un vencimiento que acaba de ocurrir, no es en tiempo real.</div>
   </div>
 
+  <h2>Cuenta por pagar por comercio</h2>
+  <div class="error" id="pasivo-comercio-error"></div>
+  <table id="tabla-pasivo-comercio">
+    <thead>
+      <tr><th>Comercio</th><th>Puntos pendientes</th><th>Valor</th><th>Canjes pendientes</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div class="empty" id="pasivo-comercio-empty" style="display:none">No hay puntos pendientes de pago a ningún comercio.</div>
+
   <h2>Canjes pendientes de pago</h2>
   <div class="error" id="canjes-error"></div>
   <table id="tabla-canjes">
@@ -130,7 +140,7 @@ async function mostrarApp(session) {
   $("login-box").style.display = "none";
   $("app").style.display = "block";
   $("session-info").textContent = `Conectado como ${session.user.email}`;
-  await Promise.all([cargarPasivo(), cargarCanjes(), cargarComercios()]);
+  await Promise.all([cargarPasivo(), cargarPasivoPorComercio(), cargarCanjes(), cargarComercios()]);
 }
 
 async function cargarPasivo() {
@@ -142,6 +152,27 @@ async function cargarPasivo() {
   $("pasivo-puntos").textContent = new Intl.NumberFormat("es-CO").format(fila.puntos_en_circulacion);
   $("pasivo-valor").textContent = cop(fila.valor_cop);
   $("pasivo-clientes").textContent = new Intl.NumberFormat("es-CO").format(fila.clientes_con_saldo);
+}
+
+async function cargarPasivoPorComercio() {
+  $("pasivo-comercio-error").textContent = "";
+  const { data, error } = await supabase.rpc("obtener_pasivo_por_comercio");
+  if (error) { $("pasivo-comercio-error").textContent = error.message; return; }
+
+  const tbody = document.querySelector("#tabla-pasivo-comercio tbody");
+  tbody.innerHTML = "";
+  $("pasivo-comercio-empty").style.display = data.length ? "none" : "block";
+
+  for (const c of data) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${c.comercio_nombre}</td>
+      <td>${new Intl.NumberFormat("es-CO").format(c.puntos_pendientes)}</td>
+      <td>${cop(c.valor_cop)}</td>
+      <td>${c.canjes_pendientes}</td>
+    `;
+    tbody.appendChild(tr);
+  }
 }
 
 $("btn-login").addEventListener("click", async () => {
@@ -197,7 +228,7 @@ async function marcarEntregado(canjeId, btn) {
     btn.disabled = false;
     return;
   }
-  await cargarCanjes();
+  await Promise.all([cargarCanjes(), cargarPasivoPorComercio()]);
 }
 
 async function cargarComercios() {
