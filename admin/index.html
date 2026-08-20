@@ -102,10 +102,12 @@
     <input id="c-ciudad" placeholder="Ciudad" required />
     <input id="c-contacto" placeholder="Contacto (tel/email)" required />
     <input id="c-pago" placeholder="Datos de pago (cuenta/Nequi)" required />
+    <input id="c-userid" placeholder="User ID portal (opcional, ver nota abajo)" />
     <button type="submit">Agregar comercio</button>
   </form>
+  <p class="sub" style="margin-top:-8px">Para dar acceso al portal (<code>/comercio</code>) a un comercio: primero créale un usuario en Supabase Dashboard → Authentication → Users → Add user (con su email), copia el <strong>User UID</strong> generado, y pégalo en "User ID portal" al agregarlo aquí (o edítalo directo en la base si el comercio ya existe).</p>
   <table id="tabla-comercios">
-    <thead><tr><th>Nombre</th><th>Ciudad</th><th>Contacto</th><th>Datos de pago</th><th>Alta</th></tr></thead>
+    <thead><tr><th>Nombre</th><th>Ciudad</th><th>Contacto</th><th>Datos de pago</th><th>Portal</th><th>Alta</th></tr></thead>
     <tbody></tbody>
   </table>
   <div class="empty" id="comercios-empty" style="display:none">Sin comercios registrados.</div>
@@ -235,7 +237,7 @@ async function cargarComercios() {
   $("comercios-error").textContent = "";
   const { data, error } = await supabase
     .from("comercios_solo_canje")
-    .select("id, nombre, ciudad, contacto, datos_pago, created_at")
+    .select("id, nombre, ciudad, contacto, datos_pago, user_id, created_at")
     .order("created_at", { ascending: false });
 
   if (error) { $("comercios-error").textContent = error.message; return; }
@@ -251,6 +253,7 @@ async function cargarComercios() {
       <td>${c.ciudad}</td>
       <td>${c.contacto}</td>
       <td>${c.datos_pago}</td>
+      <td>${c.user_id ? '<span style="color:#4caf6f">Vinculado</span>' : '<span style="color:#6b7280">Sin acceso</span>'}</td>
       <td>${fecha(c.created_at)}</td>
     `;
     tbody.appendChild(tr);
@@ -260,11 +263,13 @@ async function cargarComercios() {
 $("form-comercio").addEventListener("submit", async (ev) => {
   ev.preventDefault();
   $("comercios-error").textContent = "";
+  const userId = $("c-userid").value.trim();
   const payload = {
     nombre: $("c-nombre").value.trim(),
     ciudad: $("c-ciudad").value.trim(),
     contacto: $("c-contacto").value.trim(),
     datos_pago: $("c-pago").value.trim(),
+    ...(userId ? { user_id: userId } : {}),
   };
   const { error } = await supabase.from("comercios_solo_canje").insert(payload);
   if (error) { $("comercios-error").textContent = error.message; return; }

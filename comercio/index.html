@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Puntos Neggo — Portal de comercios</title>
+<style>
+  :root { color-scheme: dark; }
+  body { font-family: -apple-system, system-ui, sans-serif; background: #0f1115; color: #e6e6e6; margin: 0; padding: 24px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 32px 0 12px; color: #9aa4b2; text-transform: uppercase; letter-spacing: .04em; }
+  .sub { color: #8a93a3; font-size: 13px; margin-bottom: 24px; }
+  input, button { font: inherit; }
+  input { background: #1a1d24; border: 1px solid #2a2f3a; color: #e6e6e6; padding: 8px 10px; border-radius: 6px; }
+  button { background: #2f6feb; border: none; color: white; padding: 8px 14px; border-radius: 6px; cursor: pointer; }
+  button:hover { background: #4184ff; }
+  button.secondary { background: #2a2f3a; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #2a2f3a; font-size: 13px; vertical-align: top; }
+  th { color: #8a93a3; font-weight: 500; }
+  .confirmado { color: #4caf6f; }
+  .sin-confirmar { color: #ffd166; }
+  #login-box { max-width: 320px; margin: 80px auto; display: flex; flex-direction: column; gap: 10px; }
+  #app { display: none; }
+  .error { color: #ff6b6b; font-size: 13px; min-height: 18px; }
+  .ok { color: #4caf6f; font-size: 13px; min-height: 18px; }
+  .empty { color: #6b7280; font-size: 13px; padding: 12px 0; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; }
+  .pasivo { display: flex; gap: 24px; flex-wrap: wrap; background: #171a21; border: 1px solid #2a2f3a; border-radius: 8px; padding: 16px 20px; margin-top: 20px; }
+  .pasivo .stat { min-width: 160px; }
+  .pasivo .stat .label { color: #8a93a3; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  .pasivo .stat .valor { font-size: 22px; font-weight: 600; margin-top: 2px; }
+  .info { background: #171a21; border: 1px solid #2a2f3a; border-radius: 8px; padding: 16px 20px; margin-top: 20px; font-size: 13px; color: #c4cad3; }
+  .info div { margin-bottom: 4px; }
+  .confirmar-form { display: flex; gap: 6px; }
+  .confirmar-form input { width: 100px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<div id="login-box">
+  <h1>Puntos Neggo — Portal de comercios</h1>
+  <p class="sub">Acceso restringido a comercios registrados por Neggo.</p>
+  <input id="email" type="email" placeholder="Email" autocomplete="username" />
+  <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password" />
+  <button id="btn-login">Entrar</button>
+  <div class="error" id="login-error"></div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div>
+      <h1>Puntos Neggo — Portal de comercios</h1>
+      <p class="sub" id="session-info"></p>
+    </div>
+    <button class="secondary" id="btn-logout">Salir</button>
+  </div>
+
+  <div class="error" id="comercio-error"></div>
+  <div class="info" id="info-comercio"></div>
+
+  <h2>Puntos pendientes de pago (a favor del comercio)</h2>
+  <div class="pasivo">
+    <div class="stat">
+      <div class="label">Puntos pendientes</div>
+      <div class="valor" id="pasivo-puntos">—</div>
+    </div>
+    <div class="stat">
+      <div class="label">Valor</div>
+      <div class="valor" id="pasivo-valor">—</div>
+    </div>
+    <div class="stat">
+      <div class="label">Canjes pendientes</div>
+      <div class="valor" id="pasivo-canjes">—</div>
+    </div>
+  </div>
+
+  <h2>Canjes pendientes de confirmar</h2>
+  <p class="sub">Pídele al cliente el código de verificación que le muestra su app y escríbelo aquí para confirmar.</p>
+  <div class="error" id="canjes-error"></div>
+  <table id="tabla-canjes">
+    <thead>
+      <tr><th>Fecha</th><th>Puntos</th><th>Valor</th><th>Estado</th><th>Confirmar</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div class="empty" id="canjes-empty" style="display:none">No hay canjes pendientes.</div>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+// Publishable key: es publica por diseno, la proteccion real es RLS +
+// comercios_solo_canje.user_id, no la confidencialidad de esta key.
+const SUPABASE_URL = "https://ckxoypzsmvxhqlvlwnib.supabase.co";
+const SUPABASE_KEY = "sb_publishable_N0z9XkKZ92GfvxtHA-NZxA_0nENuF7v";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const $ = (id) => document.getElementById(id);
+const cop = (n) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(n);
+const fecha = (iso) => new Date(iso).toLocaleString("es-CO");
+
+async function init() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) return mostrarApp(session);
+  mostrarLogin();
+}
+
+function mostrarLogin() {
+  $("login-box").style.display = "flex";
+  $("app").style.display = "none";
+}
+
+async function mostrarApp(session) {
+  $("login-box").style.display = "none";
+  $("app").style.display = "block";
+  $("session-info").textContent = `Conectado como ${session.user.email}`;
+  await Promise.all([cargarInfoComercio(), cargarPasivo(), cargarCanjes()]);
+}
+
+$("btn-login").addEventListener("click", async () => {
+  $("login-error").textContent = "";
+  const email = $("email").value.trim();
+  const password = $("password").value;
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) { $("login-error").textContent = error.message; return; }
+  mostrarApp(data.session);
+});
+
+$("btn-logout").addEventListener("click", async () => {
+  await supabase.auth.signOut();
+  mostrarLogin();
+});
+
+async function cargarInfoComercio() {
+  $("comercio-error").textContent = "";
+  const { data, error } = await supabase
+    .from("comercios_solo_canje")
+    .select("nombre, ciudad, contacto, datos_pago")
+    .maybeSingle();
+
+  if (error) { $("comercio-error").textContent = error.message; return; }
+  if (!data) { $("comercio-error").textContent = "Tu usuario no está vinculado a ningún comercio todavía -- contacta a Neggo."; return; }
+
+  $("info-comercio").innerHTML = `
+    <div><strong>${data.nombre}</strong> — ${data.ciudad}</div>
+    <div>Contacto: ${data.contacto}</div>
+    <div>Datos de pago: ${data.datos_pago}</div>
+  `;
+}
+
+async function cargarPasivo() {
+  const { data, error } = await supabase.rpc("obtener_pasivo_por_comercio");
+  if (error) { $("comercio-error").textContent = error.message; return; }
+  const fila = Array.isArray(data) ? data[0] : null;
+  $("pasivo-puntos").textContent = new Intl.NumberFormat("es-CO").format(fila?.puntos_pendientes ?? 0);
+  $("pasivo-valor").textContent = cop(fila?.valor_cop ?? 0);
+  $("pasivo-canjes").textContent = new Intl.NumberFormat("es-CO").format(fila?.canjes_pendientes ?? 0);
+}
+
+async function cargarCanjes() {
+  $("canjes-error").textContent = "";
+  // A propósito NO se selecciona codigo_verificacion -- el comercio nunca lo lee
+  // de la base, tiene que recibirlo del cliente en persona y escribirlo.
+  const { data, error } = await supabase
+    .from("canjes")
+    .select("id, created_at, puntos, valor_cop, confirmado_comercio_at")
+    .eq("estado", "pendiente_pago")
+    .order("created_at", { ascending: true });
+
+  if (error) { $("canjes-error").textContent = error.message; return; }
+
+  const tbody = document.querySelector("#tabla-canjes tbody");
+  tbody.innerHTML = "";
+  $("canjes-empty").style.display = data.length ? "none" : "block";
+
+  for (const c of data) {
+    const tr = document.createElement("tr");
+    const confirmado = !!c.confirmado_comercio_at;
+    tr.innerHTML = `
+      <td>${fecha(c.created_at)}</td>
+      <td>${c.puntos}</td>
+      <td>${cop(c.valor_cop)}</td>
+      <td class="${confirmado ? "confirmado" : "sin-confirmar"}">${confirmado ? "Confirmado, en espera de pago" : "Sin confirmar"}</td>
+      <td>
+        ${confirmado ? "—" : `
+          <form class="confirmar-form" data-id="${c.id}">
+            <input type="text" placeholder="Código" maxlength="10" required />
+            <button type="submit">Confirmar</button>
+          </form>
+        `}
+      </td>
+    `;
+    const form = tr.querySelector("form");
+    if (form) form.addEventListener("submit", (ev) => confirmarCanje(ev, c.id));
+    tbody.appendChild(tr);
+  }
+}
+
+async function confirmarCanje(ev, canjeId) {
+  ev.preventDefault();
+  $("canjes-error").textContent = "";
+  const form = ev.target;
+  const input = form.querySelector("input");
+  const btn = form.querySelector("button");
+  btn.disabled = true;
+
+  const { error } = await supabase.rpc("confirmar_canje_comercio", {
+    p_canje_id: canjeId,
+    p_codigo: input.value.trim(),
+  });
+
+  if (error) {
+    $("canjes-error").textContent = error.message;
+    btn.disabled = false;
+    return;
+  }
+
+  await Promise.all([cargarCanjes(), cargarPasivo()]);
+}
+
+init();
+</script>
+</body>
+</html>
