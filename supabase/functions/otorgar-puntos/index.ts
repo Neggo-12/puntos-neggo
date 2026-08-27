@@ -36,7 +36,7 @@ Deno.serve(async (req: Request) => {
     return json({ error: "invalid_json_body" }, 400);
   }
 
-  const { tipoDocumento, numeroDocumento, valorCompra, comercioId, origenProducto, referenciaExterna, motivo } = body;
+  const { tipoDocumento, numeroDocumento, valorCompra, comercioId, origenProducto, referenciaExterna, motivo, nombre } = body;
 
   if (
     typeof tipoDocumento !== "string" || !tipoDocumento ||
@@ -61,6 +61,12 @@ Deno.serve(async (req: Request) => {
     p_origen_producto: origenProducto,
     p_referencia_externa: typeof referenciaExterna === "string" ? referenciaExterna : null,
     p_motivo: typeof motivo === "string" ? motivo : null,
+    // Opcional. Solo se usa para completar clientes_puntos.nombre la primera
+    // vez (gana el primer nombre conocido, nunca se pisa despues) y para
+    // generar la llave publica del cliente (ej. jheison68) usada en la
+    // pagina de Puntos Neggo. Si no se manda, todo sigue funcionando igual
+    // que hoy -- nombre y llave_cliente quedan null hasta que alguien la mande.
+    p_nombre: typeof nombre === "string" && nombre.trim() ? nombre.trim() : null,
   });
 
   if (error) {
