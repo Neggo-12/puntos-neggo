@@ -111,6 +111,14 @@
     <tbody></tbody>
   </table>
   <div class="empty" id="comercios-empty" style="display:none">Sin comercios registrados.</div>
+
+  <h2>Solicitudes de comercios (desde la página pública)</h2>
+  <div class="error" id="solicitudes-error"></div>
+  <table id="tabla-solicitudes">
+    <thead><tr><th>Fecha</th><th>Negocio</th><th>Contacto</th><th>Teléfono</th><th>Email</th><th>Ciudad</th><th>Mensaje</th><th>Acción</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <div class="empty" id="solicitudes-empty" style="display:none">No hay solicitudes pendientes.</div>
 </div>
 
 <script type="module">
@@ -142,7 +150,7 @@ async function mostrarApp(session) {
   $("login-box").style.display = "none";
   $("app").style.display = "block";
   $("session-info").textContent = `Conectado como ${session.user.email}`;
-  await Promise.all([cargarPasivo(), cargarPasivoPorComercio(), cargarCanjes(), cargarComercios()]);
+  await Promise.all([cargarPasivo(), cargarPasivoPorComercio(), cargarCanjes(), cargarComercios(), cargarSolicitudesComercio()]);
 }
 
 async function cargarPasivo() {
@@ -276,6 +284,48 @@ $("form-comercio").addEventListener("submit", async (ev) => {
   ev.target.reset();
   await cargarComercios();
 });
+
+async function cargarSolicitudesComercio() {
+  $("solicitudes-error").textContent = "";
+  const { data, error } = await supabase
+    .from("solicitudes_comercio")
+    .select("id, created_at, nombre_negocio, contacto_nombre, telefono, email, ciudad, mensaje, atendido")
+    .eq("atendido", false)
+    .order("created_at", { ascending: true });
+
+  if (error) { $("solicitudes-error").textContent = error.message; return; }
+
+  const tbody = document.querySelector("#tabla-solicitudes tbody");
+  tbody.innerHTML = "";
+  $("solicitudes-empty").style.display = data.length ? "none" : "block";
+
+  for (const s of data) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${fecha(s.created_at)}</td>
+      <td>${s.nombre_negocio}</td>
+      <td>${s.contacto_nombre ?? "-"}</td>
+      <td>${s.telefono ?? "-"}</td>
+      <td>${s.email ?? "-"}</td>
+      <td>${s.ciudad ?? "-"}</td>
+      <td>${s.mensaje ?? "-"}</td>
+      <td><button data-id="${s.id}">Marcar atendido</button></td>
+    `;
+    tr.querySelector("button").addEventListener("click", (ev) => marcarSolicitudAtendida(s.id, ev.target));
+    tbody.appendChild(tr);
+  }
+}
+
+async function marcarSolicitudAtendida(id, btn) {
+  btn.disabled = true;
+  const { error } = await supabase.from("solicitudes_comercio").update({ atendido: true }).eq("id", id);
+  if (error) {
+    $("solicitudes-error").textContent = error.message;
+    btn.disabled = false;
+    return;
+  }
+  await cargarSolicitudesComercio();
+}
 
 init();
 </script>
