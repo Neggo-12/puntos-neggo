@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Puntos Neggo</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-soft: #12151d;
+    --card: #161a24;
+    --card-hover: #1a1f2b;
+    --border: #232838;
+    --border-soft: #1c2130;
+    --text: #eef0f4;
+    --text-dim: #9aa3b5;
+    --text-faint: #5f6779;
+    --accent: #6d8dff;
+    --accent-2: #9a6dff;
+    --accent-soft: rgba(109, 141, 255, 0.12);
+    --green: #3ecf8e;
+    --green-soft: rgba(62, 207, 142, 0.12);
+    --orange: #ffb454;
+    --orange-soft: rgba(255, 180, 84, 0.12);
+    --red: #ff6b6b;
+    --red-soft: rgba(255, 107, 107, 0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(109,141,255,0.10), transparent 60%),
+      radial-gradient(1000px 500px at 100% 0%, rgba(154,109,255,0.08), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    margin: 0;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 520px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
+  .brand-mark {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px; color: #fff;
+    box-shadow: 0 4px 16px rgba(109,141,255,0.35);
+    flex-shrink: 0;
+  }
+  .brand-name { font-size: 15px; font-weight: 600; letter-spacing: 0.01em; }
+  .brand-sub { font-size: 12px; color: var(--text-faint); margin-top: 1px; }
+
+  /* ---------- Login ---------- */
+  #screen-login { display: flex; flex-direction: column; min-height: 70vh; justify-content: center; }
+  .login-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+  }
+  .login-title { font-size: 22px; font-weight: 650; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .login-sub { font-size: 13.5px; color: var(--text-dim); margin: 0 0 24px; line-height: 1.5; }
+
+  label { display: block; font-size: 12.5px; color: var(--text-dim); margin-bottom: 6px; font-weight: 500; }
+  .field { margin-bottom: 16px; }
+  .row-2 { display: grid; grid-template-columns: 108px 1fr; gap: 10px; }
+
+  select, input[type="text"], input[type="number"] {
+    width: 100%;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-family: inherit;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  select:focus, input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14.5px;
+    font-weight: 600;
+    transition: transform .1s ease, opacity .15s ease, background .15s ease;
+  }
+  button:active { transform: scale(0.98); }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+
+  .btn-primary {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+    padding: 13px 16px;
+    box-shadow: 0 6px 20px rgba(109,141,255,0.25);
+  }
+  .btn-primary:hover:not(:disabled) { filter: brightness(1.08); }
+
+  .btn-secondary {
+    background: var(--bg-soft);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+  }
+  .btn-secondary:hover:not(:disabled) { background: var(--card-hover); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-dim);
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  .btn-ghost:hover:not(:disabled) { color: var(--text); }
+
+  .msg-error {
+    font-size: 13px; color: var(--red); min-height: 18px; margin-top: 10px; line-height: 1.4;
+  }
+  .msg-ok { font-size: 13px; color: var(--green); min-height: 18px; margin-top: 10px; line-height: 1.4; }
+
+  .disclaimer {
+    font-size: 11.5px; color: var(--text-faint); text-align: center; margin-top: 22px; line-height: 1.6;
+  }
+
+  /* ---------- App ---------- */
+  #screen-app { display: none; }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+
+  .balance-card {
+    background:
+      linear-gradient(155deg, rgba(109,141,255,0.16), rgba(154,109,255,0.08) 60%, transparent),
+      var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 24px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 18px;
+  }
+  .balance-label { font-size: 12.5px; color: var(--text-dim); font-weight: 500; }
+  .balance-amount { font-size: 40px; font-weight: 700; letter-spacing: -0.02em; margin: 6px 0 2px; }
+  .balance-cop { font-size: 13px; color: var(--text-dim); }
+
+  .llave-row {
+    display: flex; align-items: center; gap: 8px; margin-top: 18px;
+    padding-top: 16px; border-top: 1px solid var(--border-soft);
+  }
+  .llave-chip {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
+    background: var(--accent-soft); color: var(--accent);
+    padding: 5px 10px; border-radius: 8px;
+  }
+  .llave-hint { font-size: 12px; color: var(--text-faint); }
+  .copy-btn { margin-left: auto; }
+
+  .vencer-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--orange); background: var(--orange-soft);
+    padding: 6px 10px; border-radius: 999px; margin-top: 14px;
+  }
+
+  .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 26px; }
+  .action-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px 14px;
+    text-align: left;
+    color: var(--text);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .action-btn:hover:not(:disabled) { background: var(--card-hover); border-color: #2c3348; }
+  .action-icon { font-size: 18px; }
+  .action-label { font-size: 13.5px; font-weight: 600; }
+
+  .section-title {
+    font-size: 12.5px; font-weight: 650; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.06em; margin: 26px 0 12px;
+  }
+
+  .movs { display: flex; flex-direction: column; gap: 2px; }
+  .mov {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 4px; border-bottom: 1px solid var(--border-soft);
+  }
+  .mov:last-child { border-bottom: none; }
+  .mov-icon {
+    width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
+  }
+  .mov-body { flex: 1; min-width: 0; }
+  .mov-title { font-size: 14px; font-weight: 550; }
+  .mov-sub { font-size: 12px; color: var(--text-faint); margin-top: 1px; }
+  .mov-puntos { font-size: 14.5px; font-weight: 650; white-space: nowrap; }
+
+  .empty-state { text-align: center; padding: 30px 10px; color: var(--text-faint); font-size: 13.5px; }
+
+  /* ---------- Overlay / modales ---------- */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(5,6,10,0.72);
+    backdrop-filter: blur(3px);
+    display: none; align-items: flex-end; justify-content: center;
+    z-index: 50;
+  }
+  .overlay.open { display: flex; }
+  @media (min-width: 560px) {
+    .overlay { align-items: center; }
+  }
+  .sheet {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px 20px 0 0;
+    width: 100%; max-width: 480px;
+    padding: 24px 22px 28px;
+    animation: sheet-up .22s ease;
+  }
+  @media (min-width: 560px) {
+    .sheet { border-radius: var(--radius); }
+  }
+  @keyframes sheet-up { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .sheet-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .sheet-title { font-size: 17px; font-weight: 650; }
+  .sheet-close {
+    background: var(--bg-soft); border: 1px solid var(--border); color: var(--text-dim);
+    width: 30px; height: 30px; border-radius: 999px; font-size: 15px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .destinatario-preview {
+    display: none; align-items: center; gap: 10px;
+    background: var(--green-soft); border: 1px solid rgba(62,207,142,0.25);
+    border-radius: var(--radius-sm); padding: 12px 14px; margin: -4px 0 16px;
+    font-size: 13.5px;
+  }
+  .destinatario-preview.show { display: flex; }
+
+  .codigo-box {
+    text-align: center; background: var(--accent-soft); border: 1px dashed var(--accent);
+    border-radius: var(--radius-sm); padding: 20px; margin: 6px 0 18px;
+  }
+  .codigo-label { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; }
+  .codigo-valor {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 26px; font-weight: 700; letter-spacing: 0.08em; color: var(--accent);
+  }
+
+  .comercio-option {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    margin-bottom: 8px; cursor: pointer; transition: border-color .15s ease, background .15s ease;
+  }
+  .comercio-option:hover { background: var(--bg-soft); }
+  .comercio-option.selected { border-color: var(--accent); background: var(--accent-soft); }
+  .comercio-nombre { font-size: 14px; font-weight: 550; }
+  .comercio-ciudad { font-size: 12px; color: var(--text-faint); }
+
+  .hidden { display: none !important; }
+  .spinner {
+    width: 15px; height: 15px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff;
+    animation: spin .6s linear infinite; display: inline-block; vertical-align: -3px; margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="brand">
+    <div class="brand-mark">N</div>
+    <div>
+      <div class="brand-name">Puntos Neggo</div>
+      <div class="brand-sub">Tus puntos, en un solo lugar</div>
+    </div>
+  </div>
+
+  <!-- ============ LOGIN ============ -->
+  <div id="screen-login">
+    <div class="login-card">
+      <div class="login-title">Ver mis puntos</div>
+      <p class="login-sub">Ingresa tu documento para ver tu saldo, tu historial y transferir o canjear tus puntos.</p>
+
+      <div class="row-2 field">
+        <div>
+          <label>Tipo</label>
+          <select id="login-tipo">
+            <option value="CC">CC</option>
+            <option value="CE">CE</option>
+            <option value="TI">TI</option>
+            <option value="PA">Pasaporte</option>
+          </select>
+        </div>
+        <div>
+          <label>Número de documento</label>
+          <input id="login-numero" type="text" inputmode="numeric" placeholder="Ej. 1020304050" />
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-login">Ver mi saldo</button>
+      <div class="msg-error" id="login-error"></div>
+    </div>
+
+    <p class="disclaimer">
+      Por ahora te identificamos solo con tu número de documento — pronto vamos a
+      agregar un código de seguridad temporal para proteger mejor tu cuenta.
+    </p>
+  </div>
+
+  <!-- ============ APP ============ -->
+  <div id="screen-app">
+    <div class="topbar">
+      <div>
+        <div style="font-size:15px; font-weight:600;" id="saludo-nombre">Hola</div>
+        <div style="font-size:12px; color:var(--text-faint);" id="saludo-doc"></div>
+      </div>
+      <button class="btn-ghost" id="btn-logout">Salir</button>
+    </div>
+
+    <div class="balance-card">
+      <div class="balance-label">Saldo disponible</div>
+      <div class="balance-amount" id="saldo-puntos">—</div>
+      <div class="balance-cop" id="saldo-cop"></div>
+      <div class="vencer-pill hidden" id="vencer-pill"></div>
+
+      <div class="llave-row">
+        <div>
+          <div class="llave-hint">Tu llave</div>
+          <div class="llave-chip" id="llave-valor">—</div>
+        </div>
+        <button class="btn-secondary copy-btn" id="btn-copiar-llave">Copiar</button>
+      </div>
+    </div>
+
+    <div class="actions-grid">
+      <button class="action-btn" id="btn-abrir-transferir">
+        <span class="action-icon">↗️</span>
+        <span class="action-label">Transferir puntos</span>
+      </button>
+      <button class="action-btn" id="btn-abrir-canjear">
+        <span class="action-icon">🎁</span>
+        <span class="action-label">Canjear puntos</span>
+      </button>
+    </div>
+
+    <div class="section-title">Historial</div>
+    <div class="msg-error" id="app-error"></div>
+    <div class="movs" id="lista-movimientos"></div>
+    <div class="empty-state hidden" id="movs-empty">Todavía no tienes movimientos.</div>
+
+    <p class="disclaimer">
+      Por ahora te identificamos solo con tu número de documento — pronto vamos a
+      agregar un código de seguridad temporal para proteger mejor tu cuenta.
+    </p>
+  </div>
+
+</div>
+
+<!-- ============ MODAL: Transferir ============ -->
+<div class="overlay" id="overlay-transferir">
+  <div class="sheet">
+    <div class="sheet-header">
+      <div class="sheet-title">Transferir puntos</div>
+      <button class="sheet-close" data-close="overlay-transferir">✕</button>
+    </div>
+
+    <div class="field">
+      <label>Llave del destinatario</label>
+      <input id="transferir-llave" type="text" placeholder="Ej. jheison68" />
+    </div>
+    <div class="destinatario-preview" id="destinatario-preview">
+      <span>✓</span>
+      <span>Le vas a transferir a <strong id="destinatario-nombre"></strong></span>
+    </div>
+
+    <div class="field">
+      <label>Puntos a transferir</label>
+      <input id="transferir-puntos" type="number" min="1" placeholder="Ej. 100" />
+    </div>
+    <div class="field">
+      <label>Motivo (opcional)</label>
+      <input id="transferir-motivo" type="text" placeholder="Ej. regalo de cumpleaños" />
+    </div>
+
+    <button class="btn-primary" id="btn-confirmar-transferir">Transferir</button>
+    <div class="msg-error" id="transferir-error"></div>
+    <div class="msg-ok" id="transferir-ok"></div>
+  </div>
+</div>
+
+<!-- ============ MODAL: Canjear ============ -->
+<div class="overlay" id="overlay-canjear">
+  <div class="sheet">
+    <div class="sheet-header">
+      <div class="sheet-title">Canjear puntos</div>
+      <button class="sheet-close" data-close="overlay-canjear">✕</button>
+    </div>
+
+    <div id="canjear-paso-1">
+      <label>Elige un comercio</label>
+      <div id="lista-comercios" style="margin: 10px 0 18px;"></div>
+
+      <div class="field">
+        <label>Puntos a canjear (mínimo 200)</label>
+        <input id="canjear-puntos" type="number" min="200" step="1" placeholder="Ej. 200" />
+      </div>
+
+      <button class="btn-primary" id="btn-confirmar-canjear">Canjear</button>
+      <div class="msg-error" id="canjear-error"></div>
+    </div>
+
+    <div id="canjear-paso-2" class="hidden">
+      <p style="font-size:13.5px; color:var(--text-dim); margin-top:0;">
+        Muéstrale este código al comercio para que confirme tu canje. Sin este código no pueden entregarte el producto o servicio.
+      </p>
+      <div class="codigo-box">
+        <div class="codigo-label">Código de verificación</div>
+        <div class="codigo-valor" id="canje-codigo">— — —</div>
+      </div>
+      <button class="btn-secondary" style="width:100%;" data-close="overlay-canjear">Listo</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+// Publishable key: es publica por diseno. La proteccion real hoy es solo
+// "conocer el numero de documento" -- debil a proposito y TEMPORAL, ver
+// docs/cronograma-pendientes.md (Fase 7, sub-tarea "portal cliente publico")
+// para el plan de reemplazo por PIN.
+const SUPABASE_URL = "https://ckxoypzsmvxhqlvlwnib.supabase.co";
+const SUPABASE_KEY = "sb_publishable_N0z9XkKZ92GfvxtHA-NZxA_0nENuF7v";
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const $ = (id) => document.getElementById(id);
+const puntosFmt = (n) => new Intl.NumberFormat("es-CO").format(n ?? 0);
+const cop = (n) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format((n ?? 0) * 10);
+const fecha = (iso) => new Date(iso).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" });
+
+const SESSION_KEY = "puntos_neggo_sesion";
+let sesion = null; // { tipoDocumento, numeroDocumento }
+let comercioSeleccionado = null;
+
+function guardarSesion(s) {
+  sesion = s;
+  try { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch {}
+}
+function borrarSesion() {
+  sesion = null;
+  try { localStorage.removeItem(SESSION_KEY); } catch {}
+}
+function leerSesionGuardada() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function mostrarLogin() {
+  $("screen-login").style.display = "flex";
+  $("screen-app").style.display = "none";
+}
+function mostrarApp() {
+  $("screen-login").style.display = "none";
+  $("screen-app").style.display = "block";
+}
+
+const ICONOS = {
+  ganado: { icon: "✓", bg: "var(--green-soft)", color: "var(--green)", label: "Puntos ganados" },
+  canjeado: { icon: "🎁", bg: "var(--orange-soft)", color: "var(--orange)", label: "Canje" },
+  transferido_salida: { icon: "↗", bg: "var(--red-soft)", color: "var(--red)", label: "Transferencia enviada" },
+  transferido_entrada: { icon: "↙", bg: "var(--green-soft)", color: "var(--green)", label: "Transferencia recibida" },
+  vencido: { icon: "⏱", bg: "rgba(255,255,255,0.06)", color: "var(--text-faint)", label: "Puntos vencidos" },
+  revertido: { icon: "↺", bg: "rgba(255,255,255,0.06)", color: "var(--text-faint)", label: "Reverso" },
+};
+
+function renderMovimientos(movs) {
+  const cont = $("lista-movimientos");
+  cont.innerHTML = "";
+  $("movs-empty").classList.toggle("hidden", movs.length > 0);
+
+  for (const m of movs) {
+    const meta = ICONOS[m.tipo] || { icon: "•", bg: "rgba(255,255,255,0.06)", color: "var(--text-dim)", label: m.tipo };
+    const positivo = m.puntos > 0;
+    const div = document.createElement("div");
+    div.className = "mov";
+    div.innerHTML = `
+      <div class="mov-icon" style="background:${meta.bg}; color:${meta.color};">${meta.icon}</div>
+      <div class="mov-body">
+        <div class="mov-title">${meta.label}</div>
+        <div class="mov-sub">${fecha(m.created_at)}${m.motivo ? " · " + m.motivo : ""}</div>
+      </div>
+      <div class="mov-puntos" style="color:${positivo ? "var(--green)" : "var(--text)"};">${positivo ? "+" : ""}${puntosFmt(m.puntos)}</div>
+    `;
+    cont.appendChild(div);
+  }
+}
+
+async function cargarEstado() {
+  $("app-error").textContent = "";
+  const { data, error } = await supabase.rpc("cliente_portal_estado", {
+    p_tipo_documento: sesion.tipoDocumento,
+    p_numero_documento: sesion.numeroDocumento,
+  });
+
+  if (error) {
+    $("app-error").textContent = error.message;
+    return;
+  }
+
+  const fila = Array.isArray(data) ? data[0] : data;
+  $("saludo-nombre").textContent = fila.nombre ? `Hola, ${fila.nombre.split(" ")[0]}` : "Hola";
+  $("saludo-doc").textContent = `${sesion.tipoDocumento} ${sesion.numeroDocumento}`;
+  $("saldo-puntos").textContent = puntosFmt(fila.saldo);
+  $("saldo-cop").textContent = `≈ ${cop(fila.saldo)}`;
+  $("llave-valor").textContent = fila.llave_cliente || "—";
+
+  if (fila.puntos_por_vencer_30d > 0) {
+    $("vencer-pill").classList.remove("hidden");
+    $("vencer-pill").innerHTML = `⏱ ${puntosFmt(fila.puntos_por_vencer_30d)} puntos vencen en los próximos 30 días`;
+  } else {
+    $("vencer-pill").classList.add("hidden");
+  }
+
+  renderMovimientos(fila.movimientos || []);
+}
+
+$("btn-login").addEventListener("click", async () => {
+  $("login-error").textContent = "";
+  const tipoDocumento = $("login-tipo").value;
+  const numeroDocumento = $("login-numero").value.trim();
+
+  if (!numeroDocumento) {
+    $("login-error").textContent = "Ingresa tu número de documento.";
+    return;
+  }
+
+  const btn = $("btn-login");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span>Buscando...`;
+
+  const { data, error } = await supabase.rpc("cliente_portal_estado", {
+    p_tipo_documento: tipoDocumento,
+    p_numero_documento: numeroDocumento,
+  });
+
+  btn.disabled = false;
+  btn.textContent = "Ver mi saldo";
+
+  if (error) {
+    $("login-error").textContent = error.message.includes("No encontramos")
+      ? "No encontramos ninguna cuenta con ese documento. Verifica el número o pregunta en el comercio donde ganaste tus puntos."
+      : error.message;
+    return;
+  }
+
+  guardarSesion({ tipoDocumento, numeroDocumento });
+  mostrarApp();
+  await cargarEstado();
+});
+
+$("login-numero").addEventListener("keydown", (e) => { if (e.key === "Enter") $("btn-login").click(); });
+
+$("btn-logout").addEventListener("click", () => {
+  borrarSesion();
+  $("login-numero").value = "";
+  mostrarLogin();
+});
+
+$("btn-copiar-llave").addEventListener("click", async () => {
+  const llave = $("llave-valor").textContent;
+  try {
+    await navigator.clipboard.writeText(llave);
+    const btn = $("btn-copiar-llave");
+    const original = btn.textContent;
+    btn.textContent = "¡Copiada!";
+    setTimeout(() => { btn.textContent = original; }, 1400);
+  } catch {}
+});
+
+function abrirOverlay(id) { $(id).classList.add("open"); }
+function cerrarOverlay(id) { $(id).classList.remove("open"); }
+
+document.querySelectorAll("[data-close]").forEach((btn) => {
+  btn.addEventListener("click", () => cerrarOverlay(btn.dataset.close));
+});
+
+// ---------- Transferir ----------
+$("btn-abrir-transferir").addEventListener("click", () => {
+  $("transferir-llave").value = "";
+  $("transferir-puntos").value = "";
+  $("transferir-motivo").value = "";
+  $("transferir-error").textContent = "";
+  $("transferir-ok").textContent = "";
+  $("destinatario-preview").classList.remove("show");
+  abrirOverlay("overlay-transferir");
+});
+
+let destinatarioValidado = null;
+$("transferir-llave").addEventListener("blur", async () => {
+  const llave = $("transferir-llave").value.trim();
+  destinatarioValidado = null;
+  $("destinatario-preview").classList.remove("show");
+  if (!llave) return;
+
+  const { data, error } = await supabase.rpc("cliente_portal_buscar_destinatario", { p_llave_cliente: llave });
+  if (error || !data || data.length === 0) return;
+
+  destinatarioValidado = data[0];
+  $("destinatario-nombre").textContent = data[0].nombre || data[0].llave_cliente;
+  $("destinatario-preview").classList.add("show");
+});
+
+$("btn-confirmar-transferir").addEventListener("click", async () => {
+  $("transferir-error").textContent = "";
+  $("transferir-ok").textContent = "";
+
+  const llave = $("transferir-llave").value.trim();
+  const puntos = parseInt($("transferir-puntos").value, 10);
+  const motivo = $("transferir-motivo").value.trim();
+
+  if (!llave) { $("transferir-error").textContent = "Ingresa la llave del destinatario."; return; }
+  if (!puntos || puntos <= 0) { $("transferir-error").textContent = "Ingresa una cantidad de puntos válida."; return; }
+
+  const btn = $("btn-confirmar-transferir");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span>Transfiriendo...`;
+
+  const referencia = `portal-${sesion.numeroDocumento}-${llave}-${puntos}-${Date.now()}`;
+
+  const { data, error } = await supabase.rpc("cliente_portal_transferir", {
+    p_tipo_documento_origen: sesion.tipoDocumento,
+    p_numero_documento_origen: sesion.numeroDocumento,
+    p_llave_destino: llave,
+    p_puntos: puntos,
+    p_referencia_externa: referencia,
+    p_motivo: motivo || null,
+  });
+
+  btn.disabled = false;
+  btn.textContent = "Transferir";
+
+  if (error) {
+    $("transferir-error").textContent = error.message;
+    return;
+  }
+
+  const fila = Array.isArray(data) ? data[0] : data;
+  $("transferir-ok").textContent = `Listo. Le transferiste ${puntosFmt(fila.puntos_transferidos)} puntos a ${fila.destinatario_nombre || llave}.`;
+  await cargarEstado();
+  setTimeout(() => cerrarOverlay("overlay-transferir"), 1600);
+});
+
+// ---------- Canjear ----------
+async function cargarComercios() {
+  const cont = $("lista-comercios");
+  cont.innerHTML = `<div class="empty-state">Cargando comercios...</div>`;
+
+  const { data, error } = await supabase.rpc("cliente_portal_comercios_disponibles");
+  if (error) {
+    cont.innerHTML = `<div class="empty-state">No pudimos cargar los comercios.</div>`;
+    return;
+  }
+  if (!data || data.length === 0) {
+    cont.innerHTML = `<div class="empty-state">No hay comercios disponibles todavía.</div>`;
+    return;
+  }
+
+  cont.innerHTML = "";
+  for (const c of data) {
+    const div = document.createElement("div");
+    div.className = "comercio-option";
+    div.dataset.id = c.comercio_id;
+    div.innerHTML = `
+      <div>
+        <div class="comercio-nombre">${c.nombre}</div>
+        <div class="comercio-ciudad">${c.ciudad || ""}</div>
+      </div>
+      <span>○</span>
+    `;
+    div.addEventListener("click", () => {
+      document.querySelectorAll(".comercio-option").forEach((el) => el.classList.remove("selected"));
+      div.classList.add("selected");
+      div.querySelector("span").textContent = "●";
+      comercioSeleccionado = c.comercio_id;
+    });
+    cont.appendChild(div);
+  }
+}
+
+$("btn-abrir-canjear").addEventListener("click", () => {
+  comercioSeleccionado = null;
+  $("canjear-puntos").value = "";
+  $("canjear-error").textContent = "";
+  $("canjear-paso-1").classList.remove("hidden");
+  $("canjear-paso-2").classList.add("hidden");
+  abrirOverlay("overlay-canjear");
+  cargarComercios();
+});
+
+$("btn-confirmar-canjear").addEventListener("click", async () => {
+  $("canjear-error").textContent = "";
+  const puntos = parseInt($("canjear-puntos").value, 10);
+
+  if (!comercioSeleccionado) { $("canjear-error").textContent = "Elige un comercio."; return; }
+  if (!puntos || puntos < 200) { $("canjear-error").textContent = "El canje mínimo es 200 puntos."; return; }
+
+  const btn = $("btn-confirmar-canjear");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span>Procesando...`;
+
+  const { data, error } = await supabase.rpc("cliente_portal_solicitar_canje", {
+    p_tipo_documento: sesion.tipoDocumento,
+    p_numero_documento: sesion.numeroDocumento,
+    p_comercio_id: comercioSeleccionado,
+    p_puntos: puntos,
+  });
+
+  btn.disabled = false;
+  btn.textContent = "Canjear";
+
+  if (error) {
+    $("canjear-error").textContent = error.message;
+    return;
+  }
+
+  const fila = Array.isArray(data) ? data[0] : data;
+  $("canje-codigo").textContent = fila.codigo_verificacion;
+  $("canjear-paso-1").classList.add("hidden");
+  $("canjear-paso-2").classList.remove("hidden");
+  await cargarEstado();
+});
+
+// ---------- Arranque ----------
+(function init() {
+  const guardada = leerSesionGuardada();
+  if (guardada && guardada.tipoDocumento && guardada.numeroDocumento) {
+    sesion = guardada;
+    mostrarApp();
+    cargarEstado();
+  } else {
+    mostrarLogin();
+  }
+})();
+</script>
+</body>
+</html>
