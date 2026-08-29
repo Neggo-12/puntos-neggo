@@ -6,27 +6,29 @@
 <title>Puntos Neggo</title>
 <style>
   :root {
-    --bg: #0b0d12;
-    --bg-soft: #12151d;
-    --card: #161a24;
-    --card-hover: #1a1f2b;
-    --border: #232838;
-    --border-soft: #1c2130;
-    --text: #eef0f4;
-    --text-dim: #9aa3b5;
-    --text-faint: #5f6779;
-    --accent: #6d8dff;
-    --accent-2: #9a6dff;
-    --accent-soft: rgba(109, 141, 255, 0.12);
-    --green: #3ecf8e;
-    --green-soft: rgba(62, 207, 142, 0.12);
-    --orange: #ffb454;
-    --orange-soft: rgba(255, 180, 84, 0.12);
-    --red: #ff6b6b;
-    --red-soft: rgba(255, 107, 107, 0.12);
+    --bg: #f5f6fb;
+    --bg-soft: #eceefa;
+    --card: #ffffff;
+    --card-hover: #f7f8fd;
+    --border: #e1e3ef;
+    --border-soft: #ececf5;
+    --text: #1c1e2b;
+    --text-dim: #5b5f78;
+    --text-faint: #8b8fa6;
+    --accent: #2953d9;
+    --accent-2: #e23f84;
+    --accent-soft: rgba(41, 83, 217, 0.10);
+    --green: #1f7a54;
+    --green-soft: rgba(31, 122, 84, 0.10);
+    --orange: #8a5a12;
+    --orange-soft: rgba(138, 90, 18, 0.10);
+    --gold: #c97f0e;
+    --gold-soft: rgba(201, 127, 14, 0.12);
+    --red: #b3324a;
+    --red-soft: rgba(179, 50, 74, 0.10);
     --radius: 16px;
     --radius-sm: 10px;
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   * { box-sizing: border-box; }
@@ -34,8 +36,8 @@
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
     background:
-      radial-gradient(1200px 600px at 10% -10%, rgba(109,141,255,0.10), transparent 60%),
-      radial-gradient(1000px 500px at 100% 0%, rgba(154,109,255,0.08), transparent 55%),
+      radial-gradient(1200px 600px at 10% -10%, rgba(41,83,217,0.06), transparent 60%),
+      radial-gradient(1000px 500px at 100% 0%, rgba(226,63,132,0.05), transparent 55%),
       var(--bg);
     color: var(--text);
     margin: 0;
@@ -51,28 +53,130 @@
     background: linear-gradient(135deg, var(--accent), var(--accent-2));
     display: flex; align-items: center; justify-content: center;
     font-weight: 700; font-size: 15px; color: #fff;
-    box-shadow: 0 4px 16px rgba(109,141,255,0.35);
+    box-shadow: 0 4px 16px rgba(41,83,217,0.28);
     flex-shrink: 0;
   }
   .brand-name { font-size: 15px; font-weight: 600; letter-spacing: 0.01em; }
   .brand-sub { font-size: 12px; color: var(--text-faint); margin-top: 1px; }
 
   /* ---------- Login ---------- */
-  #screen-login { display: flex; flex-direction: column; min-height: 70vh; justify-content: center; }
+  #screen-login {
+    position: relative;
+    display: flex; flex-direction: column; min-height: 78vh; justify-content: center;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* Fondo "aurora": tres manchas de color que flotan despacio detrás de la
+     tarjeta. Contenido solo dentro de la pantalla de login -- decisión
+     deliberada de no extender esta atmósfera al resto del sitio todavía. */
+  .aurora { position: absolute; inset: -10% -10%; z-index: -1; pointer-events: none; }
+  .aurora-blob {
+    position: absolute;
+    width: 340px; height: 340px;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.55;
+    will-change: transform;
+  }
+  .aurora-blob.b1 { top: -6%; left: 4%; background: radial-gradient(circle, var(--accent), transparent 70%); animation: drift-1 16s ease-in-out infinite; }
+  .aurora-blob.b2 { top: 22%; right: 0%; background: radial-gradient(circle, var(--accent-2), transparent 70%); animation: drift-2 19s ease-in-out infinite; }
+  .aurora-blob.b3 { bottom: -10%; left: 26%; background: radial-gradient(circle, var(--gold), transparent 70%); opacity: 0.35; animation: drift-3 22s ease-in-out infinite; }
+
+  @keyframes drift-1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px,26px) scale(1.08); } }
+  @keyframes drift-2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-24px,20px) scale(1.05); } }
+  @keyframes drift-3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(18px,-22px) scale(1.1); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aurora-blob { animation: none !important; }
+  }
+
+  .login-card-wrap { position: relative; padding: 1px; border-radius: calc(var(--radius) + 1px); animation: card-in .5s ease both; }
+  .login-card-wrap::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2) 55%, var(--gold));
+    opacity: 0.55;
+  }
+  @keyframes card-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) {
+    .login-card-wrap { animation: none; }
+  }
+
   .login-card {
-    background: var(--card);
-    border: 1px solid var(--border);
+    position: relative;
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
     border-radius: var(--radius);
     padding: 32px 28px;
+    box-shadow: 0 24px 60px -24px rgba(41,83,217,0.28), 0 2px 8px rgba(28,30,43,0.04);
   }
+
+  .login-icon {
+    width: 44px; height: 44px; border-radius: 13px; margin-bottom: 18px;
+    background: linear-gradient(135deg, var(--accent-soft), var(--gold-soft));
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+    box-shadow: inset 0 0 0 1px rgba(41,83,217,0.14);
+  }
+
   .login-title { font-size: 22px; font-weight: 650; margin: 0 0 6px; letter-spacing: -0.01em; }
   .login-sub { font-size: 13.5px; color: var(--text-dim); margin: 0 0 24px; line-height: 1.5; }
+
+  .login-tabs { display: flex; gap: 6px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 22px; }
+  .login-tab-btn {
+    flex: 1; border: none; background: transparent; color: var(--text-dim);
+    padding: 9px 6px; border-radius: 7px; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+  }
+  .login-tab-btn:hover { color: var(--text); }
+  .login-tab-btn.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(41,83,217,0.25);
+  }
+  .login-panel { display: none; }
+  .login-panel.active { display: block; animation: card-in .35s ease both; }
+  .login-links { display: flex; justify-content: center; margin-top: 4px; }
+  .link-btn {
+    background: none; border: none; padding: 4px; font-size: 12.5px; color: var(--accent);
+    cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+  }
+  .link-btn:hover { color: var(--accent-2); }
+  .checkbox-field label { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; color: var(--text-dim); font-weight: 500; cursor: pointer; line-height: 1.5; }
+  .checkbox-field input[type="checkbox"] { width: 16px; height: 16px; margin-top: 1px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
 
   label { display: block; font-size: 12.5px; color: var(--text-dim); margin-bottom: 6px; font-weight: 500; }
   .field { margin-bottom: 16px; }
   .row-2 { display: grid; grid-template-columns: 108px 1fr; gap: 10px; }
 
-  select, input[type="text"], input[type="number"] {
+  /* Control segmentado para tipo de documento -- reemplaza el <select> plano */
+  .doc-type-group { display: flex; gap: 6px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px; }
+  .doc-type-btn {
+    flex: 1; border: none; background: transparent; color: var(--text-dim);
+    padding: 9px 6px; border-radius: 7px; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+  }
+  .doc-type-btn:hover { color: var(--text); }
+  .doc-type-btn.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(41,83,217,0.25);
+  }
+
+  .input-icon-wrap { position: relative; }
+  .input-icon-wrap .input-icon {
+    position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+    font-size: 15px; opacity: 0.75; pointer-events: none;
+  }
+  .input-icon-wrap input[type="text"] { padding-left: 38px; }
+
+  select,
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"] {
     width: 100%;
     background: var(--bg-soft);
     border: 1px solid var(--border);
@@ -89,6 +193,14 @@
     box-shadow: 0 0 0 3px var(--accent-soft);
   }
 
+  .security-note {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--bg-soft); border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 22px;
+  }
+  .security-note .icon { font-size: 14px; margin-top: 1px; }
+  .security-note p { margin: 0; font-size: 11.5px; color: var(--text-faint); line-height: 1.6; }
+
   button {
     font-family: inherit;
     cursor: pointer;
@@ -102,13 +214,25 @@
   button:disabled { opacity: .5; cursor: not-allowed; }
 
   .btn-primary {
+    position: relative;
     width: 100%;
     background: linear-gradient(135deg, var(--accent), var(--accent-2));
     color: #fff;
     padding: 13px 16px;
-    box-shadow: 0 6px 20px rgba(109,141,255,0.25);
+    box-shadow: 0 6px 20px rgba(41,83,217,0.20);
+    overflow: hidden;
   }
   .btn-primary:hover:not(:disabled) { filter: brightness(1.08); }
+  .btn-primary::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.35) 50%, transparent 60%);
+    transform: translateX(-120%);
+    transition: transform .6s ease;
+  }
+  .btn-primary:hover:not(:disabled)::after { transform: translateX(120%); }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-primary::after { display: none; }
+  }
 
   .btn-secondary {
     background: var(--bg-soft);
@@ -131,6 +255,14 @@
   }
   .msg-ok { font-size: 13px; color: var(--green); min-height: 18px; margin-top: 10px; line-height: 1.4; }
 
+  .estado-error-banner {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: rgba(220, 38, 38, 0.08); border: 1px solid rgba(220, 38, 38, 0.3);
+    border-radius: var(--radius-sm); padding: 14px 16px; margin: 14px 0;
+    font-size: 13.5px; line-height: 1.5; color: var(--text);
+  }
+  .estado-error-banner .icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
+
   .disclaimer {
     font-size: 11.5px; color: var(--text-faint); text-align: center; margin-top: 22px; line-height: 1.6;
   }
@@ -142,7 +274,7 @@
 
   .balance-card {
     background:
-      linear-gradient(155deg, rgba(109,141,255,0.16), rgba(154,109,255,0.08) 60%, transparent),
+      linear-gradient(155deg, rgba(41,83,217,0.10), rgba(226,63,132,0.06) 60%, transparent),
       var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -184,7 +316,10 @@
     color: var(--text);
     display: flex; flex-direction: column; gap: 8px;
   }
-  .action-btn:hover:not(:disabled) { background: var(--card-hover); border-color: #2c3348; }
+  .action-btn:hover:not(:disabled) { background: var(--card-hover); border-color: var(--accent); }
+  .page-footer { text-align: center; margin-top: 30px; font-size: 12px; color: var(--text-faint); }
+  .page-footer a { color: var(--text-dim); text-decoration: none; }
+  .page-footer a:hover { color: var(--text); }
   .action-icon { font-size: 18px; }
   .action-label { font-size: 13.5px; font-weight: 600; }
 
@@ -192,7 +327,31 @@
     font-size: 12.5px; font-weight: 650; color: var(--text-dim);
     text-transform: uppercase; letter-spacing: 0.06em; margin: 26px 0 12px;
   }
+  .section-sub { font-size: 12.5px; color: var(--text-faint); margin: -6px 0 10px; line-height: 1.4; }
 
+  .canje-pendiente-codigo {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.04em; background: var(--accent-soft); color: var(--accent);
+    border-radius: 6px; padding: 3px 8px; white-space: nowrap;
+  }
+  .canje-pendiente-vence {
+    font-size: 11px; font-weight: 600; color: var(--orange); margin-top: 2px;
+  }
+  .canje-pendiente-vence.urgente { color: var(--red); }
+
+  .tab-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 17px; height: 17px; padding: 0 5px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent); font-size: 10.5px; font-weight: 700;
+    margin-left: 6px;
+  }
+  .doc-type-btn.active .tab-count { background: rgba(255,255,255,0.28); color: #fff; }
+
+  .movs-grupo-titulo {
+    font-size: 11.5px; font-weight: 650; color: var(--text-faint); text-transform: uppercase;
+    letter-spacing: 0.05em; margin: 18px 0 4px; padding: 0 4px;
+  }
+  .movs-grupo-titulo:first-child { margin-top: 4px; }
   .movs { display: flex; flex-direction: column; gap: 2px; }
   .mov {
     display: flex; align-items: center; gap: 12px;
@@ -293,34 +452,158 @@
 
   <!-- ============ LOGIN ============ -->
   <div id="screen-login">
-    <div class="login-card">
-      <div class="login-title">Ver mis puntos</div>
-      <p class="login-sub">Ingresa tu documento para ver tu saldo, tu historial y transferir o canjear tus puntos.</p>
-
-      <div class="row-2 field">
-        <div>
-          <label>Tipo</label>
-          <select id="login-tipo">
-            <option value="CC">CC</option>
-            <option value="CE">CE</option>
-            <option value="TI">TI</option>
-            <option value="PA">Pasaporte</option>
-          </select>
-        </div>
-        <div>
-          <label>Número de documento</label>
-          <input id="login-numero" type="text" inputmode="numeric" placeholder="Ej. 1020304050" />
-        </div>
-      </div>
-
-      <button class="btn-primary" id="btn-login">Ver mi saldo</button>
-      <div class="msg-error" id="login-error"></div>
+    <div class="aurora" aria-hidden="true">
+      <div class="aurora-blob b1"></div>
+      <div class="aurora-blob b2"></div>
+      <div class="aurora-blob b3"></div>
     </div>
 
-    <p class="disclaimer">
-      Por ahora te identificamos solo con tu número de documento — pronto vamos a
-      agregar un código de seguridad temporal para proteger mejor tu cuenta.
-    </p>
+    <div class="login-card-wrap">
+      <div class="login-card">
+        <div class="login-icon">🪪</div>
+
+        <div class="login-tabs" id="login-tabs">
+          <button type="button" class="login-tab-btn active" data-tab="entrar">Iniciar sesión</button>
+          <button type="button" class="login-tab-btn" data-tab="crear">Crear cuenta</button>
+        </div>
+
+        <!-- ============ Iniciar sesión ============ -->
+        <div class="login-panel active" id="panel-entrar">
+          <p class="login-sub">Ingresa con tu documento y contraseña para ver tu saldo, tu historial y transferir o canjear tus puntos.</p>
+          <form id="form-entrar">
+            <div class="field">
+              <label>Tipo de documento</label>
+              <div class="doc-type-group" id="entrar-tipo-group" role="group" aria-label="Tipo de documento">
+                <button type="button" class="doc-type-btn active" data-value="CC">CC</button>
+                <button type="button" class="doc-type-btn" data-value="CE">CE</button>
+                <button type="button" class="doc-type-btn" data-value="TI">TI</button>
+                <button type="button" class="doc-type-btn" data-value="PA">PA</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>Número de documento</label>
+              <div class="input-icon-wrap">
+                <span class="input-icon">#</span>
+                <input id="entrar-numero" type="text" inputmode="numeric" placeholder="Ej. 1020304050" required />
+              </div>
+            </div>
+            <div class="field">
+              <label>Contraseña</label>
+              <input id="entrar-password" type="password" autocomplete="current-password" required />
+            </div>
+            <button type="submit" class="btn-primary" id="btn-login">Entrar</button>
+            <div class="msg-error" id="login-error"></div>
+          </form>
+          <div class="login-links">
+            <button type="button" class="link-btn" id="btn-ir-recuperar">¿Olvidaste tu contraseña?</button>
+          </div>
+        </div>
+
+        <!-- ============ Crear cuenta ============ -->
+        <div class="login-panel" id="panel-crear">
+          <p class="login-sub">Regístrate para ver tu saldo, tu historial y transferir o canjear tus puntos.</p>
+          <form id="form-crear">
+            <div class="field">
+              <label>Nombres y apellidos</label>
+              <input id="crear-nombre" type="text" required />
+            </div>
+            <div class="field">
+              <label>Tipo de documento</label>
+              <div class="doc-type-group" id="crear-tipo-group" role="group" aria-label="Tipo de documento">
+                <button type="button" class="doc-type-btn active" data-value="CC">CC</button>
+                <button type="button" class="doc-type-btn" data-value="CE">CE</button>
+                <button type="button" class="doc-type-btn" data-value="TI">TI</button>
+                <button type="button" class="doc-type-btn" data-value="PA">PA</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>Número de documento</label>
+              <div class="input-icon-wrap">
+                <span class="input-icon">#</span>
+                <input id="crear-numero" type="text" inputmode="numeric" placeholder="Ej. 1020304050" required />
+              </div>
+            </div>
+            <div class="field">
+              <label>Correo</label>
+              <input id="crear-email" type="email" autocomplete="username" required />
+            </div>
+            <div class="field">
+              <label>Celular</label>
+              <input id="crear-celular" type="tel" inputmode="numeric" placeholder="Ej. 3001234567" required />
+            </div>
+            <div class="field">
+              <label>Ciudad</label>
+              <input id="crear-ciudad" type="text" placeholder="Ej. Medellín" required />
+            </div>
+            <div class="field">
+              <label>Crear contraseña</label>
+              <input id="crear-password" type="password" autocomplete="new-password" minlength="8" required />
+            </div>
+            <div class="field">
+              <label>Confirmar contraseña</label>
+              <input id="crear-password-confirm" type="password" autocomplete="new-password" minlength="8" required />
+            </div>
+            <div class="field checkbox-field">
+              <label><input id="crear-acepta" type="checkbox" required /> Acepto los <a href="/legal/#terminos" target="_blank" rel="noopener">Términos y condiciones</a> y la <a href="/legal/#privacidad" target="_blank" rel="noopener">Política de tratamiento de datos</a> de Puntos Neggo.</label>
+            </div>
+            <button type="submit" class="btn-primary" id="btn-crear">Crear cuenta</button>
+            <div class="msg-error" id="crear-error"></div>
+            <div class="msg-ok hidden" id="crear-ok"></div>
+          </form>
+        </div>
+
+        <!-- ============ Recuperar contraseña ============ -->
+        <div class="login-panel" id="panel-recuperar">
+          <p class="login-sub">Escribe tu documento y te mandamos un enlace al correo registrado para que crees una contraseña nueva.</p>
+          <form id="form-recuperar">
+            <div class="field">
+              <label>Tipo de documento</label>
+              <div class="doc-type-group" id="recuperar-tipo-group" role="group" aria-label="Tipo de documento">
+                <button type="button" class="doc-type-btn active" data-value="CC">CC</button>
+                <button type="button" class="doc-type-btn" data-value="CE">CE</button>
+                <button type="button" class="doc-type-btn" data-value="TI">TI</button>
+                <button type="button" class="doc-type-btn" data-value="PA">PA</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>Número de documento</label>
+              <div class="input-icon-wrap">
+                <span class="input-icon">#</span>
+                <input id="recuperar-numero" type="text" inputmode="numeric" placeholder="Ej. 1020304050" required />
+              </div>
+            </div>
+            <button type="submit" class="btn-primary" id="btn-recuperar-enviar">Enviar enlace</button>
+            <div class="msg-error" id="recuperar-error"></div>
+            <div class="msg-ok hidden" id="recuperar-ok">✓ Si ese documento tiene una cuenta, te llegó un enlace al correo registrado para restablecer tu contraseña.</div>
+          </form>
+          <div class="login-links">
+            <button type="button" class="link-btn" id="btn-recuperar-volver">← Volver a iniciar sesión</button>
+          </div>
+        </div>
+
+        <!-- ============ Nueva contraseña (desde el enlace del correo) ============ -->
+        <div class="login-panel" id="panel-nueva-password">
+          <p class="login-sub">Este enlace te identificó — ahora solo falta que elijas tu nueva contraseña.</p>
+          <form id="form-nueva-password">
+            <div class="field">
+              <label>Nueva contraseña</label>
+              <input id="nueva-password" type="password" autocomplete="new-password" minlength="8" required />
+            </div>
+            <div class="field">
+              <label>Confirmar contraseña</label>
+              <input id="nueva-password-confirm" type="password" autocomplete="new-password" minlength="8" required />
+            </div>
+            <button type="submit" class="btn-primary" id="btn-nueva-password">Guardar nueva contraseña</button>
+            <div class="msg-error" id="nueva-password-error"></div>
+          </form>
+        </div>
+
+        <div class="security-note">
+          <span class="icon">🔒</span>
+          <p>Tu contraseña la maneja directamente nuestro sistema de autenticación — nunca la vemos ni la guardamos nosotros.</p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ============ APP ============ -->
@@ -331,6 +614,11 @@
         <div style="font-size:12px; color:var(--text-faint);" id="saludo-doc"></div>
       </div>
       <button class="btn-ghost" id="btn-logout">Salir</button>
+    </div>
+
+    <div class="estado-error-banner hidden" id="estado-error-banner">
+      <span class="icon">⚠️</span>
+      <span id="estado-error-texto"></span>
     </div>
 
     <div class="balance-card">
@@ -359,16 +647,32 @@
       </button>
     </div>
 
-    <div class="section-title">Historial</div>
-    <div class="msg-error" id="app-error"></div>
-    <div class="movs" id="lista-movimientos"></div>
-    <div class="empty-state hidden" id="movs-empty">Todavía no tienes movimientos.</div>
+    <div class="section-title">Tu actividad</div>
+    <div class="doc-type-group" id="hist-tab-group" role="group" aria-label="Ver historial o canjes pendientes">
+      <button type="button" class="doc-type-btn active" data-tab="historial">Historial</button>
+      <button type="button" class="doc-type-btn" data-tab="pendientes">Canjes pendientes<span class="tab-count hidden" id="tab-count-pendientes">0</span></button>
+    </div>
+
+    <div id="tab-panel-historial">
+      <div class="msg-error" id="app-error"></div>
+      <div class="movs" id="lista-movimientos"></div>
+      <div class="empty-state hidden" id="movs-empty">Todavía no tienes movimientos.</div>
+    </div>
+
+    <div id="tab-panel-pendientes" class="hidden">
+      <p class="section-sub">Dale este código al comercio para que confirme tu canje. Sigue vigente hasta que lo acepten o hasta que pasen 30 minutos.</p>
+      <div class="movs" id="lista-canjes-pendientes"></div>
+      <div class="empty-state hidden" id="canjes-pendientes-empty">No tienes canjes pendientes en este momento.</div>
+    </div>
 
     <p class="disclaimer">
       Por ahora te identificamos solo con tu número de documento — pronto vamos a
       agregar un código de seguridad temporal para proteger mejor tu cuenta.
     </p>
+    <p class="disclaimer" id="aceptacion-legal-info" style="display:none;"></p>
   </div>
+
+  <p class="page-footer"><a href="/">Puntos Neggo</a> · <a href="/legal/#reglamento">Reglamento del programa</a></p>
 
 </div>
 
@@ -449,85 +753,263 @@ const SUPABASE_URL = "https://ckxoypzsmvxhqlvlwnib.supabase.co";
 const SUPABASE_KEY = "sb_publishable_N0z9XkKZ92GfvxtHA-NZxA_0nENuF7v";
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// Login por documento: llamada directa por fetch (no supabase.functions.invoke)
+// para poder leer el cuerpo JSON del error tal cual, sin depender de como
+// cada version del SDK envuelva las respuestas no-2xx.
+async function llamarLoginDocumento(body) {
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/login-documento`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    body: JSON.stringify(body),
+  });
+  let data = null;
+  try { data = await res.json(); } catch {}
+  return { ok: res.ok, data };
+}
+
 const $ = (id) => document.getElementById(id);
 const puntosFmt = (n) => new Intl.NumberFormat("es-CO").format(n ?? 0);
 const cop = (n) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format((n ?? 0) * 10);
 const fecha = (iso) => new Date(iso).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" });
 
-const SESSION_KEY = "puntos_neggo_sesion";
-let sesion = null; // { tipoDocumento, numeroDocumento }
 let comercioSeleccionado = null;
+let tipoDocumentoCrear = "CC";
+let tipoDocumentoEntrar = "CC";
+let tipoDocumentoRecuperar = "CC";
 
-function guardarSesion(s) {
-  sesion = s;
-  try { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch {}
-}
-function borrarSesion() {
-  sesion = null;
-  try { localStorage.removeItem(SESSION_KEY); } catch {}
-}
-function leerSesionGuardada() {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
-}
+document.querySelectorAll("#crear-tipo-group .doc-type-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#crear-tipo-group .doc-type-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    tipoDocumentoCrear = btn.dataset.value;
+  });
+});
+
+document.querySelectorAll("#entrar-tipo-group .doc-type-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#entrar-tipo-group .doc-type-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    tipoDocumentoEntrar = btn.dataset.value;
+  });
+});
+
+document.querySelectorAll("#recuperar-tipo-group .doc-type-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#recuperar-tipo-group .doc-type-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    tipoDocumentoRecuperar = btn.dataset.value;
+  });
+});
 
 function mostrarLogin() {
   $("screen-login").style.display = "flex";
   $("screen-app").style.display = "none";
+  mostrarPanelLogin("entrar");
 }
-function mostrarApp() {
+let sesionUsuario = null; // auth.users del cliente logueado (email, id)
+
+function mostrarApp(session) {
+  if (session) sesionUsuario = session.user;
   $("screen-login").style.display = "none";
   $("screen-app").style.display = "block";
 }
+
+// Evidencia de aceptación de términos, visible en el portal (poco vistosa,
+// pero disponible para cualquier auditoría) -- filtro explícito por user_id,
+// no solo RLS, mismo criterio ya aplicado en el resto del proyecto.
+async function cargarAceptacionLegal() {
+  const el = $("aceptacion-legal-info");
+  if (!sesionUsuario) return;
+  const { data, error } = await supabase
+    .from("aceptaciones_legales")
+    .select("version, aceptado_at")
+    .eq("user_id", sesionUsuario.id)
+    .eq("documento", "terminos_condiciones")
+    .order("aceptado_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error || !data) return;
+  el.textContent = `Aceptaste los términos y la política de tratamiento de datos (${data.version}) el ${fecha(data.aceptado_at)}.`;
+  el.style.display = "block";
+}
+
+// ---------- Login: pestañas Iniciar sesión / Crear cuenta, y subpaneles de recuperación ----------
+function mostrarPanelLogin(nombre) {
+  document.querySelectorAll(".login-panel").forEach((p) => p.classList.remove("active"));
+  $(`panel-${nombre}`).classList.add("active");
+  document.querySelectorAll("#login-tabs .login-tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.tab === nombre));
+  $("login-tabs").classList.toggle("hidden", nombre === "recuperar" || nombre === "nueva-password");
+}
+
+document.querySelectorAll("#login-tabs .login-tab-btn").forEach((btn) => {
+  btn.addEventListener("click", () => mostrarPanelLogin(btn.dataset.tab));
+});
+$("btn-ir-recuperar").addEventListener("click", () => mostrarPanelLogin("recuperar"));
+$("btn-recuperar-volver").addEventListener("click", () => mostrarPanelLogin("entrar"));
 
 const ICONOS = {
   ganado: { icon: "✓", bg: "var(--green-soft)", color: "var(--green)", label: "Puntos ganados" },
   canjeado: { icon: "🎁", bg: "var(--orange-soft)", color: "var(--orange)", label: "Canje" },
   transferido_salida: { icon: "↗", bg: "var(--red-soft)", color: "var(--red)", label: "Transferencia enviada" },
   transferido_entrada: { icon: "↙", bg: "var(--green-soft)", color: "var(--green)", label: "Transferencia recibida" },
-  vencido: { icon: "⏱", bg: "rgba(255,255,255,0.06)", color: "var(--text-faint)", label: "Puntos vencidos" },
-  revertido: { icon: "↺", bg: "rgba(255,255,255,0.06)", color: "var(--text-faint)", label: "Reverso" },
+  vencido: { icon: "⏱", bg: "rgba(28,30,43,0.06)", color: "var(--text-faint)", label: "Puntos vencidos" },
+  revertido: { icon: "↺", bg: "rgba(28,30,43,0.06)", color: "var(--text-faint)", label: "Reverso" },
 };
+
+function conceptoMovimiento(m) {
+  const contraparte = m.contraparte_nombre || m.contraparte_llave;
+  switch (m.tipo) {
+    case "ganado":
+      return m.comercio_nombre ? `Puntos ganados en ${m.comercio_nombre}` : "Puntos ganados";
+    case "canjeado":
+      return m.comercio_nombre ? `Canjeado en ${m.comercio_nombre}` : "Canje";
+    case "transferido_salida":
+      return contraparte ? `Transferido a ${contraparte}` : "Transferencia enviada";
+    case "transferido_entrada":
+      return contraparte ? `Recibido de ${contraparte}` : "Transferencia recibida";
+    case "vencido":
+      return "Puntos vencidos";
+    case "revertido":
+      return "Reverso de un movimiento";
+    default:
+      return (ICONOS[m.tipo] || {}).label || m.tipo;
+  }
+}
+
+// Agrupa el historial en baldes de fecha -- Hoy / Ayer / Esta semana / Este mes / Antes --
+// para que se pueda escanear de un vistazo en vez de una lista plana sin fin.
+function grupoDeFecha(iso) {
+  const d = new Date(iso);
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  const dia = new Date(d); dia.setHours(0, 0, 0, 0);
+  const diffDias = Math.round((hoy - dia) / 86400000);
+
+  if (diffDias === 0) return "Hoy";
+  if (diffDias === 1) return "Ayer";
+  if (diffDias <= 7) return "Esta semana";
+  if (dia.getMonth() === hoy.getMonth() && dia.getFullYear() === hoy.getFullYear()) return "Este mes";
+  return "Antes";
+}
 
 function renderMovimientos(movs) {
   const cont = $("lista-movimientos");
   cont.innerHTML = "";
   $("movs-empty").classList.toggle("hidden", movs.length > 0);
+  if (!movs.length) return;
+
+  let grupoActual = null;
+  let listaGrupo = null;
 
   for (const m of movs) {
-    const meta = ICONOS[m.tipo] || { icon: "•", bg: "rgba(255,255,255,0.06)", color: "var(--text-dim)", label: m.tipo };
+    const grupo = grupoDeFecha(m.created_at);
+    if (grupo !== grupoActual) {
+      grupoActual = grupo;
+      const titulo = document.createElement("div");
+      titulo.className = "movs-grupo-titulo";
+      titulo.textContent = grupo;
+      cont.appendChild(titulo);
+      listaGrupo = document.createElement("div");
+      listaGrupo.className = "movs";
+      cont.appendChild(listaGrupo);
+    }
+
+    const meta = ICONOS[m.tipo] || { icon: "•", bg: "rgba(28,30,43,0.06)", color: "var(--text-dim)" };
     const positivo = m.puntos > 0;
     const div = document.createElement("div");
     div.className = "mov";
     div.innerHTML = `
       <div class="mov-icon" style="background:${meta.bg}; color:${meta.color};">${meta.icon}</div>
       <div class="mov-body">
-        <div class="mov-title">${meta.label}</div>
+        <div class="mov-title">${conceptoMovimiento(m)}</div>
         <div class="mov-sub">${fecha(m.created_at)}${m.motivo ? " · " + m.motivo : ""}</div>
       </div>
       <div class="mov-puntos" style="color:${positivo ? "var(--green)" : "var(--text)"};">${positivo ? "+" : ""}${puntosFmt(m.puntos)}</div>
+    `;
+    listaGrupo.appendChild(div);
+  }
+}
+
+function venceTexto(expiraIso) {
+  if (!expiraIso) return { texto: "", urgente: false };
+  const minutos = Math.round((new Date(expiraIso).getTime() - Date.now()) / 60000);
+  if (minutos <= 0) return { texto: "Venciendo…", urgente: true };
+  const texto = minutos < 60 ? `Vence en ${minutos} min` : `Vence en ${Math.round(minutos / 60)} h`;
+  return { texto, urgente: minutos <= 5 };
+}
+
+function renderCanjesPendientes(canjes) {
+  const cont = $("lista-canjes-pendientes");
+  cont.innerHTML = "";
+  const hay = canjes && canjes.length > 0;
+  $("canjes-pendientes-empty").classList.toggle("hidden", hay);
+  $("tab-count-pendientes").textContent = canjes ? canjes.length : 0;
+  $("tab-count-pendientes").classList.toggle("hidden", !hay);
+  if (!hay) return;
+
+  for (const c of canjes) {
+    const vence = venceTexto(c.expira_at);
+    const div = document.createElement("div");
+    div.className = "mov";
+    div.innerHTML = `
+      <div class="mov-icon" style="background:var(--orange-soft); color:var(--orange);">🎁</div>
+      <div class="mov-body">
+        <div class="mov-title">${c.comercio_nombre || "Comercio"} · ${puntosFmt(c.puntos)} pts</div>
+        <div class="mov-sub">Pendiente de confirmar · ${fecha(c.created_at)}</div>
+        ${vence.texto ? `<div class="canje-pendiente-vence ${vence.urgente ? "urgente" : ""}">${vence.texto}</div>` : ""}
+      </div>
+      <div class="canje-pendiente-codigo">${c.codigo_verificacion}</div>
     `;
     cont.appendChild(div);
   }
 }
 
+let huboCanjesPendientesAlEntrar = false;
+
+async function cargarCanjesPendientes() {
+  const { data, error } = await supabase.rpc("cliente_portal_canjes_pendientes");
+  if (error) return;
+  renderCanjesPendientes(data || []);
+
+  // La primera vez que cargamos tras entrar, si hay canjes esperando código,
+  // abrimos esa pestaña de una vez -- es lo que necesita atención.
+  if (!huboCanjesPendientesAlEntrar && data && data.length > 0) {
+    huboCanjesPendientesAlEntrar = true;
+    cambiarTabHistorial("pendientes");
+  }
+}
+
+function cambiarTabHistorial(tab) {
+  document.querySelectorAll("#hist-tab-group .doc-type-btn").forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
+  $("tab-panel-historial").classList.toggle("hidden", tab !== "historial");
+  $("tab-panel-pendientes").classList.toggle("hidden", tab !== "pendientes");
+}
+
+document.querySelectorAll("#hist-tab-group .doc-type-btn").forEach((btn) => {
+  btn.addEventListener("click", () => cambiarTabHistorial(btn.dataset.tab));
+});
+
+let clienteActual = null; // { cliente_id, nombre, llave_cliente, saldo }
+
 async function cargarEstado() {
   $("app-error").textContent = "";
-  const { data, error } = await supabase.rpc("cliente_portal_estado", {
-    p_tipo_documento: sesion.tipoDocumento,
-    p_numero_documento: sesion.numeroDocumento,
-  });
+  $("estado-error-banner").classList.add("hidden");
+  const { data, error } = await supabase.rpc("cliente_portal_estado");
 
   if (error) {
+    // Este error significa que la cuenta con la que entraste no tiene un
+    // cliente de puntos vinculado -- lo mostramos donde se ve, no solo
+    // abajo en el historial, porque si no la pantalla se ve "rota" sin
+    // ninguna explicación (saldo y llave se quedan en "—").
     $("app-error").textContent = error.message;
+    $("estado-error-texto").textContent = "Esta cuenta no tiene un cliente de puntos vinculado, por eso no vemos saldo ni llave. Si crees que es un error, contáctanos.";
+    $("estado-error-banner").classList.remove("hidden");
     return;
   }
 
   const fila = Array.isArray(data) ? data[0] : data;
+  clienteActual = fila;
   $("saludo-nombre").textContent = fila.nombre ? `Hola, ${fila.nombre.split(" ")[0]}` : "Hola";
-  $("saludo-doc").textContent = `${sesion.tipoDocumento} ${sesion.numeroDocumento}`;
+  $("saludo-doc").textContent = "";
   $("saldo-puntos").textContent = puntosFmt(fila.saldo);
   $("saldo-cop").textContent = `≈ ${cop(fila.saldo)}`;
   $("llave-valor").textContent = fila.llave_cliente || "—";
@@ -542,45 +1024,199 @@ async function cargarEstado() {
   renderMovimientos(fila.movimientos || []);
 }
 
-$("btn-login").addEventListener("click", async () => {
+$("form-entrar").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
   $("login-error").textContent = "";
-  const tipoDocumento = $("login-tipo").value;
-  const numeroDocumento = $("login-numero").value.trim();
-
-  if (!numeroDocumento) {
-    $("login-error").textContent = "Ingresa tu número de documento.";
-    return;
-  }
+  const tipoDocumento = tipoDocumentoEntrar;
+  const numeroDocumento = $("entrar-numero").value.trim();
+  const password = $("entrar-password").value;
 
   const btn = $("btn-login");
   btn.disabled = true;
-  btn.innerHTML = `<span class="spinner"></span>Buscando...`;
+  btn.innerHTML = `<span class="spinner"></span>Entrando...`;
 
-  const { data, error } = await supabase.rpc("cliente_portal_estado", {
-    p_tipo_documento: tipoDocumento,
-    p_numero_documento: numeroDocumento,
-  });
+  const { ok: loginOk, data: loginData } = await llamarLoginDocumento({ accion: "login", perfil: "cliente", tipoDocumento, numeroDocumento, password });
 
-  btn.disabled = false;
-  btn.textContent = "Ver mi saldo";
-
-  if (error) {
-    $("login-error").textContent = error.message.includes("No encontramos")
-      ? "No encontramos ninguna cuenta con ese documento. Verifica el número o pregunta en el comercio donde ganaste tus puntos."
-      : error.message;
+  if (!loginOk || !loginData?.access_token) {
+    btn.disabled = false;
+    btn.textContent = "Entrar";
+    $("login-error").textContent = "Documento o contraseña incorrectos.";
     return;
   }
 
-  guardarSesion({ tipoDocumento, numeroDocumento });
-  mostrarApp();
-  await cargarEstado();
+  const { data, error } = await supabase.auth.setSession({
+    access_token: loginData.access_token,
+    refresh_token: loginData.refresh_token,
+  });
+
+  btn.disabled = false;
+  btn.textContent = "Entrar";
+
+  if (error) {
+    $("login-error").textContent = "Documento o contraseña incorrectos.";
+    return;
+  }
+
+  mostrarApp(data.session);
+  await Promise.all([cargarEstado(), cargarCanjesPendientes()]);
 });
 
-$("login-numero").addEventListener("keydown", (e) => { if (e.key === "Enter") $("btn-login").click(); });
+$("form-crear").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  $("crear-error").textContent = "";
+  $("crear-ok").classList.add("hidden");
 
-$("btn-logout").addEventListener("click", () => {
-  borrarSesion();
-  $("login-numero").value = "";
+  const nombre = $("crear-nombre").value.trim();
+  const tipoDocumento = tipoDocumentoCrear;
+  const numeroDocumento = $("crear-numero").value.trim();
+  const email = $("crear-email").value.trim();
+  const celular = $("crear-celular").value.trim();
+  const ciudad = $("crear-ciudad").value.trim();
+  const password = $("crear-password").value;
+  const passwordConfirm = $("crear-password-confirm").value;
+  const acepta = $("crear-acepta").checked;
+
+  if (!nombre || !numeroDocumento || !email || !celular || !ciudad) {
+    $("crear-error").textContent = "Completa todos los campos.";
+    return;
+  }
+  if (password.length < 8) {
+    $("crear-error").textContent = "La contraseña debe tener al menos 8 caracteres.";
+    return;
+  }
+  if (password !== passwordConfirm) {
+    $("crear-error").textContent = "Las contraseñas no coinciden.";
+    return;
+  }
+  if (!acepta) {
+    $("crear-error").textContent = "Debes aceptar el tratamiento de datos y los términos de uso.";
+    return;
+  }
+
+  const btn = $("btn-crear");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span>Creando cuenta...`;
+
+  // Chequeo previo -- avisa ANTES de crear la cuenta de Auth si ese
+  // documento ya tiene dueño (evita crear un usuario de Auth "huérfano").
+  const { data: disponible, error: disponibleError } = await supabase.rpc("cliente_portal_documento_disponible", {
+    p_tipo_documento: tipoDocumento,
+    p_numero_documento: numeroDocumento,
+  });
+  if (!disponibleError && disponible === false) {
+    btn.disabled = false;
+    btn.textContent = "Crear cuenta";
+    $("crear-error").textContent = "Ese documento ya tiene una cuenta registrada. Inicia sesión o recupera tu contraseña.";
+    return;
+  }
+
+  const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
+
+  if (signUpError) {
+    btn.disabled = false;
+    btn.textContent = "Crear cuenta";
+    $("crear-error").textContent = signUpError.message.includes("already registered")
+      ? "Ya existe una cuenta con ese correo. Si es tuya, inicia sesión o recupera tu contraseña."
+      : signUpError.message;
+    return;
+  }
+
+  if (!signUpData.session) {
+    // Confirmación de correo activada en el proyecto -- no hay sesión
+    // todavía, así que cliente_portal_registrar (requiere auth.uid()) no se
+    // puede llamar aún. Le pedimos confirmar el correo y volver a entrar.
+    btn.disabled = false;
+    btn.textContent = "Crear cuenta";
+    ev.target.reset();
+    $("crear-ok").textContent = "✓ Te mandamos un correo para confirmar tu cuenta. Confírmalo y después inicia sesión con tu contraseña.";
+    $("crear-ok").classList.remove("hidden");
+    return;
+  }
+
+  const { error: registrarError } = await supabase.rpc("cliente_portal_registrar", {
+    p_tipo_documento: tipoDocumento,
+    p_numero_documento: numeroDocumento,
+    p_nombre: nombre,
+    p_celular: celular,
+    p_ciudad: ciudad,
+    p_acepta_terminos: acepta,
+  });
+
+  btn.disabled = false;
+  btn.textContent = "Crear cuenta";
+
+  if (registrarError) {
+    $("crear-error").textContent = registrarError.message;
+    return;
+  }
+
+  mostrarApp(signUpData.session);
+  await Promise.all([cargarEstado(), cargarCanjesPendientes(), cargarAceptacionLegal()]);
+});
+
+$("form-recuperar").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  $("recuperar-error").textContent = "";
+  $("recuperar-ok").classList.add("hidden");
+  const tipoDocumento = tipoDocumentoRecuperar;
+  const numeroDocumento = $("recuperar-numero").value.trim();
+
+  const btn = $("btn-recuperar-enviar");
+  btn.disabled = true;
+
+  const { ok } = await llamarLoginDocumento({
+    accion: "recuperar",
+    perfil: "cliente",
+    tipoDocumento,
+    numeroDocumento,
+    redirectTo: location.origin + location.pathname,
+  });
+  btn.disabled = false;
+
+  if (!ok) { $("recuperar-error").textContent = "No pudimos procesar la solicitud. Intenta de nuevo."; return; }
+  $("recuperar-ok").classList.remove("hidden");
+  ev.target.reset();
+});
+
+$("form-nueva-password").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  $("nueva-password-error").textContent = "";
+  const password = $("nueva-password").value;
+  const passwordConfirm = $("nueva-password-confirm").value;
+
+  if (password.length < 8) {
+    $("nueva-password-error").textContent = "La contraseña debe tener al menos 8 caracteres.";
+    return;
+  }
+  if (password !== passwordConfirm) {
+    $("nueva-password-error").textContent = "Las contraseñas no coinciden.";
+    return;
+  }
+
+  const btn = $("btn-nueva-password");
+  btn.disabled = true;
+
+  const { error } = await supabase.auth.updateUser({ password });
+  btn.disabled = false;
+
+  if (error) { $("nueva-password-error").textContent = error.message; return; }
+
+  history.replaceState(null, "", location.pathname);
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    mostrarApp(session);
+    await Promise.all([cargarEstado(), cargarCanjesPendientes()]);
+  } else {
+    mostrarLogin();
+  }
+});
+
+$("btn-logout").addEventListener("click", async () => {
+  await supabase.auth.signOut();
+  sesionUsuario = null;
+  clienteActual = null;
+  huboCanjesPendientesAlEntrar = false;
+  cambiarTabHistorial("historial");
   mostrarLogin();
 });
 
@@ -643,11 +1279,9 @@ $("btn-confirmar-transferir").addEventListener("click", async () => {
   btn.disabled = true;
   btn.innerHTML = `<span class="spinner"></span>Transfiriendo...`;
 
-  const referencia = `portal-${sesion.numeroDocumento}-${llave}-${puntos}-${Date.now()}`;
+  const referencia = `portal-${sesionUsuario?.id || "s"}-${llave}-${puntos}-${Date.now()}`;
 
   const { data, error } = await supabase.rpc("cliente_portal_transferir", {
-    p_tipo_documento_origen: sesion.tipoDocumento,
-    p_numero_documento_origen: sesion.numeroDocumento,
     p_llave_destino: llave,
     p_puntos: puntos,
     p_referencia_externa: referencia,
@@ -727,8 +1361,6 @@ $("btn-confirmar-canjear").addEventListener("click", async () => {
   btn.innerHTML = `<span class="spinner"></span>Procesando...`;
 
   const { data, error } = await supabase.rpc("cliente_portal_solicitar_canje", {
-    p_tipo_documento: sesion.tipoDocumento,
-    p_numero_documento: sesion.numeroDocumento,
     p_comercio_id: comercioSeleccionado,
     p_puntos: puntos,
   });
@@ -745,20 +1377,31 @@ $("btn-confirmar-canjear").addEventListener("click", async () => {
   $("canje-codigo").textContent = fila.codigo_verificacion;
   $("canjear-paso-1").classList.add("hidden");
   $("canjear-paso-2").classList.remove("hidden");
-  await cargarEstado();
+  await Promise.all([cargarEstado(), cargarCanjesPendientes()]);
+  cambiarTabHistorial("pendientes");
 });
 
 // ---------- Arranque ----------
-(function init() {
-  const guardada = leerSesionGuardada();
-  if (guardada && guardada.tipoDocumento && guardada.numeroDocumento) {
-    sesion = guardada;
-    mostrarApp();
-    cargarEstado();
+async function init() {
+  // Supabase redirige acá con type=recovery cuando el cliente hace clic en
+  // el enlace de "recuperar contraseña" que le llegó por correo.
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "PASSWORD_RECOVERY") {
+      mostrarLogin();
+      mostrarPanelLogin("nueva-password");
+    }
+  });
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session && !location.hash.includes("type=recovery")) {
+    mostrarApp(session);
+    await Promise.all([cargarEstado(), cargarCanjesPendientes(), cargarAceptacionLegal()]);
   } else {
     mostrarLogin();
   }
-})();
+}
+
+init();
 </script>
 </body>
 </html>

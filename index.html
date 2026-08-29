@@ -7,25 +7,29 @@
 <meta name="description" content="Un solo lugar para todos tus puntos Neggo: gana comprando, transfiere a quien quieras y canjea en la red de comercios aliados." />
 <style>
   :root {
-    --bg: #0b0d12;
-    --bg-soft: #12151d;
-    --card: #161a24;
-    --card-hover: #1a1f2b;
-    --border: #232838;
-    --border-soft: #1c2130;
-    --text: #eef0f4;
-    --text-dim: #9aa3b5;
-    --text-faint: #5f6779;
-    --accent: #6d8dff;
-    --accent-2: #9a6dff;
-    --accent-soft: rgba(109, 141, 255, 0.12);
-    --green: #3ecf8e;
-    --green-soft: rgba(62, 207, 142, 0.12);
-    --orange: #ffb454;
-    --orange-soft: rgba(255, 180, 84, 0.12);
+    --bg: #f5f6fb;
+    --bg-soft: #eceefa;
+    --card: #ffffff;
+    --card-hover: #f7f8fd;
+    --border: #e1e3ef;
+    --border-soft: #ececf5;
+    --text: #1c1e2b;
+    --text-dim: #5b5f78;
+    --text-faint: #8b8fa6;
+    --accent: #2953d9;
+    --accent-2: #e23f84;
+    --accent-soft: rgba(41, 83, 217, 0.10);
+    --green: #1f7a54;
+    --green-soft: rgba(31, 122, 84, 0.10);
+    --orange: #8a5a12;
+    --orange-soft: rgba(138, 90, 18, 0.10);
+    --gold: #c97f0e;
+    --gold-soft: rgba(201, 127, 14, 0.12);
+    --red: #b3324a;
+    --red-soft: rgba(179, 50, 74, 0.10);
     --radius: 16px;
     --radius-sm: 10px;
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   * { box-sizing: border-box; }
@@ -35,12 +39,76 @@
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
     background:
-      radial-gradient(1200px 600px at 10% -10%, rgba(109,141,255,0.10), transparent 60%),
-      radial-gradient(1000px 500px at 100% 0%, rgba(154,109,255,0.08), transparent 55%),
+      radial-gradient(1200px 600px at 10% -10%, rgba(41,83,217,0.06), transparent 60%),
+      radial-gradient(1000px 500px at 100% 0%, rgba(226,63,132,0.05), transparent 55%),
       var(--bg);
     color: var(--text);
     margin: 0;
     -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- Barra de utilidad (Clientes / Comercios) ---------- */
+  .util-bar {
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--border);
+  }
+  .util-bar .container { display: flex; align-items: center; justify-content: space-between; height: 40px; }
+  .util-tabs { display: flex; gap: 4px; }
+  .util-tabs a {
+    font-size: 12.5px; font-weight: 600; color: var(--text-dim); text-decoration: none;
+    padding: 6px 12px; border-radius: 999px; transition: color .15s ease, background .15s ease;
+  }
+  .util-tabs a:hover { color: var(--text); }
+  .util-tabs a.active { color: var(--accent); background: var(--accent-soft); }
+  .util-extra { font-size: 12px; color: var(--text-faint); }
+  .util-extra a { color: var(--text-dim); text-decoration: none; }
+  .util-extra a:hover { color: var(--text); }
+
+  /* ---------- Carrusel promocional ---------- */
+  .carousel {
+    position: relative;
+    margin-top: 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .carousel-track {
+    display: flex;
+    transition: transform .65s cubic-bezier(.65,0,.35,1);
+  }
+  .carousel-slide {
+    flex: 0 0 100%;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+    padding: 18px 24px 30px;
+    min-height: 30px;
+  }
+  .carousel-slide .txt { font-size: 14px; max-width: 580px; }
+  .carousel-slide .txt b { font-weight: 650; display: block; margin-top: 2px; }
+  .carousel-slide .tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .carousel-slide.s-aliado { background: linear-gradient(120deg, rgba(41,83,217,0.10), rgba(226,63,132,0.05)); }
+  .carousel-slide.s-aliado .tag { color: var(--accent); }
+  .carousel-slide.s-feature { background: linear-gradient(120deg, rgba(226,63,132,0.09), var(--gold-soft)); }
+  .carousel-slide.s-feature .tag { color: var(--accent-2); }
+  .carousel-slide.s-comercio { background: linear-gradient(120deg, var(--gold-soft), rgba(41,83,217,0.06)); }
+  .carousel-slide.s-comercio .tag { color: var(--gold); }
+
+  .carousel-dots {
+    position: absolute; bottom: 10px; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .carousel-dots button {
+    width: 7px; height: 7px; padding: 0; border: none; border-radius: 50%;
+    background: rgba(28,30,43,0.20); cursor: pointer;
+    transition: background .2s ease, width .2s ease;
+  }
+  .carousel-dots button:hover { background: rgba(28,30,43,0.35); }
+  .carousel-dots button.active { width: 18px; border-radius: 4px; background: var(--accent); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .carousel-track { transition: none; }
   }
 
   a { color: inherit; }
@@ -58,7 +126,7 @@
     background: linear-gradient(135deg, var(--accent), var(--accent-2));
     display: flex; align-items: center; justify-content: center;
     font-weight: 700; font-size: 15px; color: #fff;
-    box-shadow: 0 4px 16px rgba(109,141,255,0.35);
+    box-shadow: 0 4px 16px rgba(41,83,217,0.28);
     flex-shrink: 0;
   }
   .brand-name { font-size: 15px; font-weight: 650; letter-spacing: 0.01em; }
@@ -86,7 +154,7 @@
     background: linear-gradient(135deg, var(--accent), var(--accent-2));
     color: #fff;
     padding: 13px 22px;
-    box-shadow: 0 6px 20px rgba(109,141,255,0.25);
+    box-shadow: 0 6px 20px rgba(41,83,217,0.20);
   }
   .btn-primary:hover { filter: brightness(1.08); }
 
@@ -124,18 +192,26 @@
   /* Hero visual: tarjeta de saldo, coherente con la app del cliente */
   .hero-visual { position: relative; }
   .balance-card {
+    position: relative;
     background:
-      linear-gradient(155deg, rgba(109,141,255,0.18), rgba(154,109,255,0.09) 60%, transparent),
+      linear-gradient(155deg, rgba(41,83,217,0.12), rgba(226,63,132,0.07) 60%, transparent),
       var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 28px 26px;
     max-width: 360px;
     margin: 0 auto;
-    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.5);
+    box-shadow: 0 30px 60px -20px rgba(30,34,60,0.12);
+  }
+  .balance-card-tag {
+    position: absolute; top: 14px; right: 14px;
+    font-size: 10.5px; font-weight: 650; letter-spacing: 0.02em;
+    color: var(--text-faint); background: var(--bg-soft); border: 1px solid var(--border);
+    padding: 4px 9px; border-radius: 999px;
   }
   .balance-label { font-size: 12.5px; color: var(--text-dim); font-weight: 500; }
   .balance-amount { font-size: 40px; font-weight: 750; letter-spacing: -0.02em; margin: 6px 0 2px; }
+  .balance-amount--masked { letter-spacing: 0.06em; color: var(--text-faint); }
   .balance-cop { font-size: 13px; color: var(--text-dim); }
   .llave-row {
     display: flex; align-items: center; gap: 8px; margin-top: 18px;
@@ -147,6 +223,7 @@
     background: var(--accent-soft); color: var(--accent);
     padding: 5px 10px; border-radius: 8px;
   }
+  .llave-chip--masked { color: var(--text-faint); background: var(--bg-soft); }
   .llave-hint { font-size: 12px; color: var(--text-faint); }
   .mini-mov { display: flex; align-items: center; gap: 10px; margin-top: 14px; font-size: 13px; }
   .mini-mov-icon { width: 26px; height: 26px; border-radius: 8px; background: var(--green-soft); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 13px; }
@@ -183,9 +260,9 @@
   .beneficio h4 { font-size: 14.5px; font-weight: 650; margin: 0 0 6px; }
   .beneficio p { font-size: 13px; color: var(--text-dim); line-height: 1.5; margin: 0; }
 
-  /* Comercios */
+  /* Comercios (teaser en el home -- el formulario completo vive en /aliados/) */
   .comercios-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
-  @media (min-width: 860px) { .comercios-grid { grid-template-columns: 1fr 1fr; gap: 56px; } }
+  @media (min-width: 860px) { .comercios-grid { grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; } }
 
   .comercios-lista { list-style: none; padding: 0; margin: 24px 0 0; display: flex; flex-direction: column; gap: 14px; }
   .comercios-lista li { display: flex; align-items: flex-start; gap: 12px; font-size: 14.5px; color: var(--text-dim); line-height: 1.5; }
@@ -193,6 +270,30 @@
     width: 22px; height: 22px; border-radius: 999px; background: var(--green-soft); color: var(--green);
     display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; margin-top: 1px;
   }
+
+  .comercios-cta-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 30px 28px; text-align: center;
+  }
+  .comercios-cta-card .n { font-size: 34px; font-weight: 750; letter-spacing: -0.02em; color: var(--accent); }
+  .comercios-cta-card .n-label { font-size: 13px; color: var(--text-dim); margin: 4px 0 22px; }
+
+  /* Primeros aliados */
+  .aliados-lista { display: flex; flex-wrap: wrap; gap: 12px; }
+  .aliado-badge {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 999px;
+    padding: 10px 16px 10px 10px;
+  }
+  .aliado-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-soft), rgba(226,63,132,0.12));
+    color: var(--accent); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .aliado-nombre { font-size: 13.5px; font-weight: 600; }
+  .aliado-ciudad { font-size: 11.5px; color: var(--text-faint); }
+  .aliados-empty { font-size: 14px; color: var(--text-dim); }
 
   .form-card {
     background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
@@ -223,7 +324,7 @@
     box-shadow: 0 0 0 3px var(--accent-soft);
   }
 
-  .msg-error { font-size: 13px; color: #ff6b6b; min-height: 18px; margin-top: 10px; line-height: 1.4; }
+  .msg-error { font-size: 13px; color: var(--red); min-height: 18px; margin-top: 10px; line-height: 1.4; }
   .msg-ok {
     display: flex; align-items: center; gap: 10px;
     background: var(--green-soft); border: 1px solid rgba(62,207,142,0.25); color: var(--green);
@@ -239,7 +340,7 @@
 
   /* CTA final */
   .cta-final {
-    background: linear-gradient(135deg, rgba(109,141,255,0.14), rgba(154,109,255,0.08));
+    background: linear-gradient(135deg, rgba(41,83,217,0.10), rgba(226,63,132,0.06));
     border: 1px solid var(--border); border-radius: var(--radius);
     padding: 48px 32px; text-align: center;
   }
@@ -247,20 +348,32 @@
   .cta-final p { color: var(--text-dim); margin: 0 0 24px; font-size: 15px; }
 
   /* Footer */
-  footer { border-top: 1px solid var(--border-soft); padding: 32px 0; }
-  .footer-row {
-    display: flex; flex-direction: column; gap: 16px; align-items: flex-start;
-    font-size: 13px; color: var(--text-faint);
+  footer { border-top: 1px solid var(--border-soft); padding: 44px 0 28px; }
+  .footer-cols { display: grid; grid-template-columns: 1fr; gap: 32px; }
+  @media (min-width: 700px) { .footer-cols { grid-template-columns: 1.4fr 1fr 1fr; gap: 24px; } }
+  .footer-brand-blurb { font-size: 13px; color: var(--text-faint); margin: 12px 0 0; max-width: 260px; line-height: 1.6; }
+  .footer-col-title { font-size: 12px; font-weight: 650; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+  .footer-col { display: flex; flex-direction: column; gap: 10px; }
+  .footer-col a { font-size: 13.5px; color: var(--text-dim); text-decoration: none; }
+  .footer-col a:hover { color: var(--text); }
+  .footer-bottom {
+    border-top: 1px solid var(--border-soft); margin-top: 32px; padding-top: 20px;
+    font-size: 12.5px; color: var(--text-faint);
   }
-  @media (min-width: 640px) { .footer-row { flex-direction: row; justify-content: space-between; align-items: center; } }
-  .footer-links { display: flex; gap: 20px; }
-  .footer-links a { color: var(--text-dim); text-decoration: none; }
-  .footer-links a:hover { color: var(--text); }
 
   .hidden { display: none !important; }
 </style>
 </head>
 <body>
+
+<div class="util-bar">
+  <div class="container">
+    <div class="util-tabs">
+      <a href="/" class="active">Clientes</a>
+      <a href="/aliados/">Comercios</a>
+    </div>
+  </div>
+</div>
 
 <div class="container">
   <nav class="nav">
@@ -276,6 +389,24 @@
     <a class="btn btn-secondary btn-sm" href="/cliente/">Ver mis puntos</a>
   </nav>
 
+  <div class="carousel" id="carousel" aria-roledescription="carrusel" aria-label="Novedades de Puntos Neggo">
+    <div class="carousel-track" id="carousel-track">
+      <div class="carousel-slide s-aliado">
+        <div class="txt"><span class="tag">🎉 Nuevo aliado</span><b id="carousel-aliado-texto">Cargando comercios aliados…</b></div>
+        <a class="btn btn-secondary btn-sm" href="/cliente/">Ver cómo canjear</a>
+      </div>
+      <div class="carousel-slide s-feature">
+        <div class="txt"><span class="tag">↗️ Transferencias</span><b>Regálale puntos a quien quieras usando solo su llave — en segundos y sin comisión.</b></div>
+        <a class="btn btn-secondary btn-sm" href="/cliente/">Probarlo ahora</a>
+      </div>
+      <div class="carousel-slide s-comercio">
+        <div class="txt"><span class="tag">🏬 Para comercios</span><b>Súmate a la red de aliados: sin costo de entrada y con panel propio para tus canjes.</b></div>
+        <a class="btn btn-secondary btn-sm" href="/aliados/#afiliar">Afiliar mi negocio</a>
+      </div>
+    </div>
+    <div class="carousel-dots" id="carousel-dots"></div>
+  </div>
+
   <!-- ============ HERO ============ -->
   <section class="hero" style="padding-top:20px;">
     <div>
@@ -284,23 +415,24 @@
       <p>Gana puntos comprando en Neggo, en Talleres y en la red de comercios aliados. Transfiérelos a quien quieras o canjéalos cuando quieras — todo desde un solo lugar.</p>
       <div class="hero-ctas">
         <a class="btn btn-primary" href="/cliente/">Ver mis puntos</a>
-        <a class="btn btn-secondary" href="#comercios">Soy un comercio</a>
+        <a class="btn btn-secondary" href="/aliados/">Soy un comercio</a>
       </div>
     </div>
 
     <div class="hero-visual">
       <div class="balance-card">
+        <div class="balance-card-tag">Vista de ejemplo</div>
         <div class="balance-label">Saldo disponible</div>
-        <div class="balance-amount">12.450</div>
-        <div class="balance-cop">≈ $124.500</div>
+        <div class="balance-amount balance-amount--masked" aria-label="Saldo oculto en esta vista de ejemplo">•• •••</div>
+        <div class="balance-cop">Tus puntos son privados hasta que inicias sesión</div>
         <div class="mini-mov">
           <div class="mini-mov-icon">✓</div>
-          <div>Puntos ganados en Taller Motos JR <strong style="color:var(--green)">+2.000</strong></div>
+          <div>Puntos ganados en un comercio aliado <strong style="color:var(--green)">+2.000</strong></div>
         </div>
         <div class="llave-row">
           <div>
             <div class="llave-hint">Tu llave</div>
-            <div class="llave-chip">jheison68</div>
+            <div class="llave-chip llave-chip--masked" aria-label="Llave oculta en esta vista de ejemplo">•••••••</div>
           </div>
         </div>
       </div>
@@ -362,6 +494,17 @@
     </div>
   </section>
 
+  <!-- ============ PRIMEROS ALIADOS ============ -->
+  <section id="primeros-aliados">
+    <div class="section-eyebrow">Primeros aliados</div>
+    <div class="section-title">Los comercios que ya están adentro</div>
+    <p class="section-sub">Estamos empezando a construir esta red — así se ve hoy, honestamente, y crece con cada negocio nuevo que se suma.</p>
+
+    <div class="aliados-lista" id="aliados-lista">
+      <span class="aliados-empty">Cargando...</span>
+    </div>
+  </section>
+
   <!-- ============ COMERCIOS ============ -->
   <section id="comercios">
     <div class="comercios-grid">
@@ -378,50 +521,12 @@
         </ul>
       </div>
 
-      <div class="form-card">
-        <h3>Quiero afiliar mi negocio</h3>
-        <p class="sub">Cuéntanos de tu negocio y te contactamos para activarlo.</p>
-
-        <form id="form-comercio">
-          <div class="field">
-            <label>Nombre del negocio</label>
-            <input type="text" id="f-negocio" required placeholder="Ej. Taller Motos JR" />
-          </div>
-          <div class="row-2 field">
-            <div>
-              <label>Tu nombre</label>
-              <input type="text" id="f-contacto" placeholder="Ej. Carlos Ruiz" />
-            </div>
-            <div>
-              <label>Ciudad</label>
-              <input type="text" id="f-ciudad" placeholder="Ej. Medellín" />
-            </div>
-          </div>
-          <div class="row-2 field">
-            <div>
-              <label>Teléfono</label>
-              <input type="tel" id="f-telefono" placeholder="Ej. 3001234567" />
-            </div>
-            <div>
-              <label>Email</label>
-              <input type="email" id="f-email" placeholder="Ej. tu@negocio.com" />
-            </div>
-          </div>
-          <div class="field">
-            <label>Mensaje (opcional)</label>
-            <textarea id="f-mensaje" placeholder="Cuéntanos un poco de tu negocio..."></textarea>
-          </div>
-
-          <button type="submit" class="btn btn-primary" id="btn-enviar-solicitud" style="width:100%;">Enviar solicitud</button>
-          <div class="msg-error" id="form-error"></div>
-          <div class="msg-ok hidden" id="form-ok">✓ Recibimos tu solicitud, te vamos a contactar pronto.</div>
-        </form>
+      <div class="comercios-cta-card">
+        <div class="n">100% gratis</div>
+        <div class="n-label">para afiliar tu negocio, sin letra pequeña</div>
+        <a class="btn btn-primary" href="/aliados/#afiliar" style="width:100%;">Quiero afiliar mi negocio</a>
       </div>
     </div>
-
-    <p style="font-size:13px; color:var(--text-faint); margin-top:28px;">
-      ¿Ya tienes tu negocio afiliado? <a href="/comercio/" style="color:var(--accent); text-decoration:none;">Entra a tu portal de comercio</a>.
-    </p>
   </section>
 
   <!-- ============ CTA FINAL ============ -->
@@ -434,17 +539,27 @@
   </section>
 
   <footer>
-    <div class="footer-row">
-      <div class="brand">
-        <div class="brand-mark" style="width:26px;height:26px;font-size:12px;">N</div>
-        <span>Puntos Neggo — Grupo Neggo</span>
+    <div class="footer-cols">
+      <div>
+        <div class="brand" style="text-decoration:none;">
+          <div class="brand-mark" style="width:26px;height:26px;font-size:12px;">N</div>
+          <span class="brand-name">Puntos Neggo</span>
+        </div>
+        <p class="footer-brand-blurb">Un solo lugar para todos los puntos de Grupo Neggo — se ganan comprando, se transfieren y se canjean en la red de comercios aliados.</p>
       </div>
-      <div class="footer-links">
+      <div class="footer-col">
+        <div class="footer-col-title">Producto</div>
         <a href="/cliente/">Ver mis puntos</a>
-        <a href="/comercio/">Portal de comercios</a>
-        <a href="#comercios">Afiliar mi negocio</a>
+        <a href="/aliados/">Afiliar mi negocio</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Legal</div>
+        <a href="/legal/#reglamento">Reglamento del programa</a>
+        <a href="/legal/#terminos">Términos y condiciones</a>
+        <a href="/legal/#privacidad">Tratamiento de datos</a>
       </div>
     </div>
+    <div class="footer-bottom">© 2026 Grupo Neggo. Puntos Neggo es el programa de lealtad de Grupo Neggo.</div>
   </footer>
 </div>
 
@@ -457,44 +572,90 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const $ = (id) => document.getElementById(id);
 
-$("form-comercio").addEventListener("submit", async (ev) => {
-  ev.preventDefault();
-  $("form-error").textContent = "";
+function titleCase(s) {
+  return String(s || "").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
-  const nombre_negocio = $("f-negocio").value.trim();
-  if (!nombre_negocio) {
-    $("form-error").textContent = "Cuéntanos el nombre de tu negocio.";
+async function cargarAliados() {
+  const cont = $("aliados-lista");
+  const { data, error } = await supabase.rpc("cliente_portal_comercios_disponibles");
+
+  if (error || !data || data.length === 0) {
+    cont.innerHTML = `<span class="aliados-empty">Todavía no tenemos comercios activos para mostrar públicamente — el tuyo puede ser el primero.</span>`;
+    $("carousel-aliado-texto").textContent = "Todavía no tenemos comercios activos — el tuyo puede ser el primer aliado de la red.";
     return;
   }
 
-  const payload = {
-    nombre_negocio,
-    contacto_nombre: $("f-contacto").value.trim() || null,
-    telefono: $("f-telefono").value.trim() || null,
-    email: $("f-email").value.trim() || null,
-    ciudad: $("f-ciudad").value.trim() || null,
-    mensaje: $("f-mensaje").value.trim() || null,
-  };
+  cont.innerHTML = data.map((c) => {
+    const nombre = titleCase(c.nombre);
+    const inicial = nombre.trim().charAt(0) || "N";
+    const ciudad = titleCase(c.ciudad);
+    return `
+      <div class="aliado-badge">
+        <div class="aliado-avatar">${inicial}</div>
+        <div>
+          <div class="aliado-nombre">${nombre}</div>
+          <div class="aliado-ciudad">${ciudad}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
 
-  const btn = $("btn-enviar-solicitud");
-  btn.disabled = true;
-  btn.innerHTML = `<span class="spinner"></span>Enviando...`;
+  // La primera diapositiva del carrusel destaca el comercio real más reciente
+  // -- nunca una oferta inventada.
+  const masReciente = data[data.length - 1];
+  $("carousel-aliado-texto").textContent = `Ya puedes canjear tus puntos en ${titleCase(masReciente.nombre)}, ${titleCase(masReciente.ciudad)}.`;
+}
 
-  const { error } = await supabase.from("solicitudes_comercio").insert(payload);
+function initCarousel() {
+  const carousel = $("carousel");
+  const track = $("carousel-track");
+  const dotsWrap = $("carousel-dots");
+  const slides = Array.from(track.children);
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let index = 0;
+  let timer = null;
 
-  btn.disabled = false;
-  btn.textContent = "Enviar solicitud";
+  slides.forEach((_, i) => {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.setAttribute("aria-label", `Ir a la diapositiva ${i + 1} de ${slides.length}`);
+    if (i === 0) dot.classList.add("active");
+    dot.addEventListener("click", () => goTo(i));
+    dotsWrap.appendChild(dot);
+  });
+  const dots = Array.from(dotsWrap.children);
 
-  if (error) {
-    $("form-error").textContent = "No pudimos enviar tu solicitud. Intenta de nuevo en un momento.";
-    return;
+  function goTo(i) {
+    index = (i + slides.length) % slides.length;
+    track.style.transform = `translateX(-${index * 100}%)`;
+    dots.forEach((d, di) => d.classList.toggle("active", di === index));
   }
 
-  $("form-comercio").reset();
-  document.querySelectorAll("#form-comercio .field, #form-comercio label").forEach((el) => el.classList.add("hidden"));
-  $("btn-enviar-solicitud").classList.add("hidden");
-  $("form-ok").classList.remove("hidden");
-});
+  function next() { goTo(index + 1); }
+
+  function start() {
+    if (reduceMotion) return; // respeta el ajuste de accesibilidad: sin auto-avance
+    stop();
+    timer = setInterval(next, 6000);
+  }
+  function stop() {
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+
+  carousel.addEventListener("mouseenter", stop);
+  carousel.addEventListener("mouseleave", start);
+  carousel.addEventListener("focusin", stop);
+  carousel.addEventListener("focusout", start);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stop(); else start();
+  });
+
+  start();
+}
+
+cargarAliados();
+initCarousel();
 </script>
 </body>
 </html>

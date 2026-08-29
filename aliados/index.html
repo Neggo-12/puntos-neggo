@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Puntos Neggo — Para comercios</title>
+<meta name="description" content="Súmate a la red de puntos de Neggo y Talleres. Sin costo de entrada, tú decides qué canjes aceptar y cobras cuando quieras." />
+<style>
+  :root {
+    --bg: #f5f6fb;
+    --bg-soft: #eceefa;
+    --card: #ffffff;
+    --card-hover: #f7f8fd;
+    --border: #e1e3ef;
+    --border-soft: #ececf5;
+    --text: #1c1e2b;
+    --text-dim: #5b5f78;
+    --text-faint: #8b8fa6;
+    --accent: #2953d9;
+    --accent-2: #e23f84;
+    --accent-soft: rgba(41, 83, 217, 0.10);
+    --green: #1f7a54;
+    --green-soft: rgba(31, 122, 84, 0.10);
+    --orange: #8a5a12;
+    --orange-soft: rgba(138, 90, 18, 0.10);
+    --red: #b3324a;
+    --radius: 16px;
+    --radius-sm: 10px;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(41,83,217,0.06), transparent 60%),
+      radial-gradient(1000px 500px at 100% 0%, rgba(226,63,132,0.05), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Nav ---------- */
+  .nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
+  .brand-mark {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px; color: #fff;
+    box-shadow: 0 4px 16px rgba(41,83,217,0.28);
+    flex-shrink: 0;
+  }
+  .brand-name { font-size: 15px; font-weight: 650; letter-spacing: 0.01em; }
+  .nav-links { display: none; gap: 26px; font-size: 14px; color: var(--text-dim); }
+  .nav-links a { text-decoration: none; transition: color .15s ease; white-space: nowrap; }
+  .nav-links a:hover { color: var(--text); }
+  @media (min-width: 900px) { .nav-links { display: flex; } }
+  .nav-ctas { display: flex; gap: 10px; flex-shrink: 0; }
+
+  button, .btn {
+    font-family: inherit; cursor: pointer; border: none; border-radius: var(--radius-sm);
+    font-size: 14.5px; font-weight: 600; text-decoration: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: transform .1s ease, opacity .15s ease, filter .15s ease, background .15s ease;
+  }
+  button:active, .btn:active { transform: scale(0.98); }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff; padding: 13px 22px; box-shadow: 0 6px 20px rgba(41,83,217,0.20);
+  }
+  .btn-primary:hover:not(:disabled) { filter: brightness(1.08); }
+  .btn-secondary { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); padding: 12px 20px; }
+  .btn-secondary:hover { background: var(--card-hover); }
+  .btn-sm { padding: 9px 14px; font-size: 13.5px; }
+
+  /* ---------- Hero ---------- */
+  .hero { display: grid; grid-template-columns: 1fr; gap: 40px; padding: 30px 0 76px; align-items: center; }
+  @media (min-width: 860px) { .hero { grid-template-columns: 1.05fr 0.95fr; padding: 46px 0 100px; } }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); padding: 6px 12px; border-radius: 999px; margin-bottom: 20px;
+  }
+  .hero h1 { font-size: clamp(30px, 4.6vw, 44px); font-weight: 750; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 18px; }
+  .hero h1 span { background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p { font-size: 16.5px; color: var(--text-dim); line-height: 1.6; max-width: 480px; margin: 0 0 30px; }
+  .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* Preview de panel, ilustrativo */
+  .panel-preview {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 26px 26px 22px; max-width: 380px; margin: 0 auto;
+    box-shadow: 0 30px 60px -20px rgba(30,34,60,0.12);
+  }
+  .panel-preview .ppv-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; }
+  .panel-preview .ppv-top .t { font-size: 13px; color: var(--text-dim); font-weight: 500; }
+  .panel-preview .ppv-top .tag { font-size: 11px; color: var(--text-faint); }
+  .ppv-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+  .ppv-stat { background: var(--bg-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-sm); padding: 12px 10px; }
+  .ppv-stat .l { font-size: 10.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.03em; }
+  .ppv-stat .v { font-size: 17px; font-weight: 700; margin-top: 4px; }
+  .ppv-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    padding: 11px 0; border-top: 1px solid var(--border-soft); font-size: 13px;
+  }
+  .ppv-row .desc { color: var(--text-dim); }
+  .ppv-badge { font-size: 11px; font-weight: 600; padding: 4px 9px; border-radius: 999px; background: var(--orange-soft); color: var(--orange); white-space: nowrap; }
+  .ppv-badge.ok { background: var(--green-soft); color: var(--green); }
+
+  /* ---------- Secciones ---------- */
+  section { padding: 60px 0; }
+  .section-eyebrow { font-size: 12.5px; font-weight: 650; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+  .section-title { font-size: clamp(24px, 3.4vw, 32px); font-weight: 700; letter-spacing: -0.01em; margin: 0 0 14px; }
+  .section-sub { font-size: 15.5px; color: var(--text-dim); max-width: 620px; line-height: 1.6; margin-bottom: 40px; }
+
+  .beneficios { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 640px) { .beneficios { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 960px) { .beneficios { grid-template-columns: repeat(4, 1fr); } }
+  .beneficio { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 22px 20px; }
+  .beneficio-icon { font-size: 22px; margin-bottom: 12px; }
+  .beneficio h4 { font-size: 14.5px; font-weight: 650; margin: 0 0 6px; }
+  .beneficio p { font-size: 13px; color: var(--text-dim); line-height: 1.5; margin: 0; }
+
+  .pasos { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media (min-width: 760px) { .pasos { grid-template-columns: repeat(4, 1fr); } }
+  .paso { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 22px; }
+  .paso-num {
+    width: 32px; height: 32px; border-radius: 10px; background: var(--accent-soft); color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13.5px; margin-bottom: 14px;
+  }
+  .paso h3 { font-size: 15px; font-weight: 650; margin: 0 0 8px; }
+  .paso p { font-size: 13.5px; color: var(--text-dim); line-height: 1.55; margin: 0; }
+
+  /* Primeros aliados */
+  .aliados-lista { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .aliado-badge {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 999px;
+    padding: 10px 16px 10px 10px;
+  }
+  .aliado-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-soft), rgba(226,63,132,0.12));
+    color: var(--accent); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .aliado-nombre { font-size: 13.5px; font-weight: 600; }
+  .aliado-ciudad { font-size: 11.5px; color: var(--text-faint); }
+  .aliados-empty { font-size: 14px; color: var(--text-dim); }
+  .aliados-cta { font-size: 13.5px; color: var(--text-dim); }
+  .aliados-cta a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .aliados-cta a:hover { text-decoration: underline; }
+
+  /* FAQ */
+  .faq { display: flex; flex-direction: column; gap: 10px; max-width: 720px; }
+  .faq details {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 4px 20px;
+  }
+  .faq summary {
+    cursor: pointer; list-style: none; padding: 16px 0; font-size: 15px; font-weight: 600;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; color: var(--accent); font-size: 20px; font-weight: 400; flex-shrink: 0; transition: transform .15s ease; }
+  .faq details[open] summary::after { transform: rotate(45deg); }
+  .faq p { font-size: 14px; color: var(--text-dim); line-height: 1.6; margin: 0 0 18px; }
+
+  /* Form (compartido con home) */
+  .form-wrap { display: flex; justify-content: center; }
+  .form-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 32px 30px; max-width: 520px; width: 100%;
+  }
+  .form-card h3 { font-size: 18px; font-weight: 650; margin: 0 0 4px; }
+  .form-card .sub { font-size: 13.5px; color: var(--text-dim); margin: 0 0 22px; }
+  label { display: block; font-size: 12.5px; color: var(--text-dim); margin-bottom: 6px; font-weight: 500; }
+  .field { margin-bottom: 14px; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  input[type="text"], input[type="email"], input[type="tel"], textarea {
+    width: 100%; background: var(--bg-soft); border: 1px solid var(--border); color: var(--text);
+    padding: 11px 13px; border-radius: var(--radius-sm); font-size: 14.5px; font-family: inherit;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  textarea { resize: vertical; min-height: 70px; }
+  input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .msg-error { font-size: 13px; color: var(--red); min-height: 18px; margin-top: 10px; line-height: 1.4; }
+  .msg-ok {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--green-soft); border: 1px solid rgba(62,207,142,0.25); color: var(--green);
+    border-radius: var(--radius-sm); padding: 14px 16px; font-size: 14px; margin-top: 4px;
+  }
+  .spinner {
+    width: 15px; height: 15px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff;
+    animation: spin .6s linear infinite; display: inline-block; vertical-align: -3px; margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  footer { border-top: 1px solid var(--border-soft); padding: 44px 0 28px; }
+  .footer-cols { display: grid; grid-template-columns: 1fr; gap: 32px; }
+  @media (min-width: 700px) { .footer-cols { grid-template-columns: 1.4fr 1fr 1fr; gap: 24px; } }
+  .footer-brand-blurb { font-size: 13px; color: var(--text-faint); margin: 12px 0 0; max-width: 260px; line-height: 1.6; }
+  .footer-col-title { font-size: 12px; font-weight: 650; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+  .footer-col { display: flex; flex-direction: column; gap: 10px; }
+  .footer-col a { font-size: 13.5px; color: var(--text-dim); text-decoration: none; }
+  .footer-col a:hover { color: var(--text); }
+  .footer-bottom { border-top: 1px solid var(--border-soft); margin-top: 32px; padding-top: 20px; font-size: 12.5px; color: var(--text-faint); }
+
+  /* ---------- Barra de utilidad ---------- */
+  .util-bar { background: var(--bg-soft); border-bottom: 1px solid var(--border); }
+  .util-bar .container { display: flex; align-items: center; justify-content: space-between; height: 40px; }
+  .util-tabs { display: flex; gap: 4px; }
+  .util-tabs a {
+    font-size: 12.5px; font-weight: 600; color: var(--text-dim); text-decoration: none;
+    padding: 6px 12px; border-radius: 999px; transition: color .15s ease, background .15s ease;
+  }
+  .util-tabs a:hover { color: var(--text); }
+  .util-tabs a.active { color: var(--accent); background: var(--accent-soft); }
+  .util-extra { font-size: 12px; color: var(--text-faint); }
+  .util-extra a { color: var(--text-dim); text-decoration: none; }
+  .util-extra a:hover { color: var(--text); }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="util-bar">
+  <div class="container">
+    <div class="util-tabs">
+      <a href="/">Clientes</a>
+      <a href="/aliados/" class="active">Comercios</a>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <nav class="nav">
+    <a class="brand" href="/">
+      <div class="brand-mark">N</div>
+      <div class="brand-name">Puntos Neggo</div>
+    </a>
+    <div class="nav-links">
+      <a href="#beneficios">Por qué sumarte</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#aliados">Primeros aliados</a>
+      <a href="#preguntas">Preguntas</a>
+    </div>
+    <div class="nav-ctas">
+      <a class="btn btn-primary btn-sm" href="#afiliar">Afiliar mi negocio</a>
+    </div>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" style="padding-top:10px;">
+    <div>
+      <div class="eyebrow">✦ Para comercios</div>
+      <h1>Una razón más para que <span>tus clientes vuelvan</span></h1>
+      <p>Súmate a la red de puntos de Neggo y Talleres sin construir tu propio sistema de fidelización. Llega a clientes que ya existen, tú decides qué canjes aceptar, y solo confirmas cuando el cliente está frente a ti.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#afiliar">Quiero afiliar mi negocio</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="panel-preview">
+        <div class="ppv-top">
+          <div class="t">Así se ve tu panel</div>
+          <div class="tag">vista previa</div>
+        </div>
+        <div class="ppv-stats">
+          <div class="ppv-stat"><div class="l">Pendiente</div><div class="v">4.200</div></div>
+          <div class="ppv-stat"><div class="l">Valor</div><div class="v">$42.000</div></div>
+          <div class="ppv-stat"><div class="l">Canjes</div><div class="v">3</div></div>
+        </div>
+        <div class="ppv-row">
+          <div class="desc">Canje #A12 — 2.000 pts</div>
+          <div class="ppv-badge ok">✓ Confirmado</div>
+        </div>
+        <div class="ppv-row">
+          <div class="desc">Canje #A13 — 1.200 pts</div>
+          <div class="ppv-badge">Sin confirmar</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BENEFICIOS ============ -->
+  <section id="beneficios">
+    <div class="section-eyebrow">Por qué sumarte</div>
+    <div class="section-title">Fidelización sin construir nada propio</div>
+    <p class="section-sub">No necesitas una app, ni un programa de puntos aparte. Usas el que ya existe, y solo te preocupas de confirmar lo que entregas.</p>
+
+    <div class="beneficios">
+      <div class="beneficio">
+        <div class="beneficio-icon">🎯</div>
+        <h4>Clientes que ya existen</h4>
+        <p>Llega a quienes ya compran en Neggo y en Talleres, sin gastar en marketing propio para atraerlos.</p>
+      </div>
+      <div class="beneficio">
+        <div class="beneficio-icon">🆓</div>
+        <h4>Sin costo de entrada</h4>
+        <p>Afiliarte no cuesta nada. Ni cuota mensual ni letra pequeña para empezar.</p>
+      </div>
+      <div class="beneficio">
+        <div class="beneficio-icon">🔐</div>
+        <h4>Tú decides cada canje</h4>
+        <p>Nada se descuenta solo. Confirmas con un código antes de entregar cualquier cosa.</p>
+      </div>
+      <div class="beneficio">
+        <div class="beneficio-icon">💳</div>
+        <h4>Cobras cuando quieras</h4>
+        <p>Ves tu saldo pendiente en tiempo real desde tu panel y solicitas el pago cuando te convenga.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMO FUNCIONA ============ -->
+  <section id="como-funciona">
+    <div class="section-eyebrow">Cómo funciona</div>
+    <div class="section-title">De la solicitud a tu primer canje</div>
+    <p class="section-sub">Cuatro pasos, sin necesidad de instalar nada — tu panel es una página web a la que entras con tu usuario y contraseña.</p>
+
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso-num">1</div>
+        <h3>Nos cuentas de tu negocio</h3>
+        <p>Llenas el formulario de abajo con los datos básicos de tu negocio.</p>
+      </div>
+      <div class="paso">
+        <div class="paso-num">2</div>
+        <h3>Activamos tu cuenta</h3>
+        <p>Te contactamos, confirmamos los detalles y te damos acceso a tu propio panel.</p>
+      </div>
+      <div class="paso">
+        <div class="paso-num">3</div>
+        <h3>Confirmas en persona</h3>
+        <p>El cliente te muestra su código de canje, lo escribes en tu panel y confirmas la entrega.</p>
+      </div>
+      <div class="paso">
+        <div class="paso-num">4</div>
+        <h3>Solicitas tu pago</h3>
+        <p>Ves cuánto te debemos en todo momento y pides el pago cuando lo necesites.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRIMEROS ALIADOS ============ -->
+  <section id="aliados">
+    <div class="section-eyebrow">Primeros aliados</div>
+    <div class="section-title">Estamos empezando a construir esta red</div>
+    <p class="section-sub">Así se ve hoy, honestamente — y crece con cada negocio nuevo que se suma.</p>
+
+    <div class="aliados-lista" id="aliados-lista">
+      <span class="aliados-empty">Cargando...</span>
+    </div>
+    <p class="aliados-cta">¿Quieres ser uno de los primeros? <a href="#afiliar">Afilia tu negocio</a>.</p>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section id="preguntas">
+    <div class="section-eyebrow">Preguntas frecuentes</div>
+    <div class="section-title">Antes de que preguntes</div>
+    <div class="faq">
+      <details>
+        <summary>¿Afiliar mi negocio tiene algún costo?</summary>
+        <p>No. No hay cuota de entrada ni mensualidad. Ganamos cuando la red crece, no cobrándote por participar en ella.</p>
+      </details>
+      <details>
+        <summary>¿Cómo y cuándo me pagan?</summary>
+        <p>En tu panel ves en tiempo real cuánto te debe Puntos Neggo por los canjes que ya confirmaste. Puedes solicitar el pago cuando quieras; hoy se coordina directamente con el equipo de Neggo mientras terminamos de automatizar los pagos.</p>
+      </details>
+      <details>
+        <summary>¿Qué pasa si alguien dice tener puntos pero no es cierto?</summary>
+        <p>Nunca entregas nada solo porque el cliente lo diga. Cada canje genera un código de verificación único que el cliente te muestra en su app — tú lo escribes en tu panel y el sistema lo confirma. Sin ese código, no hay canje.</p>
+      </details>
+      <details>
+        <summary>¿Puedo elegir qué canjes acepto?</summary>
+        <p>Sí. Coordinamos contigo qué tipo de canjes tiene sentido para tu negocio antes de activarte.</p>
+      </details>
+      <details>
+        <summary>¿Necesito instalar algo?</summary>
+        <p>No. Tu panel es una página web a la que entras con tu usuario y contraseña, desde el navegador que ya usas en tu computador o celular.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============ FORM ============ -->
+  <section id="afiliar">
+    <div class="section-eyebrow" style="text-align:center;">Afiliar mi negocio</div>
+    <div class="section-title" style="text-align:center;">Cuéntanos de tu negocio</div>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center;">Te contactamos para activar tu cuenta y darte acceso a tu panel.</p>
+
+    <div class="form-wrap">
+      <div class="form-card">
+        <h3>Quiero afiliar mi negocio</h3>
+        <p class="sub">Sin costo, sin compromiso. Respondemos en cuanto revisemos tu solicitud.</p>
+
+        <form id="form-comercio">
+          <div class="field">
+            <label>Nombre del negocio</label>
+            <input type="text" id="f-negocio" required placeholder="Ej. Taller Motos JR" />
+          </div>
+          <div class="row-2 field">
+            <div>
+              <label>Tu nombre</label>
+              <input type="text" id="f-contacto" placeholder="Ej. Carlos Ruiz" />
+            </div>
+            <div>
+              <label>Ciudad</label>
+              <input type="text" id="f-ciudad" placeholder="Ej. Medellín" />
+            </div>
+          </div>
+          <div class="row-2 field">
+            <div>
+              <label>Teléfono</label>
+              <input type="tel" id="f-telefono" placeholder="Ej. 3001234567" />
+            </div>
+            <div>
+              <label>Email</label>
+              <input type="email" id="f-email" placeholder="Ej. tu@negocio.com" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Mensaje (opcional)</label>
+            <textarea id="f-mensaje" placeholder="Cuéntanos un poco de tu negocio..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="btn-enviar-solicitud" style="width:100%;">Enviar solicitud</button>
+          <div class="msg-error" id="form-error"></div>
+          <div class="msg-ok hidden" id="form-ok">✓ Recibimos tu solicitud, te vamos a contactar pronto.</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-cols">
+      <div>
+        <div class="brand" style="text-decoration:none;">
+          <div class="brand-mark" style="width:26px;height:26px;font-size:12px;">N</div>
+          <span class="brand-name">Puntos Neggo</span>
+        </div>
+        <p class="footer-brand-blurb">Súmate a la red de puntos de Grupo Neggo y llega a clientes que ya existen, sin construir tu propio sistema de fidelización.</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Producto</div>
+        <a href="/">Inicio</a>
+        <a href="/cliente/">Ver mis puntos</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Legal</div>
+        <a href="/legal/#reglamento">Reglamento del programa</a>
+        <a href="/legal/#terminos">Términos y condiciones</a>
+        <a href="/legal/#privacidad">Tratamiento de datos</a>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 Grupo Neggo. Puntos Neggo es el programa de lealtad de Grupo Neggo.</div>
+  </footer>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://ckxoypzsmvxhqlvlwnib.supabase.co";
+const SUPABASE_KEY = "sb_publishable_N0z9XkKZ92GfvxtHA-NZxA_0nENuF7v";
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const $ = (id) => document.getElementById(id);
+
+function titleCase(s) {
+  return String(s || "").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+async function cargarAliados() {
+  const cont = $("aliados-lista");
+  const { data, error } = await supabase.rpc("cliente_portal_comercios_disponibles");
+
+  if (error || !data || data.length === 0) {
+    cont.innerHTML = `<span class="aliados-empty">Todavía no tenemos comercios activos para mostrar públicamente — el tuyo puede ser el primero.</span>`;
+    return;
+  }
+
+  cont.innerHTML = data.map((c) => {
+    const nombre = titleCase(c.nombre);
+    const inicial = nombre.trim().charAt(0) || "N";
+    const ciudad = titleCase(c.ciudad);
+    return `
+      <div class="aliado-badge">
+        <div class="aliado-avatar">${inicial}</div>
+        <div>
+          <div class="aliado-nombre">${nombre}</div>
+          <div class="aliado-ciudad">${ciudad}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+cargarAliados();
+
+$("form-comercio").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  $("form-error").textContent = "";
+
+  const nombre_negocio = $("f-negocio").value.trim();
+  if (!nombre_negocio) {
+    $("form-error").textContent = "Cuéntanos el nombre de tu negocio.";
+    return;
+  }
+
+  const payload = {
+    nombre_negocio,
+    contacto_nombre: $("f-contacto").value.trim() || null,
+    telefono: $("f-telefono").value.trim() || null,
+    email: $("f-email").value.trim() || null,
+    ciudad: $("f-ciudad").value.trim() || null,
+    mensaje: $("f-mensaje").value.trim() || null,
+  };
+
+  const btn = $("btn-enviar-solicitud");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span>Enviando...`;
+
+  const { error } = await supabase.from("solicitudes_comercio").insert(payload);
+
+  btn.disabled = false;
+  btn.textContent = "Enviar solicitud";
+
+  if (error) {
+    $("form-error").textContent = "No pudimos enviar tu solicitud. Intenta de nuevo en un momento.";
+    return;
+  }
+
+  $("form-comercio").reset();
+  document.querySelectorAll("#form-comercio .field, #form-comercio label").forEach((el) => el.classList.add("hidden"));
+  $("btn-enviar-solicitud").classList.add("hidden");
+  $("form-ok").classList.remove("hidden");
+});
+</script>
+</body>
+</html>

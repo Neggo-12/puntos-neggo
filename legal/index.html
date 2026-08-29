@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Puntos Neggo — Legal</title>
+<meta name="description" content="Reglamento del programa, términos y condiciones, y política de tratamiento de datos de Puntos Neggo." />
+<style>
+  :root {
+    --bg: #f5f6fb;
+    --bg-soft: #eceefa;
+    --card: #ffffff;
+    --card-hover: #f7f8fd;
+    --border: #e1e3ef;
+    --border-soft: #ececf5;
+    --text: #1c1e2b;
+    --text-dim: #5b5f78;
+    --text-faint: #8b8fa6;
+    --accent: #2953d9;
+    --accent-2: #e23f84;
+    --accent-soft: rgba(41, 83, 217, 0.10);
+    --orange: #8a5a12;
+    --orange-soft: rgba(138, 90, 18, 0.10);
+    --radius: 16px;
+    --radius-sm: 10px;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--accent); }
+  .container { max-width: 760px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* ---------- Barra de utilidad ---------- */
+  .util-bar { background: var(--bg-soft); border-bottom: 1px solid var(--border); }
+  .util-bar-inner { max-width: 760px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 40px; }
+  .util-tabs { display: flex; gap: 4px; }
+  .util-tabs a {
+    font-size: 12.5px; font-weight: 600; color: var(--text-dim); text-decoration: none;
+    padding: 6px 12px; border-radius: 999px; transition: color .15s ease, background .15s ease;
+  }
+  .util-tabs a:hover { color: var(--text); }
+
+  nav.top {
+    display: flex; align-items: center; gap: 10px; padding: 22px 0;
+  }
+  .brand-mark {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff; flex-shrink: 0;
+  }
+  .brand-name { font-size: 14.5px; font-weight: 650; text-decoration: none; color: var(--text); }
+  nav.top a.brand-name { margin-right: auto; }
+  nav.top a.back { font-size: 13px; color: var(--text-dim); text-decoration: none; }
+  nav.top a.back:hover { color: var(--text); }
+
+  header.masthead { padding: 18px 0 36px; border-bottom: 1px solid var(--border-soft); margin-bottom: 36px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); padding: 5px 11px; border-radius: 999px; margin-bottom: 16px;
+  }
+  h1 { font-size: clamp(26px, 4vw, 34px); font-weight: 750; letter-spacing: -0.01em; margin: 0 0 14px; }
+  .masthead p { font-size: 15px; color: var(--text-dim); line-height: 1.6; margin: 0; max-width: 560px; }
+
+  .toc { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+  .toc a {
+    font-size: 13px; font-weight: 600; color: var(--text-dim); text-decoration: none;
+    background: var(--card); border: 1px solid var(--border); padding: 8px 14px; border-radius: 999px;
+  }
+  .toc a:hover { color: var(--accent); border-color: var(--accent); }
+
+  .doc-section { padding: 8px 0 44px; border-bottom: 1px solid var(--border-soft); scroll-margin-top: 20px; }
+  .doc-section:last-child { border-bottom: none; }
+  .doc-title { font-size: 20px; font-weight: 700; letter-spacing: -0.005em; margin: 0 0 6px; }
+  .doc-status {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+    color: var(--orange); background: var(--orange-soft); padding: 5px 11px; border-radius: 999px; margin-bottom: 18px;
+  }
+  .doc-section p { font-size: 14.5px; color: var(--text-dim); line-height: 1.65; margin: 0 0 16px; }
+  .doc-section ul { margin: 0 0 16px; padding-left: 20px; }
+  .doc-section li { font-size: 14.5px; color: var(--text-dim); line-height: 1.65; margin-bottom: 6px; }
+  .doc-note {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 16px 18px; font-size: 13.5px; color: var(--text-dim); line-height: 1.6;
+  }
+  .doc-note b { color: var(--text); }
+
+  footer { border-top: 1px solid var(--border-soft); padding: 28px 0; font-size: 13px; color: var(--text-faint); }
+  footer a { color: var(--text-dim); text-decoration: none; }
+  footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="util-bar"><div class="util-bar-inner">
+  <div class="util-tabs">
+    <a href="/">Clientes</a>
+    <a href="/aliados/">Comercios</a>
+  </div>
+</div></div>
+
+<div class="container">
+  <nav class="top">
+    <a class="brand-mark" href="/">N</a>
+    <a class="brand-name" href="/">Puntos Neggo</a>
+    <a class="back" href="/">← Volver al inicio</a>
+  </nav>
+
+  <header class="masthead">
+    <div class="eyebrow">Legal · Versión 1 — 29 ago 2026</div>
+    <h1>Reglamento y condiciones de Puntos Neggo</h1>
+    <p>Esta página reúne los documentos legales del programa: el reglamento de puntos, los términos de uso, y la política de tratamiento de datos. Son la versión 1 (v1-2026-08-29) — describen con precisión cómo funciona la plataforma hoy, y quedan referenciados desde el checkbox de aceptación en el registro de clientes y comercios.</p>
+    <div class="toc">
+      <a href="#reglamento">Reglamento del programa</a>
+      <a href="#terminos">Términos y condiciones</a>
+      <a href="#privacidad">Tratamiento de datos</a>
+    </div>
+  </header>
+
+  <section class="doc-section" id="reglamento">
+    <div class="doc-title">Reglamento del programa de lealtad</div>
+    <div class="doc-status">Versión 1 — v1-2026-08-29</div>
+    <p>Puntos Neggo es el programa de lealtad de Grupo Neggo. Los puntos son la única moneda del programa: se ganan comprando en comercios aliados, se acumulan en la cuenta del cliente, y se pueden transferir a otro cliente o canjear en un comercio aliado.</p>
+    <ul>
+      <li><b>Cómo se ganan:</b> cada compra en un comercio aliado otorga puntos según la tasa que ese comercio tenga configurada. Un cliente nuevo para un comercio específico puede recibir el doble de puntos en esa primera compra, si el comercio tiene esa campaña activa.</li>
+      <li><b>Vencimiento:</b> los puntos vencen 12 meses después de haberse ganado. Al transferir o canjear, se consumen primero los puntos más antiguos, para que el cliente no pierda por vencimiento los que ya tenía acumulados hace más tiempo.</li>
+      <li><b>Transferencias entre clientes:</b> máximo 2.000 puntos por transferencia individual, 3.000 puntos transferidos por día, 10.000 puntos transferidos por mes, y máximo 3 transferencias en un mismo día.</li>
+      <li><b>Canje en comercios aliados:</b> un cliente puede canjear sus puntos en cualquier comercio afiliado que tenga canje habilitado, sujeto al mínimo de puntos por canje que aplique. El comercio confirma el canje con un código de verificación temporal que genera el cliente.</li>
+      <li><b>Fraude y reversas:</b> si Puntos Neggo detecta una compra revertida (por ejemplo, un reembolso posterior a la compra original), una operación fraudulenta, o actividad sospechosa en una cuenta, puede revertir los puntos otorgados y/o congelar la cuenta mientras se revisa el caso, sin perjuicio de los derechos del cliente a ser informado y a presentar sus descargos.</li>
+      <li><b>Comercios aliados:</b> todo comercio que quiera afiliarse pasa por un proceso de vinculación que incluye verificación de identidad y de la información del negocio (ver la Política de tratamiento de datos). Puntos Neggo puede suspender o dar de baja a un comercio que incumpla este reglamento o la normativa aplicable.</li>
+    </ul>
+    <div class="doc-note">Este reglamento describe el funcionamiento real de la plataforma a la fecha de esta versión. Como cualquier programa de lealtad puede ajustar sus condiciones con el tiempo, Puntos Neggo se reserva el derecho de actualizarlo — un cambio sustancial se comunica a los usuarios activos y queda reflejado en una nueva versión de este documento.</div>
+  </section>
+
+  <section class="doc-section" id="terminos">
+    <div class="doc-title">Términos y condiciones de uso</div>
+    <div class="doc-status">Versión 1 — v1-2026-08-29</div>
+    <p>Estos términos aplican a cualquier persona que use la página, el portal de cliente, o el portal de comercio de Puntos Neggo (en conjunto, "la plataforma"), operada por Grupo Neggo.</p>
+    <ul>
+      <li><b>Elegibilidad:</b> para crear una cuenta de cliente hay que ser mayor de edad y usar un documento de identidad propio y vigente. Un comercio se afilia como persona natural o jurídica, a través de un representante autorizado para actuar en su nombre.</li>
+      <li><b>Tu cuenta:</b> el acceso al portal se hace con tu número de documento y una contraseña que tú creas; sos responsable de mantenerla segura y de toda actividad que ocurra con tu sesión iniciada. Si sospechás un acceso no autorizado, contactá a Puntos Neggo de inmediato.</li>
+      <li><b>Uso permitido:</b> los puntos son personales e intransferibles salvo por el mecanismo de transferencia entre clientes descrito en el reglamento. Está prohibido crear cuentas falsas, simular compras, coludir con un comercio para generar puntos sin una compra real, o cualquier otro uso fraudulento de la plataforma.</li>
+      <li><b>Responsabilidad de los comercios aliados:</b> un comercio aliado es responsable de la veracidad de la información que entrega en su proceso de vinculación, y de otorgar puntos únicamente por compras reales ocurridas en su negocio.</li>
+      <li><b>Consecuencias del uso indebido:</b> Puntos Neggo puede suspender o cancelar una cuenta, revertir puntos, o negar un canje, cuando detecte una violación a estos términos, sin perjuicio de otras acciones legales que puedan corresponder.</li>
+      <li><b>Cambios y contacto:</b> Puntos Neggo puede actualizar estos términos; el uso continuado de la plataforma después de una actualización implica su aceptación. Cualquier duda sobre estos términos se puede resolver contactando directamente al equipo de Neggo.</li>
+    </ul>
+    <div class="doc-note">Puntos Neggo es un programa de lealtad de Grupo Neggo, todavía en una etapa temprana de crecimiento. Este documento cubre las condiciones generales de uso; no sustituye el reglamento del programa (arriba) ni la política de tratamiento de datos (abajo), que aplican en conjunto.</div>
+  </section>
+
+  <section class="doc-section" id="privacidad">
+    <div class="doc-title">Política de tratamiento de datos personales</div>
+    <div class="doc-status">Versión 1 — v1-2026-08-29</div>
+    <p>Esta política aplica el régimen de protección de datos personales de la Ley 1581 de 2012 y sus decretos reglamentarios. Grupo Neggo actúa como responsable del tratamiento de los datos personales recolectados a través de Puntos Neggo.</p>
+    <p><b>Qué datos recolectamos.</b> De un cliente: nombres, tipo y número de documento, celular, ciudad y correo electrónico. De un comercio aliado y de su representante legal o persona encargada: nombre o razón social, NIT o documento, dirección, ciudad, actividad económica, datos de contacto, datos de la cuenta bancaria donde recibe sus pagos, y — como parte del proceso de debida diligencia contra el lavado de activos (AML/SARLAFT) — copia de cédula del representante, RUT, cámara de comercio (si aplica), certificado bancario, y el resultado de la consulta en listas restrictivas nacionales e internacionales.</p>
+    <p><b>Para qué los usamos.</b> Para crear y operar tu cuenta, calcular y otorgar tus puntos, procesar transferencias y canjes, prevenir fraude, cumplir con las obligaciones de debida diligencia que aplican al vincular comercios aliados, y comunicarnos con vos sobre tu cuenta.</p>
+    <p><b>Con quién los compartimos.</b> Con proveedores de infraestructura tecnológica que almacenan y procesan estos datos en nuestro nombre (por ejemplo, nuestro proveedor de base de datos y autenticación), bajo un contrato que los obliga a protegerlos igual que nosotros. No vendemos ni cedemos tus datos a terceros para fines comerciales ajenos a Puntos Neggo.</p>
+    <p><b>Tus derechos.</b> Como titular de tus datos, en cualquier momento podés pedir acceso a los datos que tenemos sobre vos, su corrección o actualización, o su eliminación, así como revocar la autorización que diste para tratarlos — sujeto a que, mientras un comercio esté activo, cierta información de vinculación debe conservarse por el tiempo que exige la normativa de prevención de lavado de activos. Para ejercer estos derechos, contactá directamente al equipo de Neggo.</p>
+    <div class="doc-note"><b>Nota honesta:</b> este documento es la versión 1, redactada para acompañar el lanzamiento del programa; describe con precisión los datos que la plataforma recolecta hoy. Como con cualquier política de datos, recomendamos que sea revisada por un abogado antes de escalar la operación a un volumen mayor de usuarios.</div>
+  </section>
+
+  <footer>
+    <a href="/">Inicio</a> · <a href="/cliente/">Ver mis puntos</a> · <a href="/aliados/">Afiliar mi negocio</a>
+  </footer>
+</div>
+
+</body>
+</html>

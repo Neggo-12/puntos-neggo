@@ -5,120 +5,493 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Puntos Neggo — Admin</title>
 <style>
-  :root { color-scheme: dark; }
-  body { font-family: -apple-system, system-ui, sans-serif; background: #0f1115; color: #e6e6e6; margin: 0; padding: 24px; }
-  h1 { font-size: 20px; margin: 0 0 4px; }
-  h2 { font-size: 16px; margin: 32px 0 12px; color: #9aa4b2; text-transform: uppercase; letter-spacing: .04em; }
-  .sub { color: #8a93a3; font-size: 13px; margin-bottom: 24px; }
-  input, button { font: inherit; }
-  input { background: #1a1d24; border: 1px solid #2a2f3a; color: #e6e6e6; padding: 8px 10px; border-radius: 6px; }
-  button { background: #2f6feb; border: none; color: white; padding: 8px 14px; border-radius: 6px; cursor: pointer; }
-  button:hover { background: #4184ff; }
-  button.secondary { background: #2a2f3a; }
+  :root {
+    --bg: #f5f6fb;
+    --bg-soft: #eceefa;
+    --card: #ffffff;
+    --card-hover: #f7f8fd;
+    --border: #e1e3ef;
+    --border-soft: #ececf5;
+    --text: #1c1e2b;
+    --text-dim: #5b5f78;
+    --text-faint: #8b8fa6;
+    --accent: #2953d9;
+    --accent-2: #e23f84;
+    --accent-soft: rgba(41, 83, 217, 0.10);
+    --green: #1f7a54;
+    --green-soft: rgba(31, 122, 84, 0.10);
+    --orange: #8a5a12;
+    --orange-soft: rgba(138, 90, 18, 0.10);
+    --red: #b3324a;
+    --red-soft: rgba(179, 50, 74, 0.10);
+    --radius: 16px;
+    --radius-sm: 10px;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  section[id] { scroll-margin-top: 64px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background:
+      radial-gradient(1100px 550px at 8% -10%, rgba(41,83,217,0.06), transparent 60%),
+      radial-gradient(900px 460px at 100% 0%, rgba(226,63,132,0.045), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+  .container { max-width: 1080px; margin: 0 auto; padding: 24px 24px 80px; }
+
+  input, button, select, textarea { font: inherit; }
+  input, select {
+    width: 100%; background: var(--bg-soft); border: 1px solid var(--border); color: var(--text);
+    padding: 10px 12px; border-radius: var(--radius-sm); font-size: 13.5px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 5px; font-weight: 500; }
+
+  button, .btn {
+    cursor: pointer; border: none; border-radius: var(--radius-sm);
+    font-size: 13.5px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    transition: transform .1s ease, opacity .15s ease, filter .15s ease, background .15s ease;
+  }
+  button:active { transform: scale(0.98); }
   button:disabled { opacity: .5; cursor: not-allowed; }
-  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #2a2f3a; font-size: 13px; vertical-align: top; }
-  th { color: #8a93a3; font-weight: 500; }
-  code { background: #1a1d24; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
-  .codigo { font-size: 16px; font-weight: 600; letter-spacing: .05em; color: #ffd166; }
-  .estado-pendiente { color: #ffd166; }
-  .estado-pagado { color: #4caf6f; }
-  #login-box { max-width: 320px; margin: 80px auto; display: flex; flex-direction: column; gap: 10px; }
+
+  .btn-primary, button:not(.secondary):not([type="submit"].inline-btn) {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff; padding: 10px 16px; box-shadow: 0 6px 16px rgba(41,83,217,0.20);
+  }
+  .btn-primary:hover:not(:disabled), button:not(.secondary):not(:disabled):hover { filter: brightness(1.08); }
+  button.secondary, .btn-secondary {
+    background: var(--bg-soft) !important; color: var(--text) !important; border: 1px solid var(--border);
+    padding: 9px 14px; box-shadow: none !important;
+  }
+  button.secondary:hover:not(:disabled) { background: var(--card-hover) !important; filter: none; }
+
+  code { background: var(--accent-soft); color: var(--accent); padding: 2px 7px; border-radius: 6px; font-size: 12.5px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+
+  .error { color: var(--red); font-size: 13px; min-height: 18px; line-height: 1.4; }
+  .ok-msg { color: var(--green); font-size: 13px; min-height: 18px; }
+  .empty-state {
+    text-align: center; padding: 30px 16px; color: var(--text-faint); font-size: 13.5px;
+    background: var(--card); border: 1px dashed var(--border); border-radius: var(--radius);
+  }
+  .hidden { display: none !important; }
+
+  /* ---------- Login ---------- */
+  #login-screen { min-height: calc(100vh - 40px); display: flex; align-items: center; justify-content: center; }
+  .login-card {
+    width: 100%; max-width: 380px; background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 34px 30px; box-shadow: 0 30px 60px -24px rgba(30,34,60,0.14);
+  }
+  .brand-mark {
+    width: 32px; height: 32px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; color: #fff; flex-shrink: 0;
+  }
+  .login-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .login-brand-name { font-size: 14.5px; font-weight: 650; }
+  .login-card h1 { font-size: 18px; font-weight: 650; margin: 0 0 4px; }
+  .login-card .sub { font-size: 13px; color: var(--text-dim); margin: 0 0 22px; line-height: 1.5; }
+  .field { margin-bottom: 14px; }
+  .checkbox-field { display: flex; align-items: center; }
+  .checkbox-field label { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--text-dim); font-weight: 500; cursor: pointer; }
+  .checkbox-field input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
+  .solo-canje-toggle { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-dim); cursor: pointer; }
+  .solo-canje-toggle input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer; }
+
+  /* ---------- App shell ---------- */
   #app { display: none; }
-  .error { color: #ff6b6b; font-size: 13px; min-height: 18px; }
-  .empty { color: #6b7280; font-size: 13px; padding: 12px 0; }
-  form.inline { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-  form.inline input { flex: 1 1 160px; }
-  .topbar { display: flex; justify-content: space-between; align-items: center; }
-  .pasivo { display: flex; gap: 24px; flex-wrap: wrap; background: #171a21; border: 1px solid #2a2f3a; border-radius: 8px; padding: 16px 20px; margin-top: 20px; }
-  .pasivo .stat { min-width: 160px; }
-  .pasivo .stat .label { color: #8a93a3; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
-  .pasivo .stat .valor { font-size: 22px; font-weight: 600; margin-top: 2px; }
-  .pasivo .nota { color: #6b7280; font-size: 12px; margin-top: 10px; width: 100%; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; padding: 6px 0 14px; }
+  .topbar-brand { display: flex; align-items: center; gap: 10px; }
+  .topbar-title { font-size: 15px; font-weight: 650; }
+  .topbar-sub { font-size: 12px; color: var(--text-faint); margin-top: 1px; }
+
+  .quick-nav {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+    background: rgba(245,246,251,0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border); margin: 0 -24px 20px; padding: 10px 24px;
+  }
+  .quick-nav::-webkit-scrollbar { display: none; }
+  .quick-nav-link {
+    flex-shrink: 0; font-size: 12.5px; font-weight: 600; color: var(--text-dim); text-decoration: none;
+    padding: 7px 13px; border-radius: 999px; white-space: nowrap;
+    transition: color .15s ease, background .15s ease;
+  }
+  .quick-nav-link:hover { color: var(--text); background: var(--bg-soft); }
+  .quick-nav-link.active { color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+
+  .nav-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 17px; height: 17px; padding: 0 5px; margin-left: 6px;
+    border-radius: 999px; background: var(--red); color: #fff;
+    font-size: 10.5px; font-weight: 700; line-height: 1;
+  }
+  .quick-nav-link.active .nav-count { background: rgba(255,255,255,0.32); }
+
+  h2.section-title {
+    font-size: 12.5px; font-weight: 650; color: var(--accent); text-transform: uppercase;
+    letter-spacing: 0.06em; margin: 0 0 6px;
+  }
+  section[id] { margin-bottom: 44px; }
+  .section-sub { font-size: 13px; color: var(--text-dim); margin: 0 0 16px; line-height: 1.5; max-width: 720px; }
+
+  .info-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; }
+
+  /* ---------- Pasivo: clientes vs comercios ---------- */
+  .pasivo-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .pasivo-split { grid-template-columns: 1fr; } }
+  .pasivo-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px;
+  }
+  .pasivo-card h3 { font-size: 13.5px; margin: 0 0 14px; font-weight: 650; }
+  .pasivo-card .stats { display: flex; gap: 20px; flex-wrap: wrap; }
+  .pasivo-card .stat { min-width: 120px; }
+  .pasivo-card .stat .label { color: var(--text-dim); font-size: 11px; text-transform: uppercase; letter-spacing: .03em; }
+  .pasivo-card .stat .valor { font-size: 21px; font-weight: 700; margin-top: 3px; letter-spacing: -0.01em; }
+  .pasivo-card .nota { color: var(--text-faint); font-size: 11.5px; margin-top: 14px; line-height: 1.55; padding-top: 12px; border-top: 1px solid var(--border-soft); }
+
+  /* ---------- Buscador ---------- */
+  .search-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .search-row input { flex: 1 1 260px; max-width: 320px; }
+  .search-row .count { font-size: 12px; color: var(--text-faint); white-space: nowrap; }
+
+  /* ---------- Tabla en tarjeta ---------- */
+  .table-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 560px; }
+  th, td { text-align: left; padding: 11px 14px; font-size: 13px; vertical-align: middle; }
+  th {
+    color: var(--text-dim); font-weight: 600; font-size: 11.5px; text-transform: uppercase;
+    letter-spacing: .02em; border-bottom: 1px solid var(--border); background: var(--bg-soft);
+  }
+  tbody tr { border-bottom: 1px solid var(--border-soft); transition: background .1s ease; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--card-hover); }
+  .checkbox-cell { width: 30px; text-align: center; }
+  .checkbox-cell input { width: auto; padding: 0; accent-color: var(--accent); }
+
+  .btn-sm { padding: 6px 11px; font-size: 12px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600;
+    padding: 4px 9px; border-radius: 999px; white-space: nowrap;
+  }
+  .badge.ok { background: var(--green-soft); color: var(--green); }
+  .badge.neutral { background: rgba(28,30,43,0.06); color: var(--text-faint); }
+  .badge.warn { background: var(--orange-soft); color: var(--orange); }
+  .badge.danger { background: var(--red-soft); color: var(--red); }
+  .badge.info { background: var(--accent-soft); color: var(--accent); }
+
+  /* ---------- Bulk selection bar ---------- */
+  .bulk-bar {
+    display: flex; align-items: center; gap: 26px; flex-wrap: wrap;
+    background: var(--accent-soft); border: 1px solid rgba(41,83,217,0.18); border-radius: var(--radius-sm);
+    padding: 12px 18px; margin-bottom: 14px;
+  }
+  .bulk-bar .bstat { font-size: 12px; color: var(--text-dim); }
+  .bulk-bar .bstat b { font-size: 16px; color: var(--text); display: block; margin-top: 1px; }
+  .bulk-bar button { margin-left: auto; }
+
+  /* ---------- Canjes pendientes de pago, agrupados por comercio ---------- */
+  .comercio-group { margin-bottom: 14px; }
+  .comercio-group-header {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    background: var(--bg-soft); border: 1px solid var(--border); border-bottom: none;
+    border-radius: var(--radius) var(--radius) 0 0; padding: 11px 16px;
+  }
+  .comercio-group-nombre { font-size: 13.5px; font-weight: 650; }
+  .comercio-group-meta { font-size: 12px; color: var(--text-dim); margin-left: auto; white-space: nowrap; }
+  .comercio-group .table-card { border-radius: 0 0 var(--radius) var(--radius); }
+  .comercio-group-select { font-size: 11.5px; color: var(--text-dim); display: flex; align-items: center; gap: 5px; }
+  .comercio-group-select input { width: auto; accent-color: var(--accent); }
+
+  /* ---------- Drill-down por comercio ---------- */
+  tr.drill-row td { background: var(--bg-soft); padding: 16px 18px; }
+  .drill-grid { display: flex; gap: 30px; flex-wrap: wrap; }
+  .drill-stat .label { color: var(--text-dim); font-size: 11px; text-transform: uppercase; letter-spacing: .03em; }
+  .drill-stat .valor { font-size: 18px; font-weight: 700; margin-top: 3px; }
+  .drill-stat .sub { font-size: 11.5px; color: var(--text-faint); margin-top: 3px; max-width: 260px; line-height: 1.4; }
+
+  .campana-tag {
+    display: inline-block; background: var(--accent-soft); color: var(--accent); font-size: 11px; font-weight: 600;
+    padding: 2px 8px; border-radius: 999px; margin: 1px 3px 1px 0; white-space: nowrap;
+  }
+  .sin-campana { color: var(--text-faint); font-size: 12.5px; }
+
+  .recarga-form { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
+  .recarga-form input { width: 100px; padding: 6px 8px; font-size: 12px; }
+  .recarga-form button { padding: 6px 10px; font-size: 12px; }
+  .recarga-ok { color: var(--green); font-size: 11.5px; margin-top: 3px; }
+
+  form.inline { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  form.inline .field { flex: 1 1 160px; margin-bottom: 0; }
+  form.inline button { align-self: flex-end; }
+
+  /* ---------- CRM de cumplimiento ---------- */
+  .compliance-panel { padding: 18px 20px; }
+  .compliance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px 16px; margin-bottom: 4px; }
+  .compliance-subtitle {
+    font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
+    color: var(--text-faint); margin: 18px 0 10px; padding-top: 14px; border-top: 1px solid var(--border-soft);
+  }
+  .compliance-subtitle:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+  .compliance-flags { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 4px; }
+  .checklist-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px 16px; margin-bottom: 8px; }
+  .checklist-item {
+    display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-dim);
+    background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px;
+  }
+  .checklist-item input { width: auto; accent-color: var(--accent); cursor: pointer; }
+  .checklist-item.item-done { border-color: var(--green); background: var(--green-soft); color: var(--green); }
+  .checklist-item .item-check { font-weight: 700; }
+  .onboarding-checklist-summary { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .onboarding-ready-banner {
+    display: flex; align-items: center; gap: 8px; background: var(--green-soft); color: var(--green);
+    border: 1px solid var(--green); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; font-weight: 600; margin: 4px 0 10px;
+  }
+  .doc-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+  .doc-item {
+    display: flex; align-items: center; gap: 10px; font-size: 12.5px; background: var(--bg-soft);
+    border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 10px;
+  }
+  .doc-item .doc-tipo { font-weight: 600; min-width: 130px; }
+  .doc-item .doc-nombre { color: var(--text-dim); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .doc-upload-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+  .doc-upload-row .field { flex: 1 1 160px; margin-bottom: 0; }
+  .doc-upload-row input[type="file"] { padding: 7px; }
+  .compliance-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-soft); }
+  .compliance-motivo { margin-top: 10px; }
+  .compliance-meta { font-size: 11.5px; color: var(--text-faint); margin-top: 8px; line-height: 1.5; }
 </style>
 </head>
 <body>
 
-<div id="login-box">
-  <h1>Puntos Neggo — Admin</h1>
-  <p class="sub">Acceso restringido. Solo usuarios en la tabla <code>admins</code>.</p>
-  <input id="email" type="email" placeholder="Email" autocomplete="username" />
-  <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password" />
-  <button id="btn-login">Entrar</button>
-  <div class="error" id="login-error"></div>
-</div>
+<div class="container">
 
-<div id="app">
-  <div class="topbar">
-    <div>
-      <h1>Puntos Neggo — Admin</h1>
-      <p class="sub" id="session-info"></p>
+  <!-- ============ LOGIN ============ -->
+  <div id="login-screen">
+    <div class="login-card">
+      <div class="login-brand">
+        <div class="brand-mark">N</div>
+        <div class="login-brand-name">Puntos Neggo — Admin</div>
+      </div>
+      <h1>Entra a tu cuenta</h1>
+      <p class="sub">Acceso restringido. Solo usuarios en la tabla <code>admins</code>.</p>
+      <div class="field">
+        <label>Email</label>
+        <input id="email" type="email" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label>Contraseña</label>
+        <input id="password" type="password" autocomplete="current-password" />
+      </div>
+      <button id="btn-login" style="width:100%;">Entrar</button>
+      <div class="error" id="login-error" style="margin-top:12px;"></div>
     </div>
-    <button class="secondary" id="btn-logout">Salir</button>
   </div>
 
-  <h2>Pasivo financiero (puntos en circulación)</h2>
-  <div class="error" id="pasivo-error"></div>
-  <div class="pasivo">
-    <div class="stat">
-      <div class="label">Puntos en circulación</div>
-      <div class="valor" id="pasivo-puntos">—</div>
+  <!-- ============ APP ============ -->
+  <div id="app">
+    <div class="topbar">
+      <div class="topbar-brand">
+        <div class="brand-mark">N</div>
+        <div>
+          <div class="topbar-title">Puntos Neggo — Admin</div>
+          <div class="topbar-sub" id="session-info"></div>
+        </div>
+      </div>
+      <button class="secondary" id="btn-logout">Salir</button>
     </div>
-    <div class="stat">
-      <div class="label">Valor de referencia</div>
-      <div class="valor" id="pasivo-valor">—</div>
-    </div>
-    <div class="stat">
-      <div class="label">Clientes con saldo</div>
-      <div class="valor" id="pasivo-clientes">—</div>
-    </div>
-    <div class="nota">Nota: los lotes vencidos se descuentan con un barrido automático diario (01:00 hora Bogotá) — la cifra puede tener hasta 24h de rezago frente a un vencimiento que acaba de ocurrir, no es en tiempo real.</div>
+
+    <nav class="quick-nav" id="quick-nav">
+      <a href="#sec-pasivo" class="quick-nav-link" data-target="sec-pasivo">Resumen</a>
+      <a href="#sec-clientes" class="quick-nav-link" data-target="sec-clientes">Clientes</a>
+      <a href="#sec-cuenta-comercio" class="quick-nav-link" data-target="sec-cuenta-comercio">Cuenta por comercio</a>
+      <a href="#sec-canjes" class="quick-nav-link" data-target="sec-canjes">Canjes pendientes</a>
+      <a href="#sec-comercios" class="quick-nav-link hidden" data-target="sec-comercios">Comercios</a>
+      <a href="#sec-solicitudes" class="quick-nav-link" data-target="sec-solicitudes">Comercios (cumplimiento)<span class="nav-count hidden" id="nav-badge-revision"></span></a>
+    </nav>
+
+    <section id="sec-pasivo">
+      <h2 class="section-title">Puntos en circulación</h2>
+      <p class="section-sub">Lo que Puntos Neggo le debe eventualmente a los clientes (en puntos) y a los comercios (en dinero, por canjes ya entregados) — son dos pasivos distintos, separados aquí.</p>
+      <div class="error" id="pasivo-error"></div>
+      <div class="pasivo-split">
+        <div class="pasivo-card">
+          <h3>Clientes — puntos en circulación</h3>
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Puntos en circulación</div>
+              <div class="valor" id="pasivo-puntos">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Valor de referencia</div>
+              <div class="valor" id="pasivo-valor">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Clientes con saldo</div>
+              <div class="valor" id="pasivo-clientes">—</div>
+            </div>
+          </div>
+          <div class="nota">Los lotes vencidos se descuentan con un barrido automático diario (01:00 hora Bogotá) — la cifra puede tener hasta 24h de rezago frente a un vencimiento que acaba de ocurrir, no es en tiempo real.</div>
+        </div>
+        <div class="pasivo-card">
+          <h3>Comercios — cuentas por pagar</h3>
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Valor total pendiente</div>
+              <div class="valor" id="pasivo-com-valor">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Puntos pendientes</div>
+              <div class="valor" id="pasivo-com-puntos">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Comercios con saldo pendiente</div>
+              <div class="valor" id="pasivo-com-cantidad">—</div>
+            </div>
+          </div>
+          <div class="nota">Suma de "Cuenta por pagar por comercio" abajo — canjes ya confirmados por el comercio, esperando que Puntos Neggo le pague.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-clientes">
+      <h2 class="section-title">Clientes</h2>
+      <p class="section-sub">Busca por nombre, documento o llave. Abre "Ver detalle" para su información completa y su actividad reciente.</p>
+      <div class="error" id="clientes-error"></div>
+      <div class="search-row">
+        <input id="buscar-cliente" type="text" placeholder="Buscar por nombre, documento o llave..." />
+        <span class="count" id="clientes-count"></span>
+      </div>
+      <div class="table-card">
+        <div class="table-scroll">
+          <table id="tabla-clientes">
+            <thead><tr><th>Nombre</th><th>Documento</th><th>Correo</th><th>Llave</th><th>Teléfono</th><th>Ciudad</th><th>Saldo</th><th>Estado</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="empty-state hidden" id="clientes-empty" style="margin-top:10px;">Sin clientes registrados todavía.</div>
+    </section>
+
+    <section id="sec-cuenta-comercio">
+      <h2 class="section-title">Cuenta por pagar por comercio</h2>
+      <p class="section-sub">Pensada para cuando haya miles de comercios — busca por nombre y abre "Ver cuenta" para el desglose de uno solo.</p>
+      <div class="error" id="pasivo-comercio-error"></div>
+      <div class="search-row">
+        <input id="buscar-comercio" type="text" placeholder="Buscar comercio por nombre..." />
+        <span class="count" id="pasivo-comercio-count"></span>
+      </div>
+      <div class="table-card">
+        <div class="table-scroll">
+          <table id="tabla-pasivo-comercio">
+            <thead>
+              <tr><th>Comercio</th><th>Puntos pendientes</th><th>Valor</th><th>Canjes pendientes</th><th></th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="empty-state hidden" id="pasivo-comercio-empty" style="margin-top:10px;">No hay puntos pendientes de pago a ningún comercio.</div>
+    </section>
+
+    <section id="sec-canjes">
+      <h2 class="section-title">Canjes pendientes de pago</h2>
+      <p class="section-sub">Solo canjes que el comercio ya confirmó con el cliente (código verificado) — estos sí son pagables. Agrupados por comercio; selecciona uno o varios (de uno o de varios comercios a la vez) para marcarlos como pagados en bloque.</p>
+      <div class="error" id="canjes-error"></div>
+      <div class="ok-msg" id="canjes-ok"></div>
+      <div class="bulk-bar">
+        <div class="bstat">Seleccionados<b id="sel-cantidad">0</b></div>
+        <div class="bstat">Puntos<b id="sel-puntos">0</b></div>
+        <div class="bstat">Saldo total<b id="sel-valor">$ 0</b></div>
+        <button id="btn-marcar-pagados" disabled>Marcar seleccionados como pagados</button>
+      </div>
+      <div id="canjes-grupos"></div>
+      <div class="empty-state hidden" id="canjes-empty">No hay canjes confirmados pendientes de pago.</div>
+    </section>
+
+    <section id="sec-comercios" class="hidden">
+      <h2 class="section-title">Comercios solo-canje</h2>
+      <div class="error" id="comercios-error"></div>
+      <div class="info-card" style="margin-bottom:16px;">
+        <form class="inline" id="form-comercio">
+          <div class="field"><label>Nombre</label><input id="c-nombre" required /></div>
+          <div class="field"><label>Ciudad</label><input id="c-ciudad" required /></div>
+          <div class="field"><label>Contacto</label><input id="c-contacto" placeholder="tel/email" required /></div>
+          <div class="field"><label>Datos de pago</label><input id="c-pago" placeholder="cuenta/Nequi" required /></div>
+          <div class="field"><label>Email de acceso al portal</label><input id="c-email" type="email" placeholder="correo@comercio.com" /></div>
+          <div class="field checkbox-field"><label><input id="c-solo-canje" type="checkbox" /> Solo canjea (no asigna puntos)</label></div>
+          <button type="submit" id="btn-crear-comercio">Agregar comercio</button>
+        </form>
+        <p class="section-sub" style="margin:0;">Con el email, el comercio activa su propia cuenta en <code>/comercio</code>: escribe ese correo, el sistema detecta que está pendiente y le pide crear su contraseña. No hace falta crear nada a mano en Supabase.</p>
+      </div>
+      <div class="table-card">
+        <div class="table-scroll">
+          <table id="tabla-comercios">
+            <thead><tr><th>Nombre</th><th>Llave</th><th>Ciudad</th><th>Contacto</th><th>Datos de pago</th><th>Portal</th><th>Solo canjea</th><th>Billetera</th><th>Campañas activas</th><th>Alta</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="empty-state hidden" id="comercios-empty" style="margin-top:10px;">Sin comercios registrados.</div>
+      <p class="section-sub" style="margin-top:12px;">Nota: cada comercio gestiona sus propias campañas desde su portal (<code>/aliados</code>) — acá solo se ven, de solo lectura. "Solo canjea" bloquea la asignación de puntos para ese comercio (sigue pudiendo redimir).</p>
+    </section>
+
+    <section id="sec-solicitudes">
+      <h2 class="section-title">Comercios — CRM de cumplimiento</h2>
+      <p class="section-sub">Ningún comercio se crea de forma directa: toda solicitud pasa por un expediente de cumplimiento (representante legal, documentos, listas restrictivas) antes de aprobarse. Un comercio ya activo puede suspenderse acá mismo si aparece algo raro — mientras esté suspendido, no puede asignar puntos ni operar.</p>
+      <div class="error" id="compliance-error"></div>
+      <div class="ok-msg" id="compliance-ok"></div>
+
+      <h3 style="font-size:13.5px; margin:0 0 8px;">Solicitudes nuevas <span style="font-weight:400; color:var(--text-faint);">— desde el formulario público "Quiero afiliar mi negocio"</span></h3>
+      <div class="table-card" style="margin-bottom:22px;">
+        <div class="table-scroll">
+          <table id="tabla-solicitudes">
+            <thead><tr><th>Fecha</th><th>Negocio</th><th>Contacto</th><th>Teléfono</th><th>Email</th><th>Ciudad</th><th>Mensaje</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="empty-state hidden" id="solicitudes-empty" style="margin-bottom:22px;">No hay solicitudes nuevas.</div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+        <div class="quick-nav" id="compliance-tabs" style="position:static; padding:0;">
+          <a href="#" class="quick-nav-link active" data-estado="en_revision">En revisión</a>
+          <a href="#" class="quick-nav-link" data-estado="aprobado">Aprobados</a>
+          <a href="#" class="quick-nav-link" data-estado="revision_periodica">Revisión periódica<span class="nav-count hidden" id="tab-badge-revision"></span></a>
+          <a href="#" class="quick-nav-link" data-estado="suspendido">Suspendidos</a>
+          <a href="#" class="quick-nav-link" data-estado="rechazado">Rechazados</a>
+        </div>
+        <button type="button" class="secondary btn-sm" id="btn-nuevo-expediente">+ Nuevo expediente (sin solicitud)</button>
+      </div>
+
+      <div class="table-card">
+        <div class="table-scroll">
+          <table id="tabla-compliance">
+            <thead><tr><th>Negocio</th><th>Representante legal</th><th>Riesgo</th><th>Estado</th><th>Próx. revisión</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="empty-state hidden" id="compliance-empty" style="margin-top:10px;">Sin expedientes en este estado.</div>
+    </section>
   </div>
-
-  <h2>Cuenta por pagar por comercio</h2>
-  <div class="error" id="pasivo-comercio-error"></div>
-  <table id="tabla-pasivo-comercio">
-    <thead>
-      <tr><th>Comercio</th><th>Puntos pendientes</th><th>Valor</th><th>Canjes pendientes</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <div class="empty" id="pasivo-comercio-empty" style="display:none">No hay puntos pendientes de pago a ningún comercio.</div>
-
-  <h2>Canjes pendientes de pago</h2>
-  <div class="error" id="canjes-error"></div>
-  <table id="tabla-canjes">
-    <thead>
-      <tr><th>Fecha</th><th>Cliente</th><th>Comercio</th><th>Puntos</th><th>Valor</th><th>Código</th><th>Acción</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <div class="empty" id="canjes-empty" style="display:none">No hay canjes pendientes.</div>
-
-  <h2>Comercios solo-canje</h2>
-  <div class="error" id="comercios-error"></div>
-  <form class="inline" id="form-comercio">
-    <input id="c-nombre" placeholder="Nombre" required />
-    <input id="c-ciudad" placeholder="Ciudad" required />
-    <input id="c-contacto" placeholder="Contacto (tel/email)" required />
-    <input id="c-pago" placeholder="Datos de pago (cuenta/Nequi)" required />
-    <input id="c-userid" placeholder="User ID portal (opcional, ver nota abajo)" />
-    <button type="submit">Agregar comercio</button>
-  </form>
-  <p class="sub" style="margin-top:-8px">Para dar acceso al portal (<code>/comercio</code>) a un comercio: primero créale un usuario en Supabase Dashboard → Authentication → Users → Add user (con su email), copia el <strong>User UID</strong> generado, y pégalo en "User ID portal" al agregarlo aquí (o edítalo directo en la base si el comercio ya existe).</p>
-  <table id="tabla-comercios">
-    <thead><tr><th>Nombre</th><th>Ciudad</th><th>Contacto</th><th>Datos de pago</th><th>Portal</th><th>Alta</th></tr></thead>
-    <tbody></tbody>
-  </table>
-  <div class="empty" id="comercios-empty" style="display:none">Sin comercios registrados.</div>
-
-  <h2>Solicitudes de comercios (desde la página pública)</h2>
-  <div class="error" id="solicitudes-error"></div>
-  <table id="tabla-solicitudes">
-    <thead><tr><th>Fecha</th><th>Negocio</th><th>Contacto</th><th>Teléfono</th><th>Email</th><th>Ciudad</th><th>Mensaje</th><th>Acción</th></tr></thead>
-    <tbody></tbody>
-  </table>
-  <div class="empty" id="solicitudes-empty" style="display:none">No hay solicitudes pendientes.</div>
 </div>
 
 <script type="module">
@@ -133,6 +506,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const $ = (id) => document.getElementById(id);
 const cop = (n) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(n);
+const numero = (n) => new Intl.NumberFormat("es-CO").format(n);
 const fecha = (iso) => new Date(iso).toLocaleString("es-CO");
 
 async function init() {
@@ -142,15 +516,15 @@ async function init() {
 }
 
 function mostrarLogin() {
-  $("login-box").style.display = "flex";
+  $("login-screen").style.display = "flex";
   $("app").style.display = "none";
 }
 
 async function mostrarApp(session) {
-  $("login-box").style.display = "none";
+  $("login-screen").style.display = "none";
   $("app").style.display = "block";
   $("session-info").textContent = `Conectado como ${session.user.email}`;
-  await Promise.all([cargarPasivo(), cargarPasivoPorComercio(), cargarCanjes(), cargarComercios(), cargarSolicitudesComercio()]);
+  await Promise.all([cargarPasivo(), cargarClientes(), cargarPasivoPorComercio(), cargarCanjes(), cargarSolicitudesNuevas(), cargarCompliance(), actualizarBadgeRevisionPeriodica()]);
 }
 
 async function cargarPasivo() {
@@ -159,30 +533,193 @@ async function cargarPasivo() {
   if (error) { $("pasivo-error").textContent = error.message; return; }
   const fila = Array.isArray(data) ? data[0] : data;
   if (!fila) return;
-  $("pasivo-puntos").textContent = new Intl.NumberFormat("es-CO").format(fila.puntos_en_circulacion);
+  $("pasivo-puntos").textContent = numero(fila.puntos_en_circulacion);
   $("pasivo-valor").textContent = cop(fila.valor_cop);
-  $("pasivo-clientes").textContent = new Intl.NumberFormat("es-CO").format(fila.clientes_con_saldo);
+  $("pasivo-clientes").textContent = numero(fila.clientes_con_saldo);
 }
+
+// ---------- Clientes (ficha + actividad reciente) ----------
+let listaClientes = [];
+
+async function cargarClientes() {
+  $("clientes-error").textContent = "";
+  // admin_listar_clientes (no un select directo): el correo real de casi
+  // todo cliente vive en auth.users, no en clientes_puntos.email (esa columna
+  // libre nunca la llena el registro self-service) -- hace falta el join
+  // hecho del lado del servidor, admin-only.
+  const { data, error } = await supabase.rpc("admin_listar_clientes");
+
+  if (error) { $("clientes-error").textContent = error.message; return; }
+
+  listaClientes = data || [];
+  renderClientes();
+}
+
+$("buscar-cliente").addEventListener("input", renderClientes);
+
+function renderClientes() {
+  const filtro = $("buscar-cliente").value.trim().toLowerCase();
+  const filas = filtro
+    ? listaClientes.filter((c) =>
+        (c.nombre || "").toLowerCase().includes(filtro) ||
+        (c.numero_documento || "").toLowerCase().includes(filtro) ||
+        (c.llave_cliente || "").toLowerCase().includes(filtro) ||
+        (c.correo || "").toLowerCase().includes(filtro))
+    : listaClientes;
+
+  $("clientes-count").textContent = filtro ? `${filas.length} de ${listaClientes.length}` : `${listaClientes.length} cliente(s)`;
+
+  const tbody = document.querySelector("#tabla-clientes tbody");
+  tbody.innerHTML = "";
+  $("clientes-empty").classList.toggle("hidden", filas.length > 0);
+
+  for (const c of filas) {
+    const estadoBadge = c.estado === "congelado"
+      ? `<span class="badge danger">Congelada</span>`
+      : `<span class="badge ok">Activa</span>`;
+    const bloqueoBadge = c.bloqueo_redencion ? `<span class="badge warn" style="margin-left:6px;">Redención bloqueada</span>` : "";
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${c.nombre || "—"}</td>
+      <td>${c.tipo_documento || ""} ${c.numero_documento || "—"}</td>
+      <td>${c.correo || "—"}</td>
+      <td><code>${c.llave_cliente || "—"}</code></td>
+      <td>${c.telefono || "—"}</td>
+      <td>${c.ciudad || "—"}</td>
+      <td>${numero(c.saldo)} pts</td>
+      <td>${estadoBadge}${bloqueoBadge}</td>
+      <td><button type="button" class="secondary btn-sm" data-id="${c.id}">Ver detalle</button></td>
+    `;
+    tr.querySelector("button").addEventListener("click", () => toggleClienteDrillDown(tr, c));
+    tbody.appendChild(tr);
+  }
+}
+
+async function toggleClienteDrillDown(tr, cliente) {
+  const next = tr.nextElementSibling;
+  if (next && next.classList.contains("drill-row")) { next.remove(); return; }
+
+  document.querySelectorAll("#tabla-clientes .drill-row").forEach((r) => r.remove());
+
+  const drillTr = document.createElement("tr");
+  drillTr.className = "drill-row";
+  drillTr.innerHTML = `<td colspan="9">Cargando...</td>`;
+  tr.after(drillTr);
+
+  const { data, error } = await supabase.rpc("admin_cliente_movimientos", { p_cliente_id: cliente.id });
+  if (error) { drillTr.innerHTML = `<td colspan="9" class="error">${error.message}</td>`; return; }
+
+  const movimientos = data || [];
+  const filasMov = movimientos.length
+    ? movimientos.map((m) => `
+        <tr>
+          <td>${fecha(m.created_at)}</td>
+          <td>${m.tipo}</td>
+          <td>${m.puntos > 0 ? "+" : ""}${numero(m.puntos)}</td>
+          <td>${m.comercio_nombre || m.contraparte_nombre || "—"}</td>
+          <td>${m.motivo || m.origen_producto || "—"}</td>
+        </tr>
+      `).join("")
+    : `<tr><td colspan="5" class="empty-state">Sin movimientos todavía.</td></tr>`;
+
+  drillTr.innerHTML = `
+    <td colspan="9">
+      <div class="table-card" style="margin:0;">
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Fecha</th><th>Tipo</th><th>Puntos</th><th>Comercio / contraparte</th><th>Motivo</th></tr></thead>
+            <tbody>${filasMov}</tbody>
+          </table>
+        </div>
+      </div>
+    </td>
+  `;
+}
+
+// ---------- Cuenta por pagar por comercio (pensado para miles de comercios: buscador + drill-down) ----------
+let pasivoPorComercio = [];
 
 async function cargarPasivoPorComercio() {
   $("pasivo-comercio-error").textContent = "";
   const { data, error } = await supabase.rpc("obtener_pasivo_por_comercio");
   if (error) { $("pasivo-comercio-error").textContent = error.message; return; }
 
+  pasivoPorComercio = data || [];
+
+  const totalValor = pasivoPorComercio.reduce((a, c) => a + Number(c.valor_cop), 0);
+  const totalPuntos = pasivoPorComercio.reduce((a, c) => a + Number(c.puntos_pendientes), 0);
+  $("pasivo-com-valor").textContent = cop(totalValor);
+  $("pasivo-com-puntos").textContent = numero(totalPuntos);
+  $("pasivo-com-cantidad").textContent = numero(pasivoPorComercio.length);
+
+  renderPasivoPorComercio();
+}
+
+$("buscar-comercio").addEventListener("input", renderPasivoPorComercio);
+
+function renderPasivoPorComercio() {
+  const filtro = $("buscar-comercio").value.trim().toLowerCase();
+  const filas = filtro ? pasivoPorComercio.filter((c) => c.comercio_nombre.toLowerCase().includes(filtro)) : pasivoPorComercio;
+
+  $("pasivo-comercio-count").textContent = filtro ? `${filas.length} de ${pasivoPorComercio.length}` : `${pasivoPorComercio.length} comercio(s) con saldo pendiente`;
+
   const tbody = document.querySelector("#tabla-pasivo-comercio tbody");
   tbody.innerHTML = "";
-  $("pasivo-comercio-empty").style.display = data.length ? "none" : "block";
+  $("pasivo-comercio-empty").classList.toggle("hidden", filas.length > 0);
 
-  for (const c of data) {
+  for (const c of filas) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${c.comercio_nombre}</td>
-      <td>${new Intl.NumberFormat("es-CO").format(c.puntos_pendientes)}</td>
+      <td>${numero(c.puntos_pendientes)}</td>
       <td>${cop(c.valor_cop)}</td>
       <td>${c.canjes_pendientes}</td>
+      <td><button type="button" class="secondary btn-sm" data-id="${c.comercio_id}">Ver cuenta</button></td>
     `;
+    tr.querySelector("button").addEventListener("click", () => toggleDrillDown(tr, c.comercio_id));
     tbody.appendChild(tr);
   }
+}
+
+async function toggleDrillDown(tr, comercioId) {
+  const next = tr.nextElementSibling;
+  if (next && next.classList.contains("drill-row")) { next.remove(); return; }
+
+  document.querySelectorAll(".drill-row").forEach((r) => r.remove());
+
+  const drillTr = document.createElement("tr");
+  drillTr.className = "drill-row";
+  drillTr.innerHTML = `<td colspan="5">Cargando...</td>`;
+  tr.after(drillTr);
+
+  const { data, error } = await supabase.rpc("admin_comercio_cuenta", { p_comercio_id: comercioId });
+  if (error) { drillTr.innerHTML = `<td colspan="5" class="error">${error.message}</td>`; return; }
+
+  const r = Array.isArray(data) ? data[0] : data;
+  if (!r) { drillTr.innerHTML = `<td colspan="5" class="empty-state">Sin datos para este comercio.</td>`; return; }
+
+  drillTr.innerHTML = `
+    <td colspan="5">
+      <div class="drill-grid">
+        <div class="drill-stat">
+          <div class="label">Por confirmar</div>
+          <div class="valor">${cop(r.por_confirmar_valor ?? 0)}</div>
+          <div class="sub">${numero(r.por_confirmar_cantidad ?? 0)} canje(s) · ${numero(r.por_confirmar_puntos ?? 0)} pts — le falta al comercio confirmar el código con el cliente</div>
+        </div>
+        <div class="drill-stat">
+          <div class="label">Pendiente de pago</div>
+          <div class="valor">${cop(r.pendiente_pago_valor ?? 0)}</div>
+          <div class="sub">${numero(r.pendiente_pago_cantidad ?? 0)} canje(s) · ${numero(r.pendiente_pago_puntos ?? 0)} pts — confirmado, Puntos Neggo se lo debe</div>
+        </div>
+        <div class="drill-stat">
+          <div class="label">Ya pagado</div>
+          <div class="valor">${cop(r.pagado_valor ?? 0)}</div>
+          <div class="sub">${numero(r.pagado_cantidad ?? 0)} canje(s) · ${numero(r.pagado_puntos ?? 0)} pts — histórico</div>
+        </div>
+      </div>
+    </td>
+  `;
 }
 
 $("btn-login").addEventListener("click", async () => {
@@ -199,105 +736,422 @@ $("btn-logout").addEventListener("click", async () => {
   mostrarLogin();
 });
 
+// ---------- Canjes pendientes de pago: solo los ya confirmados por el comercio, agrupados por comercio ----------
+let canjesPagables = [];
+const seleccionados = new Set();
+
 async function cargarCanjes() {
   $("canjes-error").textContent = "";
+  $("canjes-ok").textContent = "";
+  seleccionados.clear();
+
+  // A propósito no se selecciona codigo_verificacion -- eso es entre el cliente y el comercio,
+  // el admin no lo necesita para pagar. Solo se muestran los que el comercio ya confirmó
+  // (confirmado_comercio_at no nulo) -- los que aún no, no son pagables todavía.
   const { data, error } = await supabase
     .from("canjes")
-    .select("id, created_at, cliente_id, comercio_nombre, puntos, valor_cop, codigo_verificacion, estado")
+    .select("id, created_at, confirmado_comercio_at, cliente_id, comercio_nombre, puntos, valor_cop, estado")
     .eq("estado", "pendiente_pago")
-    .order("created_at", { ascending: true });
+    .not("confirmado_comercio_at", "is", null)
+    .order("confirmado_comercio_at", { ascending: true });
 
   if (error) { $("canjes-error").textContent = error.message; return; }
 
-  const tbody = document.querySelector("#tabla-canjes tbody");
-  tbody.innerHTML = "";
-  $("canjes-empty").style.display = data.length ? "none" : "block";
+  canjesPagables = data || [];
+  renderCanjesAgrupados();
+  actualizarBulkBar();
+}
 
-  for (const c of data) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${fecha(c.created_at)}</td>
-      <td><code>${c.cliente_id.slice(0, 8)}</code></td>
-      <td>${c.comercio_nombre}</td>
-      <td>${c.puntos}</td>
-      <td>${cop(c.valor_cop)}</td>
-      <td class="codigo">${c.codigo_verificacion ?? "-"}</td>
-      <td><button data-id="${c.id}">Marcar entregado</button></td>
+function renderCanjesAgrupados() {
+  const cont = $("canjes-grupos");
+  cont.innerHTML = "";
+  $("canjes-empty").classList.toggle("hidden", canjesPagables.length > 0);
+  if (!canjesPagables.length) return;
+
+  // Agrupar por comercio -- por nombre para que sea legible; si hay miles de
+  // comercios cada grupo sigue siendo pequeño (son solo canjes pendientes de pago).
+  const porComercio = new Map();
+  for (const c of canjesPagables) {
+    const lista = porComercio.get(c.comercio_nombre) || [];
+    lista.push(c);
+    porComercio.set(c.comercio_nombre, lista);
+  }
+
+  const nombresOrdenados = Array.from(porComercio.keys()).sort((a, b) => a.localeCompare(b, "es"));
+
+  for (const nombre of nombresOrdenados) {
+    const filas = porComercio.get(nombre);
+    const totalPuntos = filas.reduce((a, c) => a + Number(c.puntos), 0);
+    const totalValor = filas.reduce((a, c) => a + Number(c.valor_cop), 0);
+
+    const grupo = document.createElement("div");
+    grupo.className = "comercio-group";
+    grupo.innerHTML = `
+      <div class="comercio-group-header">
+        <span class="comercio-group-nombre">${nombre}</span>
+        <label class="comercio-group-select"><input type="checkbox" class="check-grupo" /> Seleccionar todos</label>
+        <span class="comercio-group-meta">${filas.length} canje(s) · ${numero(totalPuntos)} pts · ${cop(totalValor)}</span>
+      </div>
+      <div class="table-card">
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th class="checkbox-cell"></th><th>Confirmado</th><th>Cliente</th><th>Puntos</th><th>Valor</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
     `;
-    tr.querySelector("button").addEventListener("click", (ev) => marcarEntregado(c.id, ev.target));
-    tbody.appendChild(tr);
+
+    const tbody = grupo.querySelector("tbody");
+    for (const c of filas) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="checkbox-cell"><input type="checkbox" data-id="${c.id}" /></td>
+        <td>${fecha(c.confirmado_comercio_at)}</td>
+        <td><code>${c.cliente_id.slice(0, 8)}</code></td>
+        <td>${numero(c.puntos)}</td>
+        <td>${cop(c.valor_cop)}</td>
+      `;
+      const cb = tr.querySelector("input");
+      cb.addEventListener("change", () => {
+        if (cb.checked) seleccionados.add(c.id); else seleccionados.delete(c.id);
+        sincronizarCheckboxGrupo(grupo);
+        actualizarBulkBar();
+      });
+      tbody.appendChild(tr);
+    }
+
+    grupo.querySelector(".check-grupo").addEventListener("change", (ev) => {
+      grupo.querySelectorAll("tbody input[type=checkbox]").forEach((cb) => {
+        cb.checked = ev.target.checked;
+        if (ev.target.checked) seleccionados.add(cb.dataset.id); else seleccionados.delete(cb.dataset.id);
+      });
+      actualizarBulkBar();
+    });
+
+    cont.appendChild(grupo);
   }
 }
 
-async function marcarEntregado(canjeId, btn) {
-  if (!confirm("¿Confirmaste el código de verificación con el cliente antes de esto?")) return;
+function sincronizarCheckboxGrupo(grupo) {
+  const cajas = Array.from(grupo.querySelectorAll("tbody input[type=checkbox]"));
+  const checkGrupo = grupo.querySelector(".check-grupo");
+  checkGrupo.checked = cajas.length > 0 && cajas.every((c) => c.checked);
+  checkGrupo.indeterminate = cajas.some((c) => c.checked) && !checkGrupo.checked;
+}
+
+function actualizarBulkBar() {
+  const filas = canjesPagables.filter((c) => seleccionados.has(c.id));
+  $("sel-cantidad").textContent = numero(filas.length);
+  $("sel-puntos").textContent = numero(filas.reduce((a, c) => a + Number(c.puntos), 0));
+  $("sel-valor").textContent = cop(filas.reduce((a, c) => a + Number(c.valor_cop), 0));
+  $("btn-marcar-pagados").disabled = filas.length === 0;
+}
+
+$("btn-marcar-pagados").addEventListener("click", async () => {
+  const ids = Array.from(seleccionados);
+  if (!ids.length) return;
+  if (!confirm(`¿Confirmas que ya le pagaste a el/los comercio(s) estos ${ids.length} canje(s)?`)) return;
+
+  $("canjes-error").textContent = "";
+  $("canjes-ok").textContent = "";
+  const btn = $("btn-marcar-pagados");
   btn.disabled = true;
-  const { error } = await supabase.rpc("marcar_canje_pagado", { p_canje_id: canjeId });
+
+  const { data, error } = await supabase.rpc("admin_marcar_canjes_pagados", { p_canje_ids: ids });
+
   if (error) {
     $("canjes-error").textContent = error.message;
     btn.disabled = false;
     return;
   }
-  await Promise.all([cargarCanjes(), cargarPasivoPorComercio()]);
-}
 
+  const fallidos = (data || []).filter((r) => !r.ok);
+  const exitosos = (data || []).filter((r) => r.ok);
+
+  // Importante: recargar ANTES de escribir el mensaje -- cargarCanjes() limpia
+  // canjes-ok/canjes-error al empezar, así que si el mensaje se pone antes,
+  // la recarga lo borra (mismo bug ya encontrado y corregido en el portal de comercios).
+  await Promise.all([cargarCanjes(), cargarPasivoPorComercio()]);
+
+  $("canjes-ok").textContent = exitosos.length ? `✓ ${exitosos.length} canje(s) marcados como pagados.` : "";
+  if (fallidos.length) {
+    $("canjes-error").textContent = `${fallidos.length} no se pudieron marcar: ${fallidos.map((f) => f.mensaje).join("; ")}`;
+  }
+});
+
+// ---------- Comercios ----------
 async function cargarComercios() {
   $("comercios-error").textContent = "";
-  const { data, error } = await supabase
-    .from("comercios_solo_canje")
-    .select("id, nombre, ciudad, contacto, datos_pago, user_id, created_at")
-    .order("created_at", { ascending: false });
+  const [{ data, error }, campanasRes] = await Promise.all([
+    supabase
+      .from("comercios_solo_canje")
+      .select("id, nombre, llave_comercio, ciudad, contacto, datos_pago, email, user_id, solo_canje, created_at, saldo_billetera_cop")
+      .order("created_at", { ascending: false }),
+    supabase.from("comercio_campanas").select("comercio_id, nombre, multiplicador").eq("activa", true),
+  ]);
 
   if (error) { $("comercios-error").textContent = error.message; return; }
 
+  const campanasPorComercio = new Map();
+  for (const c of (campanasRes.data || [])) {
+    const lista = campanasPorComercio.get(c.comercio_id) || [];
+    lista.push(c);
+    campanasPorComercio.set(c.comercio_id, lista);
+  }
+
   const tbody = document.querySelector("#tabla-comercios tbody");
   tbody.innerHTML = "";
-  $("comercios-empty").style.display = data.length ? "none" : "block";
+  $("comercios-empty").classList.toggle("hidden", data.length > 0);
 
   for (const c of data) {
     const tr = document.createElement("tr");
+    const campanas = campanasPorComercio.get(c.id) || [];
+    const campanaHtml = campanas.length
+      ? campanas.map((camp) => `<span class="campana-tag">${camp.nombre} x${camp.multiplicador}</span>`).join(" ")
+      : '<span class="sin-campana">Sin campañas</span>';
     tr.innerHTML = `
       <td>${c.nombre}</td>
+      <td>${c.llave_comercio || "—"}</td>
       <td>${c.ciudad}</td>
       <td>${c.contacto}</td>
       <td>${c.datos_pago}</td>
-      <td>${c.user_id ? '<span style="color:#4caf6f">Vinculado</span>' : '<span style="color:#6b7280">Sin acceso</span>'}</td>
+      <td>${c.user_id ? '<span class="badge ok">Vinculado</span>' : (c.email ? '<span class="badge neutral">Pendiente de activar</span>' : '<span class="badge neutral">Sin acceso</span>')}</td>
+      <td>
+        <label class="solo-canje-toggle">
+          <input type="checkbox" class="chk-solo-canje" data-id="${c.id}" ${c.solo_canje ? "checked" : ""} />
+          ${c.solo_canje ? "Sí" : "No"}
+        </label>
+      </td>
+      <td>
+        <div>${cop(c.saldo_billetera_cop ?? 0)}</div>
+        <form class="recarga-form" data-id="${c.id}">
+          <input type="number" min="1" step="1" placeholder="$ a recargar" required />
+          <button type="submit" class="btn-sm">Recargar</button>
+        </form>
+        <div class="recarga-ok"></div>
+      </td>
+      <td>${campanaHtml}</td>
       <td>${fecha(c.created_at)}</td>
     `;
+    tr.querySelector(".recarga-form").addEventListener("submit", (ev) => recargarBilletera(ev, c.id));
+    tr.querySelector(".chk-solo-canje").addEventListener("change", (ev) => toggleSoloCanje(ev.target, c.id));
     tbody.appendChild(tr);
   }
 }
 
+async function toggleSoloCanje(checkbox, comercioId) {
+  const valor = checkbox.checked;
+  checkbox.disabled = true;
+  const { data, error } = await supabase
+    .from("comercios_solo_canje")
+    .update({ solo_canje: valor })
+    .eq("id", comercioId)
+    .select("id");
+  checkbox.disabled = false;
+
+  if (error || !data || data.length === 0) {
+    $("comercios-error").textContent = error?.message || "No se pudo actualizar (0 filas afectadas).";
+    checkbox.checked = !valor;
+    return;
+  }
+  checkbox.parentElement.lastChild.textContent = valor ? "Sí" : "No";
+}
+
+async function recargarBilletera(ev, comercioId) {
+  ev.preventDefault();
+  const form = ev.target;
+  const input = form.querySelector("input");
+  const okMsg = form.parentElement.querySelector(".recarga-ok");
+  const valor = parseFloat(input.value);
+  if (!valor || valor <= 0) return;
+
+  if (!confirm(`¿Confirmas que ya recibiste $${valor} de este comercio por fuera del sistema?`)) return;
+
+  form.querySelector("button").disabled = true;
+  const { data, error } = await supabase.rpc("admin_recargar_billetera_comercio", {
+    p_comercio_id: comercioId,
+    p_valor_cop: valor,
+    p_motivo: null,
+  });
+  form.querySelector("button").disabled = false;
+
+  if (error) { $("comercios-error").textContent = error.message; return; }
+
+  input.value = "";
+  okMsg.textContent = "✓ Recargado";
+  setTimeout(() => { okMsg.textContent = ""; }, 2500);
+  await cargarComercios();
+}
+
+// Cuando "Aceptar y crear comercio" (en Solicitudes) prellena este formulario,
+// guarda acá el id de la solicitud para marcarla atendida SOLO si el comercio
+// se crea con éxito -- así nunca queda "atendida" sin haber pasado a ningún lado
+// (el bug reportado: la solicitud se aceptaba y desaparecía sin crear nada).
+let solicitudEnCurso = null;
+
 $("form-comercio").addEventListener("submit", async (ev) => {
   ev.preventDefault();
   $("comercios-error").textContent = "";
-  const userId = $("c-userid").value.trim();
+  const email = $("c-email").value.trim();
   const payload = {
     nombre: $("c-nombre").value.trim(),
     ciudad: $("c-ciudad").value.trim(),
     contacto: $("c-contacto").value.trim(),
     datos_pago: $("c-pago").value.trim(),
-    ...(userId ? { user_id: userId } : {}),
+    solo_canje: $("c-solo-canje").checked,
+    ...(email ? { email } : {}),
   };
   const { error } = await supabase.from("comercios_solo_canje").insert(payload);
   if (error) { $("comercios-error").textContent = error.message; return; }
+
+  if (solicitudEnCurso) {
+    await supabase.from("solicitudes_comercio").update({ atendido: true }).eq("id", solicitudEnCurso);
+    solicitudEnCurso = null;
+  }
+
   ev.target.reset();
+  $("btn-crear-comercio").textContent = "Agregar comercio";
   await cargarComercios();
 });
 
-async function cargarSolicitudesComercio() {
-  $("solicitudes-error").textContent = "";
+// ============================================================
+// CRM de cumplimiento (SAGRILAFT/SARLAFT) -- reemplaza el flujo
+// directo de "Solicitudes". Un comercio real solo nace al aprobar
+// un expediente (admin_compliance_aprobar); nunca por insert directo.
+// ============================================================
+
+const LISTAS_RESTRICTIVAS = [
+  { key: "ofac", label: "OFAC SDN (\"Lista Clinton\")", url: "https://sanctionslist.ofac.treas.gov/Home/SdnList" },
+  { key: "onu", label: "ONU — Lista Consolidada", url: "https://main.un.org/securitycouncil/en/content/un-sc-consolidated-list" },
+  { key: "ue", label: "Unión Europea — sanciones", url: "https://www.sanctionsmap.eu/" },
+  { key: "procuraduria", label: "Procuraduría — disciplinarios", url: "https://apps.procuraduria.gov.co/webcert/Certificado.aspx" },
+  { key: "contraloria", label: "Contraloría — fiscales", url: "https://www.contraloria.gov.co/en/control-fiscal/responsabilidad-fiscal/certificado-de-antecedentes-fiscales" },
+  { key: "policia", label: "Policía Nacional — judiciales", url: "https://antecedentes.policia.gov.co:7005/WebJudicial/preguntas.xhtml" },
+];
+const DOC_TIPOS = [
+  { value: "cedula_representante", label: "Cédula representante" },
+  { value: "rut", label: "RUT" },
+  { value: "camara_comercio", label: "Cámara de comercio" },
+  { value: "certificado_bancario", label: "Certificado bancario" },
+  { value: "declaracion_origen_fondos_ampliada", label: "Declaración de origen de fondos (ampliada)" },
+  { value: "declaracion_pep", label: "Declaración de vínculos PEP" },
+  { value: "otro", label: "Otro" },
+];
+const CARGOS_REPRESENTANTE = ["Representante legal", "Propietario/a", "Gerente", "Administrador/a", "Socio/a", "Apoderado/a", "Otro"];
+const ESTADO_BADGE = {
+  pendiente_revision: ["neutral", "Pendiente"],
+  en_revision: ["info", "En revisión"],
+  aprobado: ["ok", "Aprobado"],
+  rechazado: ["danger", "Rechazado"],
+  suspendido: ["warn", "Suspendido"],
+};
+const RIESGO_BADGE = {
+  sin_evaluar: ["neutral", "Sin evaluar"],
+  bajo: ["ok", "Bajo"],
+  medio: ["warn", "Medio"],
+  alto: ["danger", "Alto"],
+};
+
+let estadoComplianceActivo = "en_revision";
+
+// ============================================================
+// Checklist de vinculación AML/SARLAFT -- se recalcula en vivo a medida
+// que el admin diligencia el formulario, marca las listas restrictivas
+// consultadas, y sube documentos. Es puramente informativo: nunca aprueba
+// ni cambia el estado del expediente por sí solo -- solo muestra qué falta
+// y, cuando todo queda diligenciado, resalta que ya está listo para que el
+// admin decida aprobarlo con el botón de siempre. La aprobación real sigue
+// siendo 100% manual (admin_compliance_aprobar), a propósito: un expediente
+// "completo" no es lo mismo que un expediente "revisado y aceptado" -- eso
+// lo decide una persona, no un checklist.
+// ============================================================
+
+function calcularChecklistExpediente(f, docsTipos, tieneExpediente) {
+  const items = [];
+  const push = (label, ok, categoria) => items.push({ label, ok: !!ok, categoria });
+
+  push("Nombre del negocio", f.nombre_negocio, "Datos del negocio y representante");
+  push("NIT / documento del negocio", f.numero_documento_negocio, "Datos del negocio y representante");
+  push("Tipo de negocio (natural/jurídica)", f.tipo_negocio, "Datos del negocio y representante");
+  push("Ciudad", f.ciudad, "Datos del negocio y representante");
+  push("Dirección", f.direccion, "Datos del negocio y representante");
+  push("Actividad económica", f.actividad_economica, "Datos del negocio y representante");
+  push("Origen de los fondos declarado", f.origen_fondos, "Datos del negocio y representante");
+  push("Datos de pago (banco, tipo y número de cuenta)", f.banco && f.tipo_cuenta && f.numero_cuenta, "Datos del negocio y representante");
+  push("Contacto del negocio (email o teléfono)", f.contacto || f.email, "Datos del negocio y representante");
+  push("Nombre del representante o encargado", f.representante_nombre, "Datos del negocio y representante");
+  push("Documento del representante (tipo y número)", f.representante_tipo_documento && f.representante_numero_documento, "Datos del negocio y representante");
+  push("Cargo del representante", f.representante_cargo, "Datos del negocio y representante");
+  push("Contacto del representante (email o teléfono)", f.representante_email || f.representante_telefono, "Datos del negocio y representante");
+
+  if (tieneExpediente) {
+    push("Cédula del representante (documento cargado)", docsTipos.includes("cedula_representante"), "Documentos");
+    push("RUT (documento cargado)", docsTipos.includes("rut"), "Documentos");
+    if (f.tipo_negocio === "persona_juridica") {
+      push("Cámara de comercio (documento cargado)", docsTipos.includes("camara_comercio"), "Documentos");
+    }
+    push("Certificado bancario (documento cargado)", docsTipos.includes("certificado_bancario"), "Documentos");
+    // Documentos adicionales de debida diligencia ampliada -- solo aplican
+    // si el riesgo quedó evaluado como alto o el representante es PEP (ver
+    // la guía AML/SARLAFT en docs/guia-aml-sarlaft-documentos-comercio.md).
+    if (f.riesgo === "alto") {
+      push("Declaración de origen de fondos ampliada (documento cargado)", docsTipos.includes("declaracion_origen_fondos_ampliada"), "Documentos");
+    }
+    if (f.representante_pep) {
+      push("Declaración de vínculos PEP (documento cargado)", docsTipos.includes("declaracion_pep"), "Documentos");
+    }
+  }
+
+  push("Consulta de listas restrictivas (6 de 6)", LISTAS_RESTRICTIVAS.every((l) => f.listas_restrictivas?.[l.key]), "Debida diligencia");
+  push("Nivel de riesgo evaluado", !!f.riesgo && f.riesgo !== "sin_evaluar", "Debida diligencia");
+
+  const completos = items.filter((i) => i.ok).length;
+  return { items, completos, total: items.length, completo: completos === items.length };
+}
+
+function checklistExpedienteHtml(resultado) {
+  const { items, completos, total, completo } = resultado;
+  const categorias = [...new Set(items.map((i) => i.categoria))];
+  return `
+    <div class="onboarding-checklist-summary">
+      <span class="badge ${completo ? "ok" : "neutral"}">${completos}/${total} diligenciado</span>
+      ${completo
+        ? '<span style="font-size:12.5px; color:var(--green); font-weight:600;">✓ Toda la información y documentación quedó completa</span>'
+        : '<span style="font-size:12.5px; color:var(--text-faint);">Información pendiente por diligenciar</span>'}
+    </div>
+    ${categorias.map((cat) => `
+      <div class="checklist-grid" style="margin-bottom:10px;">
+        ${items.filter((i) => i.categoria === cat).map((i) => `
+          <div class="checklist-item ${i.ok ? "item-done" : ""}"><span class="item-check">${i.ok ? "✓" : "○"}</span> ${escHtml(i.label)}</div>
+        `).join("")}
+      </div>
+    `).join("")}
+    ${completo ? `<div class="onboarding-ready-banner">✓ Expediente completo — listo para revisar y aprobar cuando quieras.</div>` : ""}
+  `;
+}
+
+function actualizarChecklistExpediente(panel, tieneExpediente) {
+  const cont = panel.querySelector(".checklist-cont");
+  if (!cont) return;
+  const f = leerFormularioExpediente(panel);
+  const docsTipos = panel._docTipos || [];
+  cont.innerHTML = checklistExpedienteHtml(calcularChecklistExpediente(f, docsTipos, tieneExpediente));
+}
+
+async function cargarSolicitudesNuevas() {
+  $("compliance-error").textContent = "";
   const { data, error } = await supabase
     .from("solicitudes_comercio")
     .select("id, created_at, nombre_negocio, contacto_nombre, telefono, email, ciudad, mensaje, atendido")
     .eq("atendido", false)
     .order("created_at", { ascending: true });
 
-  if (error) { $("solicitudes-error").textContent = error.message; return; }
+  if (error) { $("compliance-error").textContent = error.message; return; }
 
   const tbody = document.querySelector("#tabla-solicitudes tbody");
   tbody.innerHTML = "";
-  $("solicitudes-empty").style.display = data.length ? "none" : "block";
+  $("solicitudes-empty").classList.toggle("hidden", data.length > 0);
 
   for (const s of data) {
     const tr = document.createElement("tr");
@@ -309,23 +1163,548 @@ async function cargarSolicitudesComercio() {
       <td>${s.email ?? "-"}</td>
       <td>${s.ciudad ?? "-"}</td>
       <td>${s.mensaje ?? "-"}</td>
-      <td><button data-id="${s.id}">Marcar atendido</button></td>
+      <td style="white-space:nowrap;">
+        <button data-id="${s.id}" class="btn-sm btn-abrir-expediente">Abrir expediente</button>
+        <button data-id="${s.id}" class="secondary btn-sm btn-descartar-solicitud">Descartar</button>
+      </td>
     `;
-    tr.querySelector("button").addEventListener("click", (ev) => marcarSolicitudAtendida(s.id, ev.target));
+    tr.querySelector(".btn-abrir-expediente").addEventListener("click", () => abrirFormularioNuevoExpediente(s));
+    tr.querySelector(".btn-descartar-solicitud").addEventListener("click", (ev) => descartarSolicitud(s.id, ev.target));
     tbody.appendChild(tr);
   }
 }
 
-async function marcarSolicitudAtendida(id, btn) {
+async function descartarSolicitud(id, btn) {
+  if (!confirm("¿Descartar esta solicitud? No se va a abrir ningún expediente de cumplimiento.")) return;
   btn.disabled = true;
   const { error } = await supabase.from("solicitudes_comercio").update({ atendido: true }).eq("id", id);
-  if (error) {
-    $("solicitudes-error").textContent = error.message;
-    btn.disabled = false;
-    return;
-  }
-  await cargarSolicitudesComercio();
+  if (error) { $("compliance-error").textContent = error.message; btn.disabled = false; return; }
+  await cargarSolicitudesNuevas();
 }
+
+async function cargarCompliance() {
+  $("compliance-error").textContent = "";
+  let query = supabase
+    .from("comercio_compliance")
+    .select("id, nombre_negocio, representante_nombre, representante_numero_documento, riesgo, reincidencia, estado, proxima_revision_at, comercio_id, solicitud_id");
+
+  // "Revisión periódica" no es un estado propio -- son los ya aprobados cuya próxima revisión (cada 4
+  // meses desde que se aprobaron) ya se cumplió. El comercio sigue operando normal mientras tanto.
+  query = estadoComplianceActivo === "revision_periodica"
+    ? query.eq("estado", "aprobado").lte("proxima_revision_at", new Date().toISOString())
+    : query.eq("estado", estadoComplianceActivo);
+
+  const { data, error } = await query.order("created_at", { ascending: false });
+
+  if (error) { $("compliance-error").textContent = error.message; return; }
+
+  const tbody = document.querySelector("#tabla-compliance tbody");
+  tbody.innerHTML = "";
+  document.querySelectorAll("#tabla-compliance tr.drill-row").forEach((r) => r.remove());
+  $("compliance-empty").classList.toggle("hidden", data.length > 0);
+
+  for (const exp of data) {
+    const tr = document.createElement("tr");
+    const [riesgoClase, riesgoTexto] = RIESGO_BADGE[exp.riesgo] || RIESGO_BADGE.sin_evaluar;
+    const [estadoClase, estadoTexto] = ESTADO_BADGE[exp.estado] || ["neutral", exp.estado];
+    const vencida = exp.proxima_revision_at && new Date(exp.proxima_revision_at) < new Date();
+    tr.innerHTML = `
+      <td>${exp.nombre_negocio}${exp.reincidencia ? ' <span class="badge danger" title="El documento del representante ya aparece en otro expediente rechazado o suspendido">⚠ reincidencia</span>' : ""}</td>
+      <td>${exp.representante_nombre} · ${exp.representante_numero_documento}</td>
+      <td><span class="badge ${riesgoClase}">${riesgoTexto}</span></td>
+      <td><span class="badge ${estadoClase}">${estadoTexto}</span></td>
+      <td>${exp.proxima_revision_at ? `<span class="${vencida ? 'badge danger' : ''}">${fecha(exp.proxima_revision_at)}</span>` : "—"}</td>
+      <td><button type="button" class="secondary btn-sm" data-id="${exp.id}">Ver expediente</button></td>
+    `;
+    tr.querySelector("button").addEventListener("click", () => toggleExpedienteDetalle(tr, exp.id));
+    tbody.appendChild(tr);
+  }
+}
+
+async function actualizarBadgeRevisionPeriodica() {
+  const { count, error } = await supabase
+    .from("comercio_compliance")
+    .select("id", { count: "exact", head: true })
+    .eq("estado", "aprobado")
+    .lte("proxima_revision_at", new Date().toISOString());
+
+  if (error) return;
+
+  [$("nav-badge-revision"), $("tab-badge-revision")].forEach((el) => {
+    if (!el) return;
+    el.classList.toggle("hidden", !count);
+    el.textContent = count || "";
+  });
+}
+
+document.querySelectorAll("#compliance-tabs .quick-nav-link").forEach((tab) => {
+  tab.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    document.querySelectorAll("#compliance-tabs .quick-nav-link").forEach((t) => t.classList.remove("active"));
+    tab.classList.add("active");
+    estadoComplianceActivo = tab.dataset.estado;
+    cargarCompliance();
+  });
+});
+
+// ---------- Crear expediente (desde solicitud o en blanco) ----------
+let nuevoExpedienteAbiertoPara = null;
+
+function abrirFormularioNuevoExpediente(solicitud) {
+  const clave = solicitud ? solicitud.id : "blank";
+  const yaAbierto = nuevoExpedienteAbiertoPara === clave && document.getElementById("panel-nuevo-expediente");
+  document.querySelectorAll("#tabla-solicitudes tr.drill-row, #tabla-compliance tr.drill-row").forEach((r) => r.remove());
+  nuevoExpedienteAbiertoPara = null;
+  if (yaAbierto) return; // el mismo botón que ya estaba abierto -- lo cerramos, no lo volvemos a abrir
+
+  nuevoExpedienteAbiertoPara = clave;
+  const s = solicitud || {};
+  const tabla = document.getElementById("tabla-solicitudes");
+  const filaRef = solicitud ? [...tabla.querySelectorAll("tbody tr")].find((tr) => tr.querySelector(".btn-abrir-expediente")?.dataset.id === solicitud.id) : null;
+
+  const drillTr = document.createElement("tr");
+  drillTr.className = "drill-row";
+  drillTr.innerHTML = `<td colspan="8"><div class="table-card compliance-panel" id="panel-nuevo-expediente"></div></td>`;
+
+  if (filaRef) filaRef.after(drillTr);
+  else tabla.after(drillTr);
+
+  document.getElementById("panel-nuevo-expediente").innerHTML = formularioExpedienteHtml(null, {
+    nombre_negocio: s.nombre_negocio || "",
+    ciudad: s.ciudad || "",
+    contacto: s.contacto_nombre || s.telefono || "",
+    email: s.email || "",
+  });
+  wireFormularioExpediente(null, s.id || null);
+  drillTr.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+$("btn-nuevo-expediente").addEventListener("click", () => abrirFormularioNuevoExpediente(null));
+
+function formularioExpedienteHtml(exp, prellenado) {
+  const v = exp || prellenado || {};
+  const esNuevo = !exp;
+  return `
+    <div class="compliance-subtitle">Checklist de vinculación (AML/SARLAFT)</div>
+    <div class="checklist-cont"></div>
+
+    <div class="compliance-subtitle">Datos del negocio</div>
+    <div class="compliance-grid">
+      <div class="field"><label>Nombre del negocio *</label><input class="ce-nombre_negocio" value="${escHtml(v.nombre_negocio || "")}" required /></div>
+      <div class="field"><label>NIT / documento del negocio</label><input class="ce-numero_documento_negocio" value="${escHtml(v.numero_documento_negocio || "")}" /></div>
+      <div class="field"><label>Tipo</label>
+        <select class="ce-tipo_negocio">
+          <option value="">—</option>
+          <option value="persona_natural" ${v.tipo_negocio === "persona_natural" ? "selected" : ""}>Persona natural</option>
+          <option value="persona_juridica" ${v.tipo_negocio === "persona_juridica" ? "selected" : ""}>Persona jurídica</option>
+        </select>
+      </div>
+      <div class="field"><label>Ciudad</label><input class="ce-ciudad" value="${escHtml(v.ciudad || "")}" /></div>
+      <div class="field"><label>Dirección</label><input class="ce-direccion" value="${escHtml(v.direccion || "")}" /></div>
+      <div class="field"><label>Actividad económica</label><input class="ce-actividad_economica" value="${escHtml(v.actividad_economica || "")}" /></div>
+      <div class="field"><label>Contacto</label><input class="ce-contacto" value="${escHtml(v.contacto || "")}" /></div>
+      <div class="field"><label>Email</label><input class="ce-email" type="email" value="${escHtml(v.email || "")}" /></div>
+    </div>
+    <div class="field"><label>Origen de los fondos (declarado por el comercio)</label><input class="ce-origen_fondos" value="${escHtml(v.origen_fondos || "")}" placeholder="ej. ventas del negocio, capital propio..." /></div>
+
+    <div class="compliance-subtitle">Datos de pago <span style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--text-faint);">— pedir certificado bancario y cargarlo abajo, en Documentos</span></div>
+    <div class="compliance-grid">
+      <div class="field"><label>Banco</label><input class="ce-banco" value="${escHtml(v.banco || "")}" /></div>
+      <div class="field"><label>Tipo de cuenta</label>
+        <select class="ce-tipo_cuenta">
+          <option value="">—</option>
+          <option value="ahorros" ${v.tipo_cuenta === "ahorros" ? "selected" : ""}>Ahorros</option>
+          <option value="corriente" ${v.tipo_cuenta === "corriente" ? "selected" : ""}>Corriente</option>
+        </select>
+      </div>
+      <div class="field"><label>Número de cuenta</label><input class="ce-numero_cuenta" value="${escHtml(v.numero_cuenta || "")}" /></div>
+    </div>
+
+    <div class="compliance-subtitle">Representante legal / persona encargada</div>
+    <div class="compliance-grid">
+      <div class="field"><label>Nombre completo *</label><input class="ce-representante_nombre" value="${escHtml(v.representante_nombre || "")}" required /></div>
+      <div class="field"><label>Tipo de documento *</label>
+        <select class="ce-representante_tipo_documento" required>
+          <option value="CC" ${v.representante_tipo_documento === "CC" || !v.representante_tipo_documento ? "selected" : ""}>Cédula (CC)</option>
+          <option value="CE" ${v.representante_tipo_documento === "CE" ? "selected" : ""}>Cédula extranjería (CE)</option>
+          <option value="NIT" ${v.representante_tipo_documento === "NIT" ? "selected" : ""}>NIT</option>
+          <option value="PAS" ${v.representante_tipo_documento === "PAS" ? "selected" : ""}>Pasaporte</option>
+        </select>
+      </div>
+      <div class="field"><label>Número de documento *</label><input class="ce-representante_numero_documento" value="${escHtml(v.representante_numero_documento || "")}" required /></div>
+      <div class="field"><label>Cargo</label>
+        <select class="ce-representante_cargo">
+          <option value="">—</option>
+          ${(v.representante_cargo && !CARGOS_REPRESENTANTE.includes(v.representante_cargo) ? [v.representante_cargo, ...CARGOS_REPRESENTANTE] : CARGOS_REPRESENTANTE)
+            .map((c) => `<option value="${escHtml(c)}" ${v.representante_cargo === c ? "selected" : ""}>${escHtml(c)}</option>`).join("")}
+        </select>
+      </div>
+      <div class="field"><label>Email del representante</label><input class="ce-representante_email" type="email" value="${escHtml(v.representante_email || "")}" /></div>
+      <div class="field"><label>Teléfono del representante</label><input class="ce-representante_telefono" value="${escHtml(v.representante_telefono || "")}" /></div>
+    </div>
+    ${exp && exp.reincidencia ? `<div class="compliance-flags"><span class="badge danger">⚠ Reincidencia: este documento ya aparece en un expediente rechazado o suspendido — revisar con cuidado antes de aprobar</span></div>` : ""}
+
+    <div class="compliance-subtitle">Listas restrictivas consultadas</div>
+    <div class="checklist-grid">
+      ${LISTAS_RESTRICTIVAS.map((l) => `
+        <label class="checklist-item"><input type="checkbox" class="ce-lista" data-key="${l.key}" ${exp?.listas_restrictivas?.[l.key] ? "checked" : ""} /> ${l.label}
+          <a href="${l.url}" target="_blank" rel="noopener" class="badge info" style="margin-left:auto; text-decoration:none;">Consultar ↗</a>
+        </label>
+      `).join("")}
+    </div>
+    <div class="compliance-grid" style="margin-bottom:8px;">
+      <div class="field" style="max-width:220px;"><label>Nivel de riesgo</label>
+        <select class="ce-riesgo">
+          <option value="sin_evaluar" ${!v.riesgo || v.riesgo === "sin_evaluar" ? "selected" : ""}>Sin evaluar</option>
+          <option value="bajo" ${v.riesgo === "bajo" ? "selected" : ""}>Bajo</option>
+          <option value="medio" ${v.riesgo === "medio" ? "selected" : ""}>Medio</option>
+          <option value="alto" ${v.riesgo === "alto" ? "selected" : ""}>Alto</option>
+        </select>
+      </div>
+      <div class="field">
+        <label style="visibility:hidden;">PEP</label>
+        <label class="checklist-item" style="max-width:280px;"><input type="checkbox" class="ce-pep" ${v.representante_pep ? "checked" : ""} /> El representante es una Persona Expuesta Políticamente (PEP)</label>
+      </div>
+    </div>
+
+    ${exp ? `
+    <div class="compliance-subtitle">Documentos</div>
+    <div class="doc-list" id="doc-list-${exp.id}"><span class="empty-state" style="padding:10px;">Cargando...</span></div>
+    <div class="doc-upload-row">
+      <div class="field"><label>Tipo de documento</label>
+        <select class="ce-doc-tipo">${DOC_TIPOS.map((t) => `<option value="${t.value}">${t.label}</option>`).join("")}</select>
+      </div>
+      <div class="field" style="flex:2 1 220px;"><label>Archivo</label><input type="file" class="ce-doc-file" /></div>
+      <button type="button" class="secondary btn-sm ce-btn-subir-doc">Subir</button>
+    </div>
+    ` : ""}
+
+    <div class="error ce-error"></div>
+    <div class="ok-msg ce-ok"></div>
+    <div class="field compliance-motivo"><label>Motivo / nota (para aprobar, rechazar, suspender o reactivar)</label><textarea class="ce-motivo" rows="2" style="width:100%; resize:vertical; background:var(--bg-soft); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 12px; font-size:13.5px; color:var(--text);"></textarea></div>
+
+    <div class="compliance-actions">
+      <button type="button" class="secondary btn-sm ce-btn-guardar">${esNuevo ? "Crear expediente" : "Guardar cambios"}</button>
+      ${esNuevo ? `<button type="button" class="secondary btn-sm ce-btn-cancelar">Cancelar</button>` : ""}
+      ${exp && (exp.estado === "pendiente_revision" || exp.estado === "en_revision") ? `
+        <button type="button" class="btn-sm ce-btn-aprobar">✓ Aprobar y crear comercio</button>
+        <button type="button" class="secondary btn-sm ce-btn-rechazar" style="color:var(--red) !important;">✕ Rechazar</button>
+      ` : ""}
+      ${exp && exp.estado === "aprobado" ? `<button type="button" class="secondary btn-sm ce-btn-suspender" style="color:var(--red) !important;">Suspender comercio</button>` : ""}
+      ${exp && exp.estado === "suspendido" ? `<button type="button" class="btn-sm ce-btn-reactivar">Reactivar comercio</button>` : ""}
+    </div>
+
+    ${exp && exp.estado === "aprobado" ? `<div id="panel-operativo-${exp.id}"><div class="compliance-subtitle">Operación del comercio</div><span class="empty-state" style="padding:10px;">Cargando...</span></div>` : ""}
+    ${exp ? `<div class="compliance-meta">Expediente <code>${exp.id}</code>${exp.revisado_at ? ` · última decisión: ${fecha(exp.revisado_at)}` : ""}${exp.motivo_decision ? ` · motivo: ${escHtml(exp.motivo_decision)}` : ""}</div>` : ""}
+  `;
+}
+
+function escHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function leerFormularioExpediente(panel) {
+  const val = (sel) => panel.querySelector(sel)?.value?.trim() || null;
+  const listas = {};
+  panel.querySelectorAll(".ce-lista").forEach((chk) => { listas[chk.dataset.key] = chk.checked; });
+  return {
+    nombre_negocio: val(".ce-nombre_negocio"),
+    numero_documento_negocio: val(".ce-numero_documento_negocio"),
+    tipo_negocio: val(".ce-tipo_negocio"),
+    ciudad: val(".ce-ciudad"),
+    direccion: val(".ce-direccion"),
+    actividad_economica: val(".ce-actividad_economica"),
+    origen_fondos: val(".ce-origen_fondos"),
+    banco: val(".ce-banco"),
+    tipo_cuenta: val(".ce-tipo_cuenta"),
+    numero_cuenta: val(".ce-numero_cuenta"),
+    contacto: val(".ce-contacto"),
+    email: val(".ce-email"),
+    representante_nombre: val(".ce-representante_nombre"),
+    representante_tipo_documento: val(".ce-representante_tipo_documento"),
+    representante_numero_documento: val(".ce-representante_numero_documento"),
+    representante_cargo: val(".ce-representante_cargo"),
+    representante_email: val(".ce-representante_email"),
+    representante_telefono: val(".ce-representante_telefono"),
+    riesgo: val(".ce-riesgo"),
+    representante_pep: panel.querySelector(".ce-pep")?.checked || false,
+    listas_restrictivas: listas,
+    motivo: val(".ce-motivo"),
+  };
+}
+
+function wireFormularioExpediente(exp, solicitudId) {
+  const panel = exp ? document.getElementById(`panel-expediente-${exp.id}`) : document.getElementById("panel-nuevo-expediente");
+  const errorEl = panel.querySelector(".ce-error");
+  const okEl = panel.querySelector(".ce-ok");
+
+  // Checklist en vivo: se recalcula con cualquier cambio en el formulario
+  // (campos de texto, selects, listas restrictivas, riesgo). Los documentos
+  // se suman aparte, cuando cargarDocumentos() resuelve (ver más abajo).
+  const actualizarChecklist = () => actualizarChecklistExpediente(panel, !!exp);
+  panel.addEventListener("input", actualizarChecklist);
+  panel.addEventListener("change", actualizarChecklist);
+  actualizarChecklist();
+
+  panel.querySelector(".ce-btn-cancelar")?.addEventListener("click", () => {
+    nuevoExpedienteAbiertoPara = null;
+    panel.closest("tr.drill-row")?.remove();
+  });
+
+  panel.querySelector(".ce-btn-guardar").addEventListener("click", async () => {
+    errorEl.textContent = ""; okEl.textContent = "";
+    const f = leerFormularioExpediente(panel);
+    if (!f.nombre_negocio || !f.representante_nombre || !f.representante_numero_documento) {
+      errorEl.textContent = "Nombre del negocio y los datos del representante legal son obligatorios.";
+      return;
+    }
+    if (!exp) {
+      const { data, error } = await supabase.rpc("admin_compliance_crear", {
+        p_nombre_negocio: f.nombre_negocio, p_representante_nombre: f.representante_nombre,
+        p_representante_tipo_documento: f.representante_tipo_documento, p_representante_numero_documento: f.representante_numero_documento,
+        p_solicitud_id: solicitudId, p_numero_documento_negocio: f.numero_documento_negocio, p_tipo_negocio: f.tipo_negocio,
+        p_ciudad: f.ciudad, p_direccion: f.direccion, p_actividad_economica: f.actividad_economica, p_origen_fondos: f.origen_fondos,
+        p_banco: f.banco, p_tipo_cuenta: f.tipo_cuenta, p_numero_cuenta: f.numero_cuenta,
+        p_contacto: f.contacto, p_email: f.email, p_representante_email: f.representante_email,
+        p_representante_telefono: f.representante_telefono, p_representante_cargo: f.representante_cargo,
+      });
+      if (error) { errorEl.textContent = error.message; return; }
+      await Promise.all([cargarSolicitudesNuevas(), cargarCompliance()]);
+      return;
+    }
+    const { error } = await supabase.rpc("admin_compliance_actualizar", {
+      p_id: exp.id, p_nombre_negocio: f.nombre_negocio, p_representante_nombre: f.representante_nombre,
+      p_representante_tipo_documento: f.representante_tipo_documento, p_representante_numero_documento: f.representante_numero_documento,
+      p_numero_documento_negocio: f.numero_documento_negocio, p_tipo_negocio: f.tipo_negocio, p_ciudad: f.ciudad,
+      p_direccion: f.direccion, p_actividad_economica: f.actividad_economica, p_origen_fondos: f.origen_fondos,
+      p_banco: f.banco, p_tipo_cuenta: f.tipo_cuenta, p_numero_cuenta: f.numero_cuenta,
+      p_contacto: f.contacto, p_email: f.email, p_representante_email: f.representante_email,
+      p_representante_telefono: f.representante_telefono, p_representante_cargo: f.representante_cargo,
+      p_riesgo: f.riesgo, p_listas_restrictivas: f.listas_restrictivas, p_representante_pep: f.representante_pep,
+    });
+    if (error) { errorEl.textContent = error.message; return; }
+    okEl.textContent = "✓ Guardado";
+    setTimeout(() => { okEl.textContent = ""; }, 2000);
+    await cargarCompliance();
+  });
+
+  if (exp) {
+    panel.querySelector(".ce-btn-aprobar")?.addEventListener("click", async () => {
+      if (!confirm(`¿Aprobar "${exp.nombre_negocio}" y crear el comercio real? Va a poder operar de inmediato.`)) return;
+      const motivo = leerFormularioExpediente(panel).motivo;
+      const { error } = await supabase.rpc("admin_compliance_aprobar", { p_id: exp.id, p_motivo: motivo });
+      if (error) { errorEl.textContent = error.message; return; }
+      $("compliance-ok").textContent = `✓ "${exp.nombre_negocio}" aprobado y creado como comercio.`;
+      setTimeout(() => { $("compliance-ok").textContent = ""; }, 4000);
+      await cargarCompliance();
+    });
+    panel.querySelector(".ce-btn-rechazar")?.addEventListener("click", async () => {
+      const motivo = leerFormularioExpediente(panel).motivo;
+      if (!motivo) { errorEl.textContent = "El motivo de rechazo es obligatorio."; return; }
+      if (!confirm(`¿Rechazar "${exp.nombre_negocio}"? No se va a crear ningún comercio.`)) return;
+      const { error } = await supabase.rpc("admin_compliance_rechazar", { p_id: exp.id, p_motivo: motivo });
+      if (error) { errorEl.textContent = error.message; return; }
+      await cargarCompliance();
+    });
+    panel.querySelector(".ce-btn-suspender")?.addEventListener("click", async () => {
+      const motivo = leerFormularioExpediente(panel).motivo;
+      if (!motivo) { errorEl.textContent = "El motivo de suspensión es obligatorio."; return; }
+      if (!confirm(`¿Suspender "${exp.nombre_negocio}"? Deja de poder asignar puntos y operar de inmediato.`)) return;
+      const { error } = await supabase.rpc("admin_compliance_suspender", { p_id: exp.id, p_motivo: motivo });
+      if (error) { errorEl.textContent = error.message; return; }
+      await cargarCompliance();
+    });
+    panel.querySelector(".ce-btn-reactivar")?.addEventListener("click", async () => {
+      const motivo = leerFormularioExpediente(panel).motivo;
+      if (!confirm(`¿Reactivar "${exp.nombre_negocio}"? Vuelve a poder operar de inmediato.`)) return;
+      const { error } = await supabase.rpc("admin_compliance_reactivar", { p_id: exp.id, p_motivo: motivo });
+      if (error) { errorEl.textContent = error.message; return; }
+      await cargarCompliance();
+    });
+
+    cargarDocumentos(exp.id, panel);
+    panel.querySelector(".ce-btn-subir-doc").addEventListener("click", () => subirDocumento(exp.id, panel));
+
+    if (exp.estado === "aprobado" && exp.comercio_id) cargarPanelOperativo(exp);
+  }
+}
+
+async function cargarDocumentos(complianceId, panel) {
+  const cont = panel.querySelector(`#doc-list-${complianceId}`);
+  const { data, error } = await supabase
+    .from("comercio_compliance_documentos")
+    .select("id, tipo, storage_path, nombre_archivo, created_at")
+    .eq("compliance_id", complianceId)
+    .order("created_at", { ascending: false });
+
+  if (error) { cont.innerHTML = `<span class="error">${error.message}</span>`; return; }
+
+  panel._docTipos = data.map((d) => d.tipo);
+  actualizarChecklistExpediente(panel, true);
+
+  if (!data.length) { cont.innerHTML = `<span class="empty-state" style="padding:10px;">Sin documentos cargados.</span>`; return; }
+
+  cont.innerHTML = data.map((d) => {
+    const tipoLabel = DOC_TIPOS.find((t) => t.value === d.tipo)?.label || d.tipo;
+    return `<div class="doc-item"><span class="doc-tipo">${tipoLabel}</span><span class="doc-nombre">${escHtml(d.nombre_archivo || d.storage_path)}</span><button type="button" class="secondary btn-sm doc-ver" data-path="${d.storage_path}">Ver</button></div>`;
+  }).join("");
+  cont.querySelectorAll(".doc-ver").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const { data: signed, error: errSigned } = await supabase.storage.from("comercio-documentos").createSignedUrl(btn.dataset.path, 120);
+      if (errSigned) { alert(errSigned.message); return; }
+      window.open(signed.signedUrl, "_blank", "noopener");
+    });
+  });
+}
+
+async function subirDocumento(complianceId, panel) {
+  const errorEl = panel.querySelector(".ce-error");
+  errorEl.textContent = "";
+  const tipo = panel.querySelector(".ce-doc-tipo").value;
+  const fileInput = panel.querySelector(".ce-doc-file");
+  const file = fileInput.files[0];
+  if (!file) { errorEl.textContent = "Elegí un archivo primero."; return; }
+
+  const path = `${complianceId}/${tipo}-${Date.now()}-${file.name}`;
+  const { error: errUpload } = await supabase.storage.from("comercio-documentos").upload(path, file);
+  if (errUpload) { errorEl.textContent = errUpload.message; return; }
+
+  const { error: errRegistro } = await supabase.rpc("admin_compliance_registrar_documento", {
+    p_compliance_id: complianceId, p_tipo: tipo, p_storage_path: path, p_nombre_archivo: file.name,
+  });
+  if (errRegistro) { errorEl.textContent = errRegistro.message; return; }
+
+  fileInput.value = "";
+  await cargarDocumentos(complianceId, panel);
+}
+
+async function cargarPanelOperativo(exp) {
+  const cont = document.getElementById(`panel-operativo-${exp.id}`);
+  const { data: c, error } = await supabase
+    .from("comercios_solo_canje")
+    .select("id, llave_comercio, user_id, saldo_billetera_cop, solo_canje")
+    .eq("id", exp.comercio_id)
+    .maybeSingle();
+  if (error || !c) { cont.innerHTML = `<div class="error">${error?.message || "No se encontró el comercio."}</div>`; return; }
+
+  const [{ data: m, error: errM }, { data: campanas }, { count: revisionesCount }] = await Promise.all([
+    supabase.rpc("admin_compliance_metricas_periodo", { p_compliance_id: exp.id }),
+    supabase.from("comercio_campanas").select("nombre, multiplicador").eq("comercio_id", c.id).eq("activa", true),
+    supabase.from("comercio_compliance_auditoria").select("id", { count: "exact", head: true }).eq("compliance_id", exp.id).eq("evento", "revision_periodica"),
+  ]);
+  const met = Array.isArray(m) ? m[0] : m;
+  const vencida = exp.proxima_revision_at && new Date(exp.proxima_revision_at) < new Date();
+  const campanaHtml = campanas && campanas.length
+    ? campanas.map((camp) => `<span class="campana-tag">${escHtml(camp.nombre)} x${camp.multiplicador}</span>`).join(" ")
+    : '<span class="sin-campana">Sin campañas activas</span>';
+
+  cont.innerHTML = `
+    <div class="compliance-subtitle">Operación del comercio</div>
+    <div class="compliance-grid" style="margin-bottom:10px;">
+      <div><label>Llave</label><div>${c.llave_comercio || "—"}</div></div>
+      <div><label>Portal</label><div>${c.user_id ? '<span class="badge ok">Vinculado</span>' : '<span class="badge neutral">Pendiente de activar</span>'}</div></div>
+      <div><label>Próxima re-revisión</label><div>${exp.proxima_revision_at ? `<span class="${vencida ? 'badge danger' : ''}">${fecha(exp.proxima_revision_at)}</span>` : "—"}</div></div>
+      <div><label>Revisiones periódicas realizadas</label><div>${numero(revisionesCount || 0)}</div></div>
+      <div><label>Campañas activas</label><div>${campanaHtml}</div></div>
+    </div>
+    <label class="checklist-item" style="max-width:260px; margin-bottom:10px;"><input type="checkbox" class="op-solo-canje" ${c.solo_canje ? "checked" : ""} /> Solo canjea (no asigna puntos)</label>
+    <div class="field" style="max-width:280px;"><label>Saldo en billetera: ${cop(c.saldo_billetera_cop ?? 0)}</label>
+      <form class="recarga-form op-recarga-form"><input type="number" min="1" step="1" placeholder="$ a recargar" required /><button type="submit" class="btn-sm">Recargar</button></form>
+      <div class="recarga-ok"></div>
+    </div>
+
+    <div class="compliance-subtitle">Seguimiento del periodo${met ? ` — desde ${fecha(met.desde)}` : ""}</div>
+    ${errM ? `<div class="error">${errM.message}</div>` : !met ? `<span class="empty-state" style="padding:10px;">Cargando...</span>` : `
+      <div class="compliance-grid" style="margin-bottom:10px;">
+        <div><label>Puntos otorgados</label><div style="font-weight:700;">${numero(met.puntos_otorgados)}</div></div>
+        <div><label>Clientes distintos</label><div style="font-weight:700;">${numero(met.clientes_distintos)}</div></div>
+        <div><label>Canjes realizados</label><div style="font-weight:700;">${numero(met.canjes_realizados)}</div></div>
+      </div>
+      ${met.clientes_reincidentes && met.clientes_reincidentes.length ? `
+        <div class="doc-list" style="margin-bottom:6px;">
+          ${met.clientes_reincidentes.map((r) => `<div class="doc-item"><span class="doc-tipo">⚠ ${escHtml(r.nombre || r.clienteId)}</span><span class="doc-nombre">Ganó puntos ${r.vecesGanado}× · Redimió ${r.vecesCanjeado}× en este comercio</span></div>`).join("")}
+        </div>
+        <p style="font-size:11.5px; color:var(--text-faint); margin:0 0 10px;">Actividad repetida (≥3 veces) del mismo cliente en este comercio — revisar si es un patrón normal de fidelidad o algo a mirar con más cuidado.</p>
+      ` : `<p style="font-size:12px; color:var(--text-faint); margin:0 0 10px;">Sin clientes con actividad repetida en el periodo.</p>`}
+    `}
+    <button type="button" class="secondary btn-sm op-btn-auditoria" style="margin-top:6px;">Registrar auditoría periódica realizada</button>
+  `;
+
+  cont.querySelector(".op-solo-canje").addEventListener("change", async (ev) => {
+    const checked = ev.target.checked;
+    ev.target.disabled = true;
+    const { data, error: errUpd } = await supabase.from("comercios_solo_canje").update({ solo_canje: checked }).eq("id", c.id).select("id");
+    ev.target.disabled = false;
+    if (errUpd || !data?.length) { ev.target.checked = !checked; alert(errUpd?.message || "No se pudo actualizar."); }
+  });
+
+  cont.querySelector(".op-recarga-form").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const input = ev.target.querySelector("input");
+    const valor = parseFloat(input.value);
+    if (!valor || valor <= 0) return;
+    if (!confirm(`¿Confirmas que ya recibiste $${valor} de este comercio por fuera del sistema?`)) return;
+    const okMsg = ev.target.parentElement.querySelector(".recarga-ok");
+    ev.target.querySelector("button").disabled = true;
+    const { error: errRec } = await supabase.rpc("admin_recargar_billetera_comercio", { p_comercio_id: c.id, p_valor_cop: valor, p_motivo: null });
+    ev.target.querySelector("button").disabled = false;
+    if (errRec) { alert(errRec.message); return; }
+    input.value = "";
+    okMsg.textContent = "✓ Recargado";
+    setTimeout(() => { okMsg.textContent = ""; }, 2500);
+    await cargarPanelOperativo(exp);
+  });
+
+  cont.querySelector(".op-btn-auditoria").addEventListener("click", async () => {
+    const nota = prompt("Nota de la re-revisión periódica (opcional):") || null;
+    const { error: errAud } = await supabase.rpc("admin_compliance_registrar_auditoria", { p_id: exp.id, p_nota: nota });
+    if (errAud) { alert(errAud.message); return; }
+    await Promise.all([cargarCompliance(), actualizarBadgeRevisionPeriodica()]);
+  });
+}
+
+async function toggleExpedienteDetalle(tr, expedienteId) {
+  const next = tr.nextElementSibling;
+  if (next && next.classList.contains("drill-row")) { next.remove(); return; }
+  document.querySelectorAll("#tabla-compliance tr.drill-row, #tabla-solicitudes tr.drill-row").forEach((r) => r.remove());
+  nuevoExpedienteAbiertoPara = null;
+
+  const drillTr = document.createElement("tr");
+  drillTr.className = "drill-row";
+  drillTr.innerHTML = `<td colspan="6"><div class="table-card compliance-panel" id="panel-expediente-${expedienteId}">Cargando...</div></td>`;
+  tr.after(drillTr);
+
+  const { data: exp, error } = await supabase.from("comercio_compliance").select("*").eq("id", expedienteId).single();
+  if (error || !exp) { drillTr.querySelector(".compliance-panel").innerHTML = `<span class="error">${error?.message || "No encontrado"}</span>`; return; }
+
+  drillTr.querySelector(".compliance-panel").innerHTML = formularioExpedienteHtml(exp, exp);
+  wireFormularioExpediente(exp, null);
+}
+
+// ---------- Navegación por subpáginas (una sección visible a la vez) ----------
+// sec-comercios queda deliberadamente fuera de esta lista: la sección sigue
+// oculta (Parte 5) aunque alguien escriba #sec-comercios a mano en la URL.
+const SECCIONES_ADMIN = ["sec-pasivo", "sec-clientes", "sec-cuenta-comercio", "sec-canjes", "sec-solicitudes"];
+
+function mostrarSeccionAdmin(id) {
+  SECCIONES_ADMIN.forEach((s) => {
+    const el = document.getElementById(s);
+    if (el) el.classList.toggle("hidden", s !== id);
+  });
+  document.querySelectorAll("#quick-nav .quick-nav-link").forEach((l) => {
+    l.classList.toggle("active", l.dataset.target === id);
+  });
+}
+
+function manejarRutaAdmin() {
+  const hash = location.hash.replace("#", "");
+  const id = SECCIONES_ADMIN.includes(hash) ? hash : "sec-pasivo";
+  mostrarSeccionAdmin(id);
+  window.scrollTo(0, 0);
+}
+
+window.addEventListener("hashchange", manejarRutaAdmin);
+manejarRutaAdmin();
 
 init();
 </script>

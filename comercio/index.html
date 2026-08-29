@@ -4,88 +4,670 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Puntos Neggo — Portal de comercios</title>
+<meta name="description" content="Panel para comercios aliados de Puntos Neggo: revisa tus canjes pendientes, confírmalos y consulta tu saldo por cobrar." />
 <style>
-  :root { color-scheme: dark; }
-  body { font-family: -apple-system, system-ui, sans-serif; background: #0f1115; color: #e6e6e6; margin: 0; padding: 24px; }
-  h1 { font-size: 20px; margin: 0 0 4px; }
-  h2 { font-size: 16px; margin: 32px 0 12px; color: #9aa4b2; text-transform: uppercase; letter-spacing: .04em; }
-  .sub { color: #8a93a3; font-size: 13px; margin-bottom: 24px; }
-  input, button { font: inherit; }
-  input { background: #1a1d24; border: 1px solid #2a2f3a; color: #e6e6e6; padding: 8px 10px; border-radius: 6px; }
-  button { background: #2f6feb; border: none; color: white; padding: 8px 14px; border-radius: 6px; cursor: pointer; }
-  button:hover { background: #4184ff; }
-  button.secondary { background: #2a2f3a; }
+  :root {
+    --bg: #f5f6fb;
+    --bg-soft: #eceefa;
+    --card: #ffffff;
+    --card-hover: #f7f8fd;
+    --border: #e1e3ef;
+    --border-soft: #ececf5;
+    --text: #1c1e2b;
+    --text-dim: #5b5f78;
+    --text-faint: #8b8fa6;
+    --accent: #2953d9;
+    --accent-2: #e23f84;
+    --accent-soft: rgba(41, 83, 217, 0.10);
+    --green: #1f7a54;
+    --green-soft: rgba(31, 122, 84, 0.10);
+    --orange: #8a5a12;
+    --orange-soft: rgba(138, 90, 18, 0.10);
+    --red: #b3324a;
+    --red-soft: rgba(179, 50, 74, 0.10);
+    --radius: 16px;
+    --radius-sm: 10px;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+  section[id] { scroll-margin-top: 64px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background:
+      radial-gradient(1100px 550px at 8% -10%, rgba(41,83,217,0.06), transparent 60%),
+      radial-gradient(900px 460px at 100% 0%, rgba(226,63,132,0.045), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+  .container { max-width: 880px; margin: 0 auto; padding: 0 24px 80px; }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--text-faint); text-decoration: none;
+    padding: 22px 0 0;
+  }
+  .back-link:hover { color: var(--text-dim); }
+
+  button, .btn {
+    font-family: inherit; cursor: pointer; border: none; border-radius: var(--radius-sm);
+    font-size: 14.5px; font-weight: 600; text-decoration: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: transform .1s ease, opacity .15s ease, filter .15s ease, background .15s ease;
+  }
+  button:active, .btn:active { transform: scale(0.98); }
   button:disabled { opacity: .5; cursor: not-allowed; }
-  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #2a2f3a; font-size: 13px; vertical-align: top; }
-  th { color: #8a93a3; font-weight: 500; }
-  .confirmado { color: #4caf6f; }
-  .sin-confirmar { color: #ffd166; }
-  #login-box { max-width: 320px; margin: 80px auto; display: flex; flex-direction: column; gap: 10px; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff; padding: 12px 20px; box-shadow: 0 6px 20px rgba(41,83,217,0.20);
+  }
+  .btn-primary:hover:not(:disabled) { filter: brightness(1.08); }
+
+  .btn-secondary {
+    background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); padding: 11px 18px;
+  }
+  .btn-secondary:hover { background: var(--card-hover); }
+
+  input, textarea, select {
+    width: 100%; background: var(--bg-soft); border: 1px solid var(--border); color: var(--text);
+    padding: 11px 13px; border-radius: var(--radius-sm); font-size: 14.5px; font-family: inherit;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  label { display: block; font-size: 12.5px; color: var(--text-dim); margin-bottom: 6px; font-weight: 500; }
+  .field { margin-bottom: 14px; }
+  .checkbox-field label { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; color: var(--text-dim); font-weight: 500; cursor: pointer; line-height: 1.5; }
+  .checkbox-field input[type="checkbox"] { width: 16px; height: 16px; margin-top: 1px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+
+  .msg-error { font-size: 13px; color: var(--red); min-height: 18px; line-height: 1.4; }
+  .msg-ok { font-size: 13px; color: var(--green); min-height: 18px; }
+
+  .spinner {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff;
+    animation: spin .6s linear infinite; display: inline-block; margin-right: 7px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- Login ---------- */
+  #login-screen {
+    min-height: calc(100vh - 60px);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .login-card {
+    width: 100%; max-width: 380px;
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 36px 32px; box-shadow: 0 30px 60px -20px rgba(30,34,60,0.12);
+  }
+  .login-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+  .brand-mark {
+    width: 32px; height: 32px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; color: #fff; flex-shrink: 0;
+  }
+  .login-card h1 { font-size: 18px; font-weight: 650; margin: 0 0 4px; }
+  .login-card .sub { font-size: 13.5px; color: var(--text-dim); margin: 0 0 24px; line-height: 1.5; }
+  #login-form .field:last-of-type { margin-bottom: 20px; }
+  .login-links { display: flex; justify-content: space-between; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+  .login-link-btn {
+    background: none; border: none; padding: 0; font-size: 12.5px; color: var(--accent);
+    cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+  }
+  .login-link-btn:hover { color: var(--accent-2); }
+  .login-subview { display: none; }
+  .login-subview.active { display: block; }
+  .login-subview .back-to-login { margin-bottom: 16px; }
+  .msg-ok-box {
+    font-size: 13px; color: var(--green); background: var(--green-soft);
+    border-radius: var(--radius-sm); padding: 12px 14px; line-height: 1.5; margin-top: 4px;
+  }
+
+  /* ---------- App ---------- */
   #app { display: none; }
-  .error { color: #ff6b6b; font-size: 13px; min-height: 18px; }
-  .ok { color: #4caf6f; font-size: 13px; min-height: 18px; }
-  .empty { color: #6b7280; font-size: 13px; padding: 12px 0; }
-  .topbar { display: flex; justify-content: space-between; align-items: center; }
-  .pasivo { display: flex; gap: 24px; flex-wrap: wrap; background: #171a21; border: 1px solid #2a2f3a; border-radius: 8px; padding: 16px 20px; margin-top: 20px; }
-  .pasivo .stat { min-width: 160px; }
-  .pasivo .stat .label { color: #8a93a3; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
-  .pasivo .stat .valor { font-size: 22px; font-weight: 600; margin-top: 2px; }
-  .info { background: #171a21; border: 1px solid #2a2f3a; border-radius: 8px; padding: 16px 20px; margin-top: 20px; font-size: 13px; color: #c4cad3; }
-  .info div { margin-bottom: 4px; }
-  .confirmar-form { display: flex; gap: 6px; }
-  .confirmar-form input { width: 100px; text-transform: uppercase; }
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 0 8px;
+  }
+  .topbar-brand { display: flex; align-items: center; gap: 10px; }
+  .topbar-brand-name { font-size: 14.5px; font-weight: 650; }
+  .topbar-sub { font-size: 12.5px; color: var(--text-faint); margin-top: 1px; }
+
+  h2.section-title {
+    font-size: 12.5px; font-weight: 650; color: var(--accent); text-transform: uppercase;
+    letter-spacing: 0.06em; margin: 40px 0 16px;
+  }
+  h2.section-title:first-of-type { margin-top: 32px; }
+
+  .info-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 22px 24px;
+  }
+
+  .stats-row { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  @media (min-width: 560px) { .stats-row { grid-template-columns: repeat(3, 1fr); } }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 20px 22px;
+  }
+  .stat-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.03em; }
+  .stat-value { font-size: 26px; font-weight: 750; letter-spacing: -0.01em; margin-top: 6px; }
+  .stat-value.accent { color: var(--accent); }
+  .stat-sub { font-size: 11.5px; color: var(--text-faint); margin-top: 5px; }
+
+  .section-sub { font-size: 13.5px; color: var(--text-dim); margin: -8px 0 18px; line-height: 1.5; }
+
+  .canjes-list { display: flex; flex-direction: column; gap: 12px; }
+  .canje-row {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 16px 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px;
+  }
+  .canje-main { flex: 1 1 220px; min-width: 0; }
+  .canje-fecha { font-size: 12px; color: var(--text-faint); }
+  .canje-monto { font-size: 15px; font-weight: 650; margin-top: 2px; }
+  .canje-monto .puntos { color: var(--text-dim); font-weight: 500; font-size: 13px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+    padding: 5px 10px; border-radius: 999px; white-space: nowrap;
+  }
+  .badge.confirmado { background: var(--green-soft); color: var(--green); }
+  .badge.sin-confirmar { background: var(--orange-soft); color: var(--orange); }
+  .badge.asignado { background: var(--accent-soft); color: var(--accent); }
+  .badge.pagado { background: var(--green-soft); color: var(--green); }
+  .badge.pendiente { background: var(--orange-soft); color: var(--orange); }
+  .badge.cancelado { background: rgba(28,30,43,0.06); color: var(--text-faint); }
+  .canje-cliente { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+  .confirmar-form { display: flex; gap: 8px; align-items: center; }
+  .confirmar-form input {
+    width: 150px; text-transform: uppercase; text-align: center; letter-spacing: 0.08em;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13.5px;
+    padding: 9px 10px;
+  }
+  .confirmar-form button { padding: 9px 16px; font-size: 13.5px; }
+
+  .vence-pill {
+    font-size: 11.5px; font-weight: 600; padding: 4px 9px; border-radius: 999px;
+    background: var(--orange-soft); color: var(--orange); white-space: nowrap;
+  }
+  .vence-pill.urgente { background: var(--red-soft); color: var(--red); }
+
+  /* ---------- Tabs ---------- */
+  .tab-group {
+    display: flex; gap: 6px; background: var(--bg-soft); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 4px; margin: 4px 0 18px;
+  }
+  .tab-btn {
+    flex: 1; border: none; background: transparent; color: var(--text-dim);
+    padding: 10px 10px; border-radius: 7px; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(41,83,217,0.25);
+  }
+  .tab-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent); font-size: 11px; font-weight: 700;
+  }
+  .tab-btn.active .tab-count { background: rgba(255,255,255,0.28); color: #fff; }
+
+  .empty-state {
+    text-align: center; padding: 36px 20px; color: var(--text-faint); font-size: 14px;
+    background: var(--card); border: 1px dashed var(--border); border-radius: var(--radius);
+  }
+
+  /* ---------- Tu negocio / billetera ---------- */
+  .negocio-hero {
+    background:
+      linear-gradient(155deg, rgba(41,83,217,0.10), rgba(226,63,132,0.06) 60%, transparent),
+      var(--card);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 26px 24px;
+  }
+  .negocio-hero-top {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    margin-bottom: 18px;
+  }
+  .negocio-hero-nombre { font-size: 18px; font-weight: 700; }
+  .negocio-hero-llave { font-size: 12.5px; color: var(--text-dim); }
+  .negocio-hero-llave code {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace; background: var(--accent-soft);
+    color: var(--accent); padding: 3px 8px; border-radius: 6px; font-weight: 600; font-size: 12.5px;
+  }
+  .negocio-hero-billetera { padding-top: 16px; border-top: 1px solid var(--border-soft); }
+  .billetera-label { font-size: 12.5px; color: var(--text-dim); font-weight: 500; }
+  .billetera-monto { font-size: 34px; font-weight: 750; letter-spacing: -0.02em; margin: 4px 0 4px; color: var(--accent); }
+  .billetera-hint { font-size: 12px; color: var(--text-faint); }
+  .negocio-hero-detalle {
+    margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-soft);
+    font-size: 13px; color: var(--text-dim); line-height: 1.7;
+  }
+  .negocio-hero-detalle b { color: var(--text); font-weight: 500; }
+
+  /* ---------- Campañas ---------- */
+  .campanas-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .campana-chip {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .campana-chip-nombre { font-size: 14.5px; font-weight: 650; }
+  .campana-chip-meta {
+    display: flex; align-items: center; gap: 8px; margin-top: 5px;
+    font-size: 12.5px; color: var(--text-dim);
+  }
+  .campana-crear-row { display: grid; grid-template-columns: 1.4fr 0.8fr 1fr; gap: 10px; }
+  @media (max-width: 560px) { .campana-crear-row { grid-template-columns: 1fr; } }
+
+  /* ---------- Asignar puntos ---------- */
+  .cliente-preview {
+    display: none; align-items: center; gap: 8px;
+    background: var(--green-soft); border: 1px solid rgba(31,122,84,0.22);
+    border-radius: var(--radius-sm); padding: 11px 13px; margin: -4px 0 14px;
+    font-size: 13.5px;
+  }
+  .cliente-preview.show { display: flex; }
+
+  footer.app-footer {
+    border-top: 1px solid var(--border-soft); margin-top: 48px; padding-top: 20px;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+  }
+  footer.app-footer span { font-size: 12.5px; color: var(--text-faint); }
+
+  /* ---------- Barra de utilidad ---------- */
+  .util-bar { background: var(--bg-soft); border-bottom: 1px solid var(--border); margin: 0 -24px; padding: 0 24px; }
+  .util-bar-inner { max-width: 880px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 40px; }
+  .util-tabs { display: flex; gap: 4px; }
+  .util-tabs a {
+    font-size: 12.5px; font-weight: 600; color: var(--text-dim); text-decoration: none;
+    padding: 6px 12px; border-radius: 999px; transition: color .15s ease, background .15s ease;
+  }
+  .util-tabs a:hover { color: var(--text); }
+  .util-tabs a.active { color: var(--accent); background: var(--accent-soft); }
+
+  /* ---------- Navegación rápida del panel (scrollspy) ---------- */
+  .quick-nav {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+    background: rgba(245,246,251,0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border); margin: 0 -24px 8px; padding: 10px 24px;
+  }
+  .quick-nav::-webkit-scrollbar { display: none; }
+  .quick-nav-link {
+    flex-shrink: 0; font-size: 12.5px; font-weight: 600; color: var(--text-dim); text-decoration: none;
+    padding: 7px 13px; border-radius: 999px; transition: color .15s ease, background .15s ease;
+    white-space: nowrap;
+  }
+  .quick-nav-link:hover { color: var(--text); background: var(--bg-soft); }
+  .quick-nav-link.active { color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+
+  /* ---------- Actividad: tira de estadísticas + filas estilo movimiento ---------- */
+  .actividad-stats { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
+  @media (min-width: 560px) { .actividad-stats { grid-template-columns: repeat(3, 1fr); } }
+  .actividad-stat {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 14px 16px;
+  }
+  .actividad-stat .label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .03em; }
+  .actividad-stat .valor { font-size: 19px; font-weight: 700; margin-top: 3px; }
+  .actividad-buscar { margin-bottom: 14px; }
+  .actividad-buscar input { max-width: 280px; }
+
+  .mov-row {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 13px 16px;
+  }
+  .mov-avatar {
+    width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  .mov-row-body { flex: 1; min-width: 0; }
+  .mov-row-nombre { font-size: 14px; font-weight: 600; }
+  .mov-row-sub { font-size: 12px; color: var(--text-faint); margin-top: 1px; }
+  .mov-row-monto { text-align: right; flex-shrink: 0; }
+  .mov-row-monto .valor { font-size: 14.5px; font-weight: 700; color: var(--green); }
+  .mov-row-monto .pts { font-size: 11.5px; color: var(--text-faint); margin-top: 1px; }
+
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
 
-<div id="login-box">
-  <h1>Puntos Neggo — Portal de comercios</h1>
-  <p class="sub">Acceso restringido a comercios registrados por Neggo.</p>
-  <input id="email" type="email" placeholder="Email" autocomplete="username" />
-  <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password" />
-  <button id="btn-login">Entrar</button>
-  <div class="error" id="login-error"></div>
-</div>
+<div class="util-bar"><div class="util-bar-inner">
+  <div class="util-tabs">
+    <a href="/">Clientes</a>
+    <a href="/aliados/" class="active">Comercios</a>
+  </div>
+</div></div>
 
-<div id="app">
-  <div class="topbar">
-    <div>
-      <h1>Puntos Neggo — Portal de comercios</h1>
-      <p class="sub" id="session-info"></p>
+<div class="container">
+  <a class="back-link" href="/">← Puntos Neggo</a>
+
+  <!-- ============ LOGIN ============ -->
+  <div id="login-screen">
+    <div class="login-card">
+      <div class="login-brand">
+        <div class="brand-mark">N</div>
+        <div class="topbar-brand-name">Portal de comercios</div>
+      </div>
+      <h1>Entra a tu cuenta</h1>
+      <p class="sub">Acceso restringido a comercios registrados por Puntos Neggo. Si tu negocio ya está afiliado y no tienes credenciales, contáctanos.</p>
+      <form id="login-form">
+        <div class="field">
+          <label>Número de documento del comercio</label>
+          <input id="documento" type="text" inputmode="numeric" autocomplete="username" required />
+        </div>
+        <div class="field">
+          <label>Contraseña</label>
+          <input id="password" type="password" autocomplete="current-password" required />
+        </div>
+        <button type="submit" class="btn btn-primary" id="btn-login" style="width:100%;">Entrar</button>
+        <div class="msg-error" id="login-error" style="margin-top:12px;"></div>
+      </form>
+
+      <div class="login-links" id="login-form-links">
+        <button type="button" class="login-link-btn" id="btn-ir-activar">¿Tu negocio fue aceptado? Activa tu cuenta</button>
+        <button type="button" class="login-link-btn" id="btn-ir-recuperar">¿Olvidaste tu contraseña?</button>
+      </div>
+
+      <!-- ============ Activar cuenta (self-service) ============ -->
+      <div class="login-subview" id="activar-view">
+        <div class="back-to-login"><button type="button" class="login-link-btn" id="btn-activar-volver">← Volver a iniciar sesión</button></div>
+        <h1 id="activar-titulo">Activa tu cuenta</h1>
+        <p class="sub">Escribe el correo con el que Puntos Neggo registró tu negocio. Si está pendiente de activar, te vamos a pedir que crees tu contraseña.</p>
+        <form id="form-activar-verificar">
+          <div class="field">
+            <label>Email</label>
+            <input id="activar-email" type="email" autocomplete="username" required />
+          </div>
+          <button type="submit" class="btn btn-primary" id="btn-activar-verificar" style="width:100%;">Verificar correo</button>
+          <div class="msg-error" id="activar-verificar-error" style="margin-top:12px;"></div>
+        </form>
+        <form id="form-activar-crear" class="hidden" style="margin-top:4px;">
+          <div class="field">
+            <label>Crear contraseña</label>
+            <input id="activar-password" type="password" autocomplete="new-password" minlength="8" required />
+          </div>
+          <div class="field">
+            <label>Confirmar contraseña</label>
+            <input id="activar-password-confirm" type="password" autocomplete="new-password" minlength="8" required />
+          </div>
+          <div class="field checkbox-field">
+            <label><input id="activar-acepta" type="checkbox" required /> Acepto los <a href="/legal/#terminos" target="_blank" rel="noopener">Términos y condiciones</a> y la <a href="/legal/#privacidad" target="_blank" rel="noopener">Política de tratamiento de datos</a> de Puntos Neggo.</label>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btn-activar-crear" style="width:100%;">Activar cuenta</button>
+          <div class="msg-error" id="activar-crear-error" style="margin-top:12px;"></div>
+        </form>
+      </div>
+
+      <!-- ============ Recuperar contraseña ============ -->
+      <div class="login-subview" id="recuperar-view">
+        <div class="back-to-login"><button type="button" class="login-link-btn" id="btn-recuperar-volver">← Volver a iniciar sesión</button></div>
+        <h1>Recuperar contraseña</h1>
+        <p class="sub">Escribe el número de documento de tu comercio y te mandamos un enlace al correo registrado para que crees una contraseña nueva.</p>
+        <form id="form-recuperar">
+          <div class="field">
+            <label>Número de documento del comercio</label>
+            <input id="recuperar-documento" type="text" inputmode="numeric" autocomplete="username" required />
+          </div>
+          <button type="submit" class="btn btn-primary" id="btn-recuperar-enviar" style="width:100%;">Enviar enlace</button>
+          <div class="msg-error" id="recuperar-error" style="margin-top:12px;"></div>
+          <div class="msg-ok-box hidden" id="recuperar-ok">✓ Si ese documento tiene una cuenta, te llegó un enlace al correo registrado para restablecer tu contraseña.</div>
+        </form>
+      </div>
+
+      <!-- ============ Nueva contraseña (desde el enlace del correo) ============ -->
+      <div class="login-subview" id="nueva-password-view">
+        <h1>Crea tu nueva contraseña</h1>
+        <p class="sub">Este enlace te identificó — ahora solo falta que elijas tu nueva contraseña.</p>
+        <form id="form-nueva-password">
+          <div class="field">
+            <label>Nueva contraseña</label>
+            <input id="nueva-password" type="password" autocomplete="new-password" minlength="8" required />
+          </div>
+          <div class="field">
+            <label>Confirmar contraseña</label>
+            <input id="nueva-password-confirm" type="password" autocomplete="new-password" minlength="8" required />
+          </div>
+          <button type="submit" class="btn btn-primary" id="btn-nueva-password" style="width:100%;">Guardar nueva contraseña</button>
+          <div class="msg-error" id="nueva-password-error" style="margin-top:12px;"></div>
+        </form>
+      </div>
     </div>
-    <button class="secondary" id="btn-logout">Salir</button>
   </div>
 
-  <div class="error" id="comercio-error"></div>
-  <div class="info" id="info-comercio"></div>
+  <!-- ============ APP ============ -->
+  <div id="app">
+    <div class="topbar">
+      <div class="topbar-brand">
+        <div class="brand-mark">N</div>
+        <div>
+          <div class="topbar-brand-name">Portal de comercios</div>
+          <div class="topbar-sub" id="session-info"></div>
+        </div>
+      </div>
+      <button class="btn btn-secondary" id="btn-logout">Salir</button>
+    </div>
 
-  <h2>Puntos pendientes de pago (a favor del comercio)</h2>
-  <div class="pasivo">
-    <div class="stat">
-      <div class="label">Puntos pendientes</div>
-      <div class="valor" id="pasivo-puntos">—</div>
+    <nav class="quick-nav" id="quick-nav">
+      <a href="#sec-negocio" class="quick-nav-link" data-target="sec-negocio">Resumen</a>
+      <a href="#sec-campanas" class="quick-nav-link" data-target="sec-campanas">Campañas</a>
+      <a href="#sec-operar" class="quick-nav-link" data-target="sec-operar">Operar</a>
+      <a href="#sec-cuenta" class="quick-nav-link" data-target="sec-cuenta">Tu cuenta</a>
+      <a href="#sec-actividad" class="quick-nav-link" data-target="sec-actividad">Actividad</a>
+    </nav>
+
+    <div class="msg-error" id="comercio-error" style="margin-top:8px;"></div>
+
+    <section id="sec-negocio">
+    <h2 class="section-title">Tu negocio</h2>
+    <div class="negocio-hero">
+      <div class="negocio-hero-top">
+        <div class="negocio-hero-nombre" id="info-nombre">—</div>
+        <div class="negocio-hero-llave">Llave <code id="info-llave">—</code></div>
+      </div>
+      <div class="negocio-hero-billetera">
+        <div class="billetera-label">Saldo disponible para asignar puntos</div>
+        <div class="billetera-monto" id="billetera-saldo">—</div>
+        <div class="billetera-hint">Se recarga cuando le transfieres el valor a Puntos Neggo y lo confirmamos.</div>
+      </div>
+      <div class="negocio-hero-detalle" id="info-detalle"></div>
     </div>
-    <div class="stat">
-      <div class="label">Valor</div>
-      <div class="valor" id="pasivo-valor">—</div>
+    </section>
+
+    <section id="sec-campanas">
+    <h2 class="section-title">Campañas activas</h2>
+    <p class="section-sub">Puedes tener varias al mismo tiempo (ej. una para todos y otra solo para clientes nuevos) — tú eliges cuál le aplica a cada cliente al asignarle puntos.</p>
+    <div class="campanas-list" id="campanas-list"></div>
+    <div class="empty-state hidden" id="campanas-empty">No tienes campañas activas todavía.</div>
+
+    <div class="info-card">
+      <div class="campana-crear-row">
+        <div class="field" style="margin-bottom:0;">
+          <label>Nombre</label>
+          <input id="campana-nombre" type="text" placeholder="Ej. Aniversario" maxlength="60" />
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Multiplica x</label>
+          <select id="campana-multiplicador">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Aplica a</label>
+          <select id="campana-segmento">
+            <option value="todos">Todos los clientes</option>
+            <option value="nuevo">Clientes nuevos</option>
+            <option value="recurrente">Clientes recurrentes</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-campana-crear" style="margin-top:14px; width:100%;">+ Nueva campaña</button>
+      <div class="msg-error" id="campana-error" style="margin-top:10px;"></div>
+      <div class="msg-ok" id="campana-ok" style="margin-top:10px;"></div>
     </div>
-    <div class="stat">
-      <div class="label">Canjes pendientes</div>
-      <div class="valor" id="pasivo-canjes">—</div>
+    </section>
+
+    <section id="sec-operar">
+    <div id="bloque-asignar-puntos">
+    <h2 class="section-title">Asignar puntos a un cliente</h2>
+    <p class="section-sub">Pídele al cliente su llave, confirma que es él y escribe el valor de su compra — el sistema calcula los puntos.</p>
+    <div class="info-card">
+      <div class="field">
+        <label>Llave del cliente</label>
+        <input id="asignar-llave" type="text" placeholder="Ej. carlos50" />
+      </div>
+      <div class="cliente-preview" id="cliente-preview">
+        <span>✓ <strong id="cliente-preview-nombre"></strong> · cel. terminado en <span id="cliente-preview-tel"></span> · saldo: <strong id="cliente-preview-saldo"></strong> pts</span>
+      </div>
+      <div class="field">
+        <label>Campaña que le aplica a este cliente (opcional)</label>
+        <select id="asignar-campana">
+          <option value="">Ninguna — puntos normales (x1)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Valor de la compra del cliente (COP)</label>
+        <input id="asignar-valor" type="number" min="800" step="1" placeholder="Ej. 50000" />
+      </div>
+      <button class="btn btn-primary" id="btn-asignar" style="width:100%;" disabled>Asignar puntos</button>
+      <div class="msg-error" id="asignar-error" style="margin-top:10px;"></div>
+      <div class="msg-ok" id="asignar-ok" style="margin-top:10px;"></div>
     </div>
+    </div>
+    <div class="info-card hidden" id="aviso-solo-canje" style="margin-bottom:16px;">
+      <p class="section-sub" style="margin:0;">Tu negocio está configurado como <strong>solo-canje</strong>: no asigna puntos, solo los recibe cuando un cliente canjea. Si crees que esto es un error, contacta a Puntos Neggo.</p>
+    </div>
+
+    <h2 class="section-title">Redimir puntos de un cliente</h2>
+    <p class="section-sub">Cuando el cliente está pagando en tu negocio y quiere cubrir parte o todo con sus puntos: escribí su llave y cuántos puntos redime. Al cliente le va a aparecer un código de 6 dígitos en su cuenta — pedíselo y confírmalo abajo en "Por confirmar". Puntos Neggo te paga después el valor de lo redimido.</p>
+    <div class="info-card">
+      <div class="field">
+        <label>Llave del cliente</label>
+        <input id="redimir-llave" type="text" placeholder="Ej. carlos50" />
+      </div>
+      <div class="cliente-preview" id="redimir-preview">
+        <span>✓ <strong id="redimir-preview-nombre"></strong> · cel. terminado en <span id="redimir-preview-tel"></span> · saldo disponible: <strong id="redimir-preview-saldo"></strong> pts</span>
+      </div>
+      <div class="field">
+        <label>Puntos a redimir (mínimo 200)</label>
+        <input id="redimir-puntos" type="number" min="200" step="1" placeholder="Ej. 300" />
+      </div>
+      <button class="btn btn-primary" id="btn-redimir" style="width:100%;" disabled>Redimir puntos</button>
+      <div class="msg-error" id="redimir-error" style="margin-top:10px;"></div>
+      <div class="msg-ok" id="redimir-ok" style="margin-top:10px;"></div>
+    </div>
+    </section>
+
+    <section id="sec-cuenta">
+    <h2 class="section-title">Tu cuenta con Puntos Neggo</h2>
+    <p class="section-sub">Lo que te debemos por los canjes que ya entregaste, y lo que ya te hemos pagado.</p>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Te debemos</div>
+        <div class="stat-value accent" id="cuenta-debe-valor">—</div>
+        <div class="stat-sub" id="cuenta-debe-detalle">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Ya te pagamos</div>
+        <div class="stat-value" id="cuenta-pagado-valor">—</div>
+        <div class="stat-sub" id="cuenta-pagado-detalle">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Por confirmar</div>
+        <div class="stat-value" id="cuenta-porconfirmar-cantidad">—</div>
+        <div class="stat-sub">necesitan el código del cliente</div>
+      </div>
+    </div>
+
+    <div class="tab-group" id="cuenta-tab-group" role="tablist">
+      <button type="button" class="tab-btn active" data-tab="confirmar">Por confirmar <span class="tab-count hidden" id="tab-count-confirmar">0</span></button>
+      <button type="button" class="tab-btn" data-tab="pendiente">Pendiente de pago</button>
+      <button type="button" class="tab-btn" data-tab="pagado">Ya pagado</button>
+    </div>
+
+    <div id="tab-panel-confirmar">
+      <p class="section-sub">Pídele al cliente el código de verificación que le muestra su app y escríbelo aquí para confirmar la entrega — no importa si lo escribe con o sin el espacio.</p>
+      <div class="msg-error" id="canjes-error"></div>
+      <div class="canjes-list" id="canjes-list"></div>
+      <div class="empty-state hidden" id="canjes-empty">No tienes canjes pendientes de confirmar en este momento.</div>
+    </div>
+
+    <div id="tab-panel-pendiente" class="hidden">
+      <p class="section-sub">Ya confirmaste la entrega — Puntos Neggo te paga esto por fuera del sistema y lo marca aquí cuando esté listo.</p>
+      <div class="canjes-list" id="pendiente-pago-list"></div>
+      <div class="empty-state hidden" id="pendiente-pago-empty">No tienes canjes pendientes de pago en este momento.</div>
+    </div>
+
+    <div id="tab-panel-pagado" class="hidden">
+      <p class="section-sub">Historial de lo que Puntos Neggo ya te pagó.</p>
+      <div class="msg-error" id="pagados-error"></div>
+      <div class="canjes-list" id="pagados-list"></div>
+      <div class="empty-state hidden" id="pagados-empty">Todavía no te hemos pagado ningún canje.</div>
+    </div>
+    </section>
+
+    <section id="sec-actividad">
+    <h2 class="section-title">Actividad — puntos que has asignado</h2>
+    <p class="section-sub">Cada vez que le diste puntos a un cliente por una compra en tu negocio — esto no es dinero que te deban, es tu propio registro.</p>
+
+    <div class="actividad-stats">
+      <div class="actividad-stat">
+        <div class="label">Este mes</div>
+        <div class="valor" id="actividad-stat-mes-cantidad">—</div>
+      </div>
+      <div class="actividad-stat">
+        <div class="label">Puntos asignados este mes</div>
+        <div class="valor" id="actividad-stat-mes-puntos">—</div>
+      </div>
+      <div class="actividad-stat">
+        <div class="label">Clientes distintos este mes</div>
+        <div class="valor" id="actividad-stat-mes-clientes">—</div>
+      </div>
+    </div>
+
+    <div class="actividad-buscar">
+      <input id="actividad-buscar" type="text" placeholder="Buscar por nombre de cliente..." />
+    </div>
+
+    <div class="msg-error" id="actividad-error"></div>
+    <div class="canjes-list" id="actividad-list"></div>
+    <div class="empty-state hidden" id="actividad-empty">Todavía no le has asignado puntos a ningún cliente.</div>
+    <div class="empty-state hidden" id="actividad-sin-resultados">Ningún cliente coincide con esa búsqueda.</div>
+    </section>
+
+    <footer class="app-footer">
+      <span>Puntos Neggo — portal de comercios</span>
+      <span>
+        <a href="/" style="color:var(--text-dim); text-decoration:none;">Volver al inicio</a>
+        · <a href="/legal/#reglamento" style="color:var(--text-dim); text-decoration:none;">Legal</a>
+      </span>
+    </footer>
   </div>
-
-  <h2>Canjes pendientes de confirmar</h2>
-  <p class="sub">Pídele al cliente el código de verificación que le muestra su app y escríbelo aquí para confirmar.</p>
-  <div class="error" id="canjes-error"></div>
-  <table id="tabla-canjes">
-    <thead>
-      <tr><th>Fecha</th><th>Puntos</th><th>Valor</th><th>Estado</th><th>Confirmar</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <div class="empty" id="canjes-empty" style="display:none">No hay canjes pendientes.</div>
 </div>
 
 <script type="module">
@@ -98,34 +680,266 @@ const SUPABASE_KEY = "sb_publishable_N0z9XkKZ92GfvxtHA-NZxA_0nENuF7v";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// Login por documento: llamada directa por fetch (no supabase.functions.invoke)
+// para poder leer el cuerpo JSON del error tal cual, sin depender de como
+// cada version del SDK envuelva las respuestas no-2xx.
+async function llamarLoginDocumento(body) {
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/login-documento`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    body: JSON.stringify(body),
+  });
+  let data = null;
+  try { data = await res.json(); } catch {}
+  return { ok: res.ok, data };
+}
+
 const $ = (id) => document.getElementById(id);
 const cop = (n) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(n);
-const fecha = (iso) => new Date(iso).toLocaleString("es-CO");
+const numero = (n) => new Intl.NumberFormat("es-CO").format(n);
+const fecha = (iso) => new Date(iso).toLocaleString("es-CO", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+
+const SEGMENTO_LABEL = { todos: "Todos los clientes", nuevo: "Clientes nuevos", recurrente: "Clientes recurrentes" };
+
+function vencePillHtml(expiraIso) {
+  if (!expiraIso) return "";
+  const minutos = Math.round((new Date(expiraIso).getTime() - Date.now()) / 60000);
+  if (minutos <= 0) return `<span class="vence-pill urgente">Venciendo…</span>`;
+  const urgente = minutos <= 5;
+  const texto = minutos < 60 ? `Vence en ${minutos} min` : `Vence en ${Math.round(minutos / 60)} h`;
+  return `<span class="vence-pill ${urgente ? "urgente" : ""}">${texto}</span>`;
+}
+
+// ---------- Tabs: Por confirmar / Pendiente de pago / Ya pagado ----------
+document.querySelectorAll("#cuenta-tab-group .tab-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#cuenta-tab-group .tab-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    const tab = btn.dataset.tab;
+    $("tab-panel-confirmar").classList.toggle("hidden", tab !== "confirmar");
+    $("tab-panel-pendiente").classList.toggle("hidden", tab !== "pendiente");
+    $("tab-panel-pagado").classList.toggle("hidden", tab !== "pagado");
+  });
+});
 
 async function init() {
+  // Supabase redirige acá con type=recovery cuando el comercio hace clic en
+  // el enlace de "recuperar contraseña" que le llegó por correo -- hay que
+  // mostrarle el formulario de nueva contraseña en vez del login normal.
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "PASSWORD_RECOVERY") {
+      mostrarLogin();
+      mostrarSubvista("nueva-password-view");
+    }
+  });
+
   const { data: { session } } = await supabase.auth.getSession();
-  if (session) return mostrarApp(session);
+  if (session && !location.hash.includes("type=recovery")) return mostrarApp(session);
   mostrarLogin();
 }
 
 function mostrarLogin() {
-  $("login-box").style.display = "flex";
+  $("login-screen").style.display = "flex";
   $("app").style.display = "none";
+  mostrarSubvista(null);
 }
+
+// ---------- Login: activar cuenta / recuperar contraseña ----------
+function mostrarSubvista(id) {
+  document.querySelectorAll(".login-subview").forEach((v) => v.classList.remove("active"));
+  $("login-form").classList.toggle("hidden", !!id);
+  $("login-form-links").classList.toggle("hidden", !!id);
+  if (id) $(id).classList.add("active");
+}
+
+$("btn-ir-activar").addEventListener("click", () => mostrarSubvista("activar-view"));
+$("btn-activar-volver").addEventListener("click", () => mostrarSubvista(null));
+$("btn-ir-recuperar").addEventListener("click", () => mostrarSubvista("recuperar-view"));
+$("btn-recuperar-volver").addEventListener("click", () => mostrarSubvista(null));
+
+$("form-activar-verificar").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  $("activar-verificar-error").textContent = "";
+  const email = $("activar-email").value.trim();
+  const btn = $("btn-activar-verificar");
+  btn.disabled = true;
+
+  const { data, error } = await supabase.rpc("comercio_portal_verificar_activacion", { p_email: email });
+  btn.disabled = false;
+
+  if (error) { $("activar-verificar-error").textContent = error.message; return; }
+  if (!data) {
+    $("activar-verificar-error").textContent = "No encontramos una cuenta pendiente de activación con ese correo. Si ya la activaste, inicia sesión normalmente.";
+    return;
+  }
+
+  $("activar-titulo").textContent = "Crea tu contraseña";
+  $("form-activar-verificar").classList.add("hidden");
+  $("form-activar-crear").classList.remove("hidden");
+});
+
+$("form-activar-crear").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  $("activar-crear-error").textContent = "";
+  const email = $("activar-email").value.trim();
+  const password = $("activar-password").value;
+  const confirmar = $("activar-password-confirm").value;
+
+  if (password.length < 8) {
+    $("activar-crear-error").textContent = "La contraseña debe tener al menos 8 caracteres.";
+    return;
+  }
+  if (password !== confirmar) {
+    $("activar-crear-error").textContent = "Las contraseñas no coinciden.";
+    return;
+  }
+  const acepta = $("activar-acepta").checked;
+  if (!acepta) {
+    $("activar-crear-error").textContent = "Debes aceptar los términos y la política de tratamiento de datos.";
+    return;
+  }
+
+  const btn = $("btn-activar-crear");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span>Activando...`;
+
+  const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
+  if (signUpError) {
+    btn.disabled = false;
+    btn.textContent = "Activar cuenta";
+    $("activar-crear-error").textContent = signUpError.message.includes("already registered")
+      ? "Ya existe una cuenta con ese correo. Si es tuya, usa \"¿Olvidaste tu contraseña?\"."
+      : signUpError.message;
+    return;
+  }
+
+  if (!signUpData.session) {
+    // El proyecto tiene confirmación de correo activada -- no hay sesión
+    // todavía, así que no se puede llamar comercio_portal_activar (requiere
+    // auth.uid()). Le pedimos que confirme el correo y vuelva a entrar.
+    btn.disabled = false;
+    btn.textContent = "Activar cuenta";
+    $("form-activar-crear").classList.add("hidden");
+    $("activar-crear-error").textContent = "";
+    $("activar-crear-error").insertAdjacentHTML("afterend", `<div class="msg-ok-box" id="activar-confirmar-correo-ok">✓ Te mandamos un correo para confirmar tu cuenta. Confírmalo y después inicia sesión con tu contraseña.</div>`);
+    return;
+  }
+
+  const { error: activarError } = await supabase.rpc("comercio_portal_activar", { p_email: email, p_acepta_terminos: acepta });
+  btn.disabled = false;
+  btn.textContent = "Activar cuenta";
+
+  if (activarError) {
+    $("activar-crear-error").textContent = activarError.message;
+    return;
+  }
+
+  supabase.rpc("comercio_login_registrar_exito").catch(() => {});
+  mostrarApp(signUpData.session);
+});
+
+$("form-recuperar").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  $("recuperar-error").textContent = "";
+  $("recuperar-ok").classList.add("hidden");
+  const numeroDocumento = $("recuperar-documento").value.trim();
+  const btn = $("btn-recuperar-enviar");
+  btn.disabled = true;
+
+  const { ok } = await llamarLoginDocumento({
+    accion: "recuperar",
+    perfil: "comercio",
+    numeroDocumento,
+    redirectTo: location.origin + location.pathname,
+  });
+  btn.disabled = false;
+
+  if (!ok) { $("recuperar-error").textContent = "No pudimos procesar la solicitud. Intenta de nuevo."; return; }
+  $("recuperar-ok").classList.remove("hidden");
+  ev.target.reset();
+});
+
+$("form-nueva-password").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  $("nueva-password-error").textContent = "";
+  const password = $("nueva-password").value;
+  const confirmar = $("nueva-password-confirm").value;
+
+  if (password.length < 8) {
+    $("nueva-password-error").textContent = "La contraseña debe tener al menos 8 caracteres.";
+    return;
+  }
+  if (password !== confirmar) {
+    $("nueva-password-error").textContent = "Las contraseñas no coinciden.";
+    return;
+  }
+
+  const btn = $("btn-nueva-password");
+  btn.disabled = true;
+
+  const { data, error } = await supabase.auth.updateUser({ password });
+  btn.disabled = false;
+
+  if (error) { $("nueva-password-error").textContent = error.message; return; }
+
+  history.replaceState(null, "", location.pathname);
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) mostrarApp(session); else mostrarLogin();
+});
 
 async function mostrarApp(session) {
-  $("login-box").style.display = "none";
+  $("login-screen").style.display = "none";
   $("app").style.display = "block";
-  $("session-info").textContent = `Conectado como ${session.user.email}`;
-  await Promise.all([cargarInfoComercio(), cargarPasivo(), cargarCanjes()]);
+  $("session-info").textContent = session.user.email;
+  await Promise.all([
+    cargarInfoComercio(),
+    cargarCampanas(),
+    cargarResumenCuenta(),
+    cargarCanjes(),
+    cargarPagados(),
+    cargarActividad(),
+  ]);
 }
 
-$("btn-login").addEventListener("click", async () => {
+$("login-form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
   $("login-error").textContent = "";
-  const email = $("email").value.trim();
+  const btn = $("btn-login");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span>Entrando...`;
+
+  const numeroDocumento = $("documento").value.trim();
   const password = $("password").value;
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) { $("login-error").textContent = error.message; return; }
+
+  // El email real del comercio se resuelve del lado del servidor (nunca
+  // viaja al navegador) y el bloqueo anti fuerza bruta se aplica ahí mismo,
+  // reutilizando comercio_login_verificar_bloqueo/registrar_fallo/registrar_exito.
+  const { ok: loginOk, data: loginData } = await llamarLoginDocumento({ accion: "login", perfil: "comercio", numeroDocumento, password });
+
+  if (!loginOk || !loginData?.access_token) {
+    btn.disabled = false;
+    btn.textContent = "Entrar";
+    if (loginData?.error === "demasiados_intentos") {
+      $("login-error").textContent = `Demasiados intentos fallidos. Esperá ${loginData.minutosEspera} minuto(s) antes de volver a intentar.`;
+    } else {
+      $("login-error").textContent = "Documento o contraseña incorrectos.";
+    }
+    return;
+  }
+
+  const { data, error } = await supabase.auth.setSession({
+    access_token: loginData.access_token,
+    refresh_token: loginData.refresh_token,
+  });
+
+  btn.disabled = false;
+  btn.textContent = "Entrar";
+
+  if (error) {
+    $("login-error").textContent = "Documento o contraseña incorrectos.";
+    return;
+  }
+
   mostrarApp(data.session);
 });
 
@@ -134,68 +948,352 @@ $("btn-logout").addEventListener("click", async () => {
   mostrarLogin();
 });
 
+let comercioInfo = null;
+let clienteEncontrado = null;
+let campanasActivas = [];
+
 async function cargarInfoComercio() {
   $("comercio-error").textContent = "";
+  // Filtro explícito por user_id: sin esto, una cuenta admin que además
+  // tenga un comercio de prueba vinculado ve TODAS las filas que RLS le deja
+  // ver como admin (admins_select_comercios) y .maybeSingle() revienta con
+  // "multiple rows returned" en cuanto hay más de un comercio en la tabla.
+  const { data: { session } } = await supabase.auth.getSession();
   const { data, error } = await supabase
     .from("comercios_solo_canje")
-    .select("nombre, ciudad, contacto, datos_pago")
+    .select("nombre, ciudad, contacto, datos_pago, saldo_billetera_cop, llave_comercio, solo_canje")
+    .eq("user_id", session?.user?.id)
     .maybeSingle();
 
   if (error) { $("comercio-error").textContent = error.message; return; }
-  if (!data) { $("comercio-error").textContent = "Tu usuario no está vinculado a ningún comercio todavía -- contacta a Neggo."; return; }
+  if (!data) {
+    $("comercio-error").textContent = "Tu usuario no está vinculado a ningún comercio todavía. Contacta a Puntos Neggo.";
+    return;
+  }
 
-  $("info-comercio").innerHTML = `
-    <div><strong>${data.nombre}</strong> — ${data.ciudad}</div>
-    <div>Contacto: ${data.contacto}</div>
-    <div>Datos de pago: ${data.datos_pago}</div>
+  comercioInfo = data;
+
+  $("info-nombre").textContent = data.nombre;
+  $("info-llave").textContent = data.llave_comercio || "—";
+  $("info-detalle").innerHTML = `
+    <div><b>Ciudad:</b> ${data.ciudad}</div>
+    <div><b>Contacto:</b> ${data.contacto}</div>
+    <div><b>Datos de pago:</b> ${data.datos_pago}</div>
   `;
+
+  $("bloque-asignar-puntos").classList.toggle("hidden", !!data.solo_canje);
+  $("aviso-solo-canje").classList.toggle("hidden", !data.solo_canje);
+
+  actualizarBilleteraUI(data.saldo_billetera_cop);
+  cargarAceptacionLegal(session?.user?.id);
 }
 
-async function cargarPasivo() {
-  const { data, error } = await supabase.rpc("obtener_pasivo_por_comercio");
+// Evidencia de aceptación de términos, visible en el portal (poco vistosa,
+// pero disponible para cualquier auditoría) -- filtro explícito por
+// user_id, no solo RLS, mismo criterio ya aplicado en el resto del proyecto.
+async function cargarAceptacionLegal(userId) {
+  if (!userId) return;
+  const { data, error } = await supabase
+    .from("aceptaciones_legales")
+    .select("version, aceptado_at")
+    .eq("user_id", userId)
+    .eq("documento", "terminos_condiciones")
+    .order("aceptado_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error || !data) return;
+  const fechaTxt = new Date(data.aceptado_at).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" });
+  $("info-detalle").insertAdjacentHTML("beforeend", `<div style="font-size:11px; color:var(--text-faint); margin-top:6px;">Términos y tratamiento de datos aceptados (${data.version}) el ${fechaTxt}.</div>`);
+}
+
+function actualizarBilleteraUI(nuevoSaldo) {
+  if (comercioInfo) comercioInfo.saldo_billetera_cop = nuevoSaldo;
+  $("billetera-saldo").textContent = cop(nuevoSaldo ?? comercioInfo?.saldo_billetera_cop ?? 0);
+}
+
+// ---------- Campañas (varias activas a la vez, el comercio elige cuál aplica) ----------
+async function cargarCampanas() {
+  const { data, error } = await supabase.rpc("comercio_portal_listar_campanas");
+  if (error) { $("campana-error").textContent = error.message; return; }
+  campanasActivas = data || [];
+
+  const list = $("campanas-list");
+  list.innerHTML = "";
+  $("campanas-empty").classList.toggle("hidden", campanasActivas.length > 0);
+
+  for (const c of campanasActivas) {
+    const row = document.createElement("div");
+    row.className = "campana-chip";
+    row.innerHTML = `
+      <div class="campana-chip-main">
+        <div class="campana-chip-nombre">${c.nombre}</div>
+        <div class="campana-chip-meta"><span class="badge asignado">x${c.multiplicador}</span><span>${SEGMENTO_LABEL[c.segmento] || c.segmento}</span></div>
+      </div>
+      <button type="button" class="btn btn-secondary" data-id="${c.campana_id}">Desactivar</button>
+    `;
+    row.querySelector("button").addEventListener("click", () => desactivarCampana(c.campana_id));
+    list.appendChild(row);
+  }
+
+  const select = $("asignar-campana");
+  const valorPrevio = select.value;
+  select.innerHTML = `<option value="">Ninguna — puntos normales (x1)</option>` +
+    campanasActivas.map((c) => `<option value="${c.campana_id}">${c.nombre} (x${c.multiplicador} · ${SEGMENTO_LABEL[c.segmento] || c.segmento})</option>`).join("");
+  if (campanasActivas.some((c) => c.campana_id === valorPrevio)) select.value = valorPrevio;
+}
+
+async function desactivarCampana(id) {
+  $("campana-error").textContent = "";
+  $("campana-ok").textContent = "";
+  const { error } = await supabase.rpc("comercio_portal_desactivar_campana", { p_campana_id: id });
+  if (error) { $("campana-error").textContent = error.message; return; }
+  $("campana-ok").textContent = "Campaña desactivada.";
+  await cargarCampanas();
+}
+
+$("btn-campana-crear").addEventListener("click", async () => {
+  $("campana-error").textContent = "";
+  $("campana-ok").textContent = "";
+
+  const nombre = $("campana-nombre").value.trim();
+  const multiplicador = parseInt($("campana-multiplicador").value, 10);
+  const segmento = $("campana-segmento").value;
+
+  if (!nombre) { $("campana-error").textContent = "Ponle un nombre a la campaña."; return; }
+
+  const btn = $("btn-campana-crear");
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.innerHTML = `<span class="spinner"></span>Creando...`;
+
+  const { error } = await supabase.rpc("comercio_portal_crear_campana", {
+    p_nombre: nombre,
+    p_multiplicador: multiplicador,
+    p_segmento: segmento,
+  });
+
+  btn.disabled = false;
+  btn.textContent = original;
+
+  if (error) { $("campana-error").textContent = error.message; return; }
+
+  $("campana-nombre").value = "";
+  $("campana-ok").textContent = `Campaña "${nombre}" creada y activa.`;
+  await cargarCampanas();
+});
+
+$("asignar-llave").addEventListener("blur", async () => {
+  const llave = $("asignar-llave").value.trim();
+  clienteEncontrado = null;
+  $("cliente-preview").classList.remove("show");
+  $("btn-asignar").disabled = true;
+  if (!llave) return;
+
+  const { data, error } = await supabase.rpc("comercio_portal_buscar_cliente", { p_llave_cliente: llave });
+  const fila = Array.isArray(data) ? data[0] : data;
+
+  if (error || !fila) {
+    $("asignar-error").textContent = "No encontramos ningún cliente con esa llave.";
+    return;
+  }
+
+  $("asignar-error").textContent = "";
+  clienteEncontrado = fila;
+  $("cliente-preview-nombre").textContent = fila.nombre || "Cliente";
+  $("cliente-preview-tel").textContent = fila.telefono_mascara ? fila.telefono_mascara.slice(-4) : "—";
+  $("cliente-preview-saldo").textContent = numero(fila.saldo ?? 0);
+  $("cliente-preview").classList.add("show");
+  $("btn-asignar").disabled = false;
+});
+
+$("btn-asignar").addEventListener("click", async () => {
+  $("asignar-error").textContent = "";
+  $("asignar-ok").textContent = "";
+
+  const llave = $("asignar-llave").value.trim();
+  const valor = parseFloat($("asignar-valor").value);
+  const campanaId = $("asignar-campana").value || null;
+
+  if (!clienteEncontrado) { $("asignar-error").textContent = "Busca un cliente con una llave válida primero."; return; }
+  if (!valor || valor < 800) { $("asignar-error").textContent = "El valor mínimo de compra es $800."; return; }
+
+  const btn = $("btn-asignar");
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.innerHTML = `<span class="spinner"></span>Asignando...`;
+
+  const { data, error } = await supabase.rpc("comercio_portal_otorgar_puntos", {
+    p_llave_cliente: llave,
+    p_valor_compra: valor,
+    p_motivo: null,
+    p_campana_id: campanaId,
+  });
+
+  btn.disabled = false;
+  btn.textContent = original;
+
+  if (error) {
+    $("asignar-error").textContent = error.message;
+    return;
+  }
+
+  const fila = Array.isArray(data) ? data[0] : data;
+  $("asignar-ok").textContent = `Listo: le asignaste ${numero(fila.puntos_otorgados)} puntos a ${fila.cliente_nombre}${fila.campana_nombre ? ` (campaña "${fila.campana_nombre}" x${fila.multiplicador})` : ""}.`;
+
+  $("asignar-llave").value = "";
+  $("asignar-valor").value = "";
+  $("asignar-campana").value = "";
+  $("cliente-preview").classList.remove("show");
+  $("btn-asignar").disabled = true;
+  clienteEncontrado = null;
+
+  actualizarBilleteraUI(fila.saldo_billetera_nuevo);
+  await cargarActividad();
+});
+
+// ---------- Redimir puntos (en persona -- el comercio ya tiene al cliente enfrente,
+// pero el cliente igual debe confirmar con su código, mismo mecanismo de siempre) ----------
+let clienteRedimirEncontrado = null;
+
+$("redimir-llave").addEventListener("blur", async () => {
+  const llave = $("redimir-llave").value.trim();
+  clienteRedimirEncontrado = null;
+  $("redimir-preview").classList.remove("show");
+  $("btn-redimir").disabled = true;
+  if (!llave) return;
+
+  const { data, error } = await supabase.rpc("comercio_portal_buscar_cliente", { p_llave_cliente: llave });
+  const fila = Array.isArray(data) ? data[0] : data;
+
+  if (error || !fila) {
+    $("redimir-error").textContent = "No encontramos ningún cliente con esa llave.";
+    return;
+  }
+
+  $("redimir-error").textContent = "";
+  clienteRedimirEncontrado = fila;
+  $("redimir-preview-nombre").textContent = fila.nombre || "Cliente";
+  $("redimir-preview-tel").textContent = fila.telefono_mascara ? fila.telefono_mascara.slice(-4) : "—";
+  $("redimir-preview-saldo").textContent = numero(fila.saldo ?? 0);
+  $("redimir-preview").classList.add("show");
+  $("btn-redimir").disabled = false;
+});
+
+$("btn-redimir").addEventListener("click", async () => {
+  $("redimir-error").textContent = "";
+  $("redimir-ok").textContent = "";
+
+  const llave = $("redimir-llave").value.trim();
+  const puntos = parseInt($("redimir-puntos").value, 10);
+
+  if (!clienteRedimirEncontrado) { $("redimir-error").textContent = "Busca un cliente con una llave válida primero."; return; }
+  if (!puntos || puntos < 200) { $("redimir-error").textContent = "La redención mínima es 200 puntos."; return; }
+  if (clienteRedimirEncontrado.saldo != null && puntos > clienteRedimirEncontrado.saldo) {
+    $("redimir-error").textContent = `El cliente solo tiene ${numero(clienteRedimirEncontrado.saldo)} puntos disponibles.`;
+    return;
+  }
+
+  const btn = $("btn-redimir");
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.innerHTML = `<span class="spinner"></span>Redimiendo...`;
+
+  const { data, error } = await supabase.rpc("comercio_portal_redimir_puntos", {
+    p_llave_cliente: llave,
+    p_puntos: puntos,
+    p_motivo: null,
+  });
+
+  btn.disabled = false;
+  btn.textContent = original;
+
+  if (error) {
+    $("redimir-error").textContent = error.message;
+    return;
+  }
+
+  const fila = Array.isArray(data) ? data[0] : data;
+  $("redimir-ok").textContent = `Listo: quedó pendiente ${numero(fila.puntos_redimidos)} puntos de ${fila.cliente_nombre} (${cop(fila.valor_cop)}). Pídele el código de 6 dígitos que le apareció en su cuenta y confírmalo abajo en "Por confirmar".`;
+
+  $("redimir-llave").value = "";
+  $("redimir-puntos").value = "";
+  $("redimir-preview").classList.remove("show");
+  $("btn-redimir").disabled = true;
+  clienteRedimirEncontrado = null;
+
+  await Promise.all([cargarResumenCuenta(), cargarCanjes()]);
+});
+
+// ---------- Tu cuenta con Puntos Neggo ----------
+async function cargarResumenCuenta() {
+  const { data, error } = await supabase.rpc("comercio_portal_resumen_cuenta");
   if (error) { $("comercio-error").textContent = error.message; return; }
-  const fila = Array.isArray(data) ? data[0] : null;
-  $("pasivo-puntos").textContent = new Intl.NumberFormat("es-CO").format(fila?.puntos_pendientes ?? 0);
-  $("pasivo-valor").textContent = cop(fila?.valor_cop ?? 0);
-  $("pasivo-canjes").textContent = new Intl.NumberFormat("es-CO").format(fila?.canjes_pendientes ?? 0);
+  const r = Array.isArray(data) ? data[0] : data;
+  if (!r) return;
+
+  $("cuenta-debe-valor").textContent = cop(r.pendiente_pago_valor ?? 0);
+  $("cuenta-debe-detalle").textContent = `${numero(r.pendiente_pago_cantidad ?? 0)} canje(s) · ${numero(r.pendiente_pago_puntos ?? 0)} pts`;
+
+  $("cuenta-pagado-valor").textContent = cop(r.pagado_valor ?? 0);
+  $("cuenta-pagado-detalle").textContent = `${numero(r.pagado_cantidad ?? 0)} canje(s) · ${numero(r.pagado_puntos ?? 0)} pts`;
+
+  $("cuenta-porconfirmar-cantidad").textContent = numero(r.por_confirmar_cantidad ?? 0);
 }
 
 async function cargarCanjes() {
   $("canjes-error").textContent = "";
   // A propósito NO se selecciona codigo_verificacion -- el comercio nunca lo lee
   // de la base, tiene que recibirlo del cliente en persona y escribirlo.
-  const { data, error } = await supabase
-    .from("canjes")
-    .select("id, created_at, puntos, valor_cop, confirmado_comercio_at")
-    .eq("estado", "pendiente_pago")
-    .order("created_at", { ascending: true });
+  // El RPC (en vez de leer la tabla directo) también vence perezosamente
+  // cualquier canje sin confirmar que ya pasó los 30 minutos.
+  const { data, error } = await supabase.rpc("comercio_portal_canjes_pendientes");
 
   if (error) { $("canjes-error").textContent = error.message; return; }
 
-  const tbody = document.querySelector("#tabla-canjes tbody");
-  tbody.innerHTML = "";
-  $("canjes-empty").style.display = data.length ? "none" : "block";
+  const sinConfirmar = (data || []).filter((c) => !c.confirmado_comercio_at);
+  const confirmadosPendientePago = (data || []).filter((c) => !!c.confirmado_comercio_at);
 
-  for (const c of data) {
-    const tr = document.createElement("tr");
-    const confirmado = !!c.confirmado_comercio_at;
-    tr.innerHTML = `
-      <td>${fecha(c.created_at)}</td>
-      <td>${c.puntos}</td>
-      <td>${cop(c.valor_cop)}</td>
-      <td class="${confirmado ? "confirmado" : "sin-confirmar"}">${confirmado ? "Confirmado, en espera de pago" : "Sin confirmar"}</td>
-      <td>
-        ${confirmado ? "—" : `
-          <form class="confirmar-form" data-id="${c.id}">
-            <input type="text" placeholder="Código" maxlength="10" required />
-            <button type="submit">Confirmar</button>
-          </form>
-        `}
-      </td>
+  $("tab-count-confirmar").textContent = sinConfirmar.length;
+  $("tab-count-confirmar").classList.toggle("hidden", sinConfirmar.length === 0);
+
+  const listConfirmar = $("canjes-list");
+  listConfirmar.innerHTML = "";
+  $("canjes-empty").classList.toggle("hidden", sinConfirmar.length > 0);
+
+  for (const c of sinConfirmar) {
+    const row = document.createElement("div");
+    row.className = "canje-row";
+    row.innerHTML = `
+      <div class="canje-main">
+        <div class="canje-fecha">${fecha(c.created_at)}</div>
+        <div class="canje-monto">${cop(c.valor_cop)} <span class="puntos">· ${numero(c.puntos)} pts</span></div>
+      </div>
+      <span class="badge sin-confirmar">Sin confirmar</span>
+      ${vencePillHtml(c.expira_at)}
+      <form class="confirmar-form" data-id="${c.canje_id}">
+        <input type="text" inputmode="numeric" placeholder="Código (con o sin espacio)" maxlength="10" required />
+        <button type="submit" class="btn btn-primary">Confirmar</button>
+      </form>
     `;
-    const form = tr.querySelector("form");
-    if (form) form.addEventListener("submit", (ev) => confirmarCanje(ev, c.id));
-    tbody.appendChild(tr);
+    row.querySelector("form").addEventListener("submit", (ev) => confirmarCanje(ev, c.canje_id));
+    listConfirmar.appendChild(row);
+  }
+
+  const listPendiente = $("pendiente-pago-list");
+  listPendiente.innerHTML = "";
+  $("pendiente-pago-empty").classList.toggle("hidden", confirmadosPendientePago.length > 0);
+
+  for (const c of confirmadosPendientePago) {
+    const row = document.createElement("div");
+    row.className = "canje-row";
+    row.innerHTML = `
+      <div class="canje-main">
+        <div class="canje-fecha">${fecha(c.created_at)}</div>
+        <div class="canje-monto">${cop(c.valor_cop)} <span class="puntos">· ${numero(c.puntos)} pts</span></div>
+      </div>
+      <span class="badge confirmado">✓ Confirmado, en espera de pago</span>
+    `;
+    listPendiente.appendChild(row);
   }
 }
 
@@ -206,8 +1304,10 @@ async function confirmarCanje(ev, canjeId) {
   const input = form.querySelector("input");
   const btn = form.querySelector("button");
   btn.disabled = true;
+  const original = btn.textContent;
+  btn.innerHTML = `<span class="spinner"></span>`;
 
-  const { error } = await supabase.rpc("confirmar_canje_comercio", {
+  const { data, error } = await supabase.rpc("confirmar_canje_comercio", {
     p_canje_id: canjeId,
     p_codigo: input.value.trim(),
   });
@@ -215,11 +1315,141 @@ async function confirmarCanje(ev, canjeId) {
   if (error) {
     $("canjes-error").textContent = error.message;
     btn.disabled = false;
+    btn.textContent = original;
     return;
   }
 
-  await Promise.all([cargarCanjes(), cargarPasivo()]);
+  const fila = Array.isArray(data) ? data[0] : data;
+
+  await Promise.all([cargarCanjes(), cargarResumenCuenta()]);
+
+  if (fila?.vencido) {
+    $("canjes-error").textContent = "Ese canje venció (pasaron más de 30 minutos sin confirmar) — los puntos ya se le devolvieron al cliente.";
+  }
 }
+
+async function cargarPagados() {
+  $("pagados-error").textContent = "";
+  const { data, error } = await supabase.rpc("comercio_portal_canjes_pagados", { p_limit: 50 });
+  if (error) { $("pagados-error").textContent = error.message; return; }
+
+  const list = $("pagados-list");
+  list.innerHTML = "";
+  $("pagados-empty").classList.toggle("hidden", (data || []).length > 0);
+
+  for (const p of (data || [])) {
+    const row = document.createElement("div");
+    row.className = "canje-row";
+    row.innerHTML = `
+      <div class="canje-main">
+        <div class="canje-fecha">Pagado ${fecha(p.pagado_at)}</div>
+        <div class="canje-monto">${cop(p.valor_cop)} <span class="puntos">· ${numero(p.puntos)} pts</span></div>
+        <div class="canje-cliente">${p.cliente_nombre || "Cliente"}</div>
+      </div>
+      <span class="badge pagado">✓ Pagado</span>
+    `;
+    list.appendChild(row);
+  }
+}
+
+// ---------- Actividad: puntos que el comercio ha asignado (no es dinero pendiente) ----------
+let actividadAsignados = [];
+
+async function cargarActividad() {
+  $("actividad-error").textContent = "";
+  const { data, error } = await supabase.rpc("comercio_portal_historial", { p_limit: 100 });
+  if (error) { $("actividad-error").textContent = error.message; return; }
+
+  actividadAsignados = (data || []).filter((h) => h.tipo === "asignado");
+  actualizarEstadisticasActividad();
+  renderActividad();
+}
+
+function actualizarEstadisticasActividad() {
+  const ahora = new Date();
+  const delMes = actividadAsignados.filter((h) => {
+    const d = new Date(h.created_at);
+    return d.getMonth() === ahora.getMonth() && d.getFullYear() === ahora.getFullYear();
+  });
+  const clientesDistintos = new Set(delMes.map((h) => h.cliente_nombre || "Cliente"));
+
+  $("actividad-stat-mes-cantidad").textContent = numero(delMes.length);
+  $("actividad-stat-mes-puntos").textContent = numero(delMes.reduce((a, h) => a + Number(h.puntos), 0));
+  $("actividad-stat-mes-clientes").textContent = numero(clientesDistintos.size);
+}
+
+function inicialDe(nombre) {
+  return (nombre || "C").trim().charAt(0).toUpperCase();
+}
+
+function renderActividad() {
+  const filtro = $("actividad-buscar").value.trim().toLowerCase();
+  const filas = filtro
+    ? actividadAsignados.filter((h) => (h.cliente_nombre || "").toLowerCase().includes(filtro))
+    : actividadAsignados;
+
+  const list = $("actividad-list");
+  list.innerHTML = "";
+  $("actividad-empty").classList.toggle("hidden", actividadAsignados.length > 0);
+  $("actividad-sin-resultados").classList.toggle("hidden", !(filtro && filas.length === 0));
+
+  for (const h of filas) {
+    const row = document.createElement("div");
+    row.className = "mov-row";
+    row.innerHTML = `
+      <div class="mov-avatar">${inicialDe(h.cliente_nombre)}</div>
+      <div class="mov-row-body">
+        <div class="mov-row-nombre">${h.cliente_nombre || "Cliente"}</div>
+        <div class="mov-row-sub">${fecha(h.created_at)}</div>
+      </div>
+      <div class="mov-row-monto">
+        <div class="valor">+${numero(h.puntos)} pts</div>
+        <div class="pts">${cop(h.valor_cop)}</div>
+      </div>
+    `;
+    list.appendChild(row);
+  }
+}
+
+$("actividad-buscar").addEventListener("input", renderActividad);
+
+// ---------- Navegación rápida (scrollspy): resalta la sección visible ----------
+// Nota: se evaluó IntersectionObserver con banda superior, pero la última
+// sección (Actividad) casi nunca llena esa banda cuando el contenido debajo
+// de ella es corto -- se queda sin marcar como activa. Más simple y sin ese
+// caso raro: en cada scroll, la sección activa es la última cuyo borde
+// superior ya pasó la línea de referencia (justo debajo de la barra sticky).
+function inicializarScrollspy() {
+  const secciones = ["sec-negocio", "sec-campanas", "sec-operar", "sec-cuenta", "sec-actividad"]
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+  if (!secciones.length) return;
+
+  const links = document.querySelectorAll("#quick-nav .quick-nav-link");
+  const LINEA_REFERENCIA = 90;
+  let ticking = false;
+
+  function actualizar() {
+    ticking = false;
+    let activa = secciones[0];
+    for (const s of secciones) {
+      if (s.getBoundingClientRect().top <= LINEA_REFERENCIA) activa = s;
+    }
+    // Si ya no se puede hacer scroll más abajo (la última sección puede ser
+    // corta y nunca cruzar la línea de referencia), esa última sección cuenta
+    // como la activa igual -- es lo que se está viendo.
+    const yaAlFondo = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+    if (yaAlFondo) activa = secciones[secciones.length - 1];
+    links.forEach((l) => l.classList.toggle("active", l.dataset.target === activa.id));
+  }
+
+  window.addEventListener("scroll", () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(actualizar); }
+  }, { passive: true });
+
+  actualizar();
+}
+inicializarScrollspy();
 
 init();
 </script>
